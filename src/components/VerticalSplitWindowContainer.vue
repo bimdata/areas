@@ -1,15 +1,18 @@
-<template>
-  <div class="vertical-split">
-    <Window class="window" :style="windowsStyle[0]" />
-    <div class="vertical-separator" :style="`width:${separatorWidth}px`" @mousedown="onMouseDown"></div>
-    <Window class="window" :style="windowsStyle[1]" />
-  </div>
-</template>
-
 <script>
 import Window from "./Window.vue";
 
 export default {
+  render(h) {
+    return h("div", { class: "vertical-split" }, [
+      h(Window, { class: "window", style: this.windowsStyle[0] }),
+      h("div", {
+        class: "vertical-separator",
+        style: `width:${this.separatorWidth}px`,
+        on: { mousedown: this.onMouseDown }
+      }),
+      h(Window, { class: "window", style: this.windowsStyle[1] })
+    ]);
+  },
   data() {
     return {
       containerWidth: null,
