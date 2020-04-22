@@ -1,6 +1,10 @@
 <template>
   <div class="window-manager">
-    <VerticalSplitWindowContainer />
+    <VerticalSplitWindowContainer>
+      <Window />
+      <Window />
+      <Window />
+    </VerticalSplitWindowContainer>
   </div>
 </template>
 
