@@ -81,6 +81,7 @@ export default {
       this.activeSeparatorIndex = separatorIndex;
       e.preventDefault();
       e.stopPropagation();
+      document.body.style.setProperty("cursor", "col-resize", "important");
 
       document.addEventListener("mousemove", this.drag);
       document.addEventListener("mouseup", e => this.stopDrag(e));
@@ -115,6 +116,7 @@ export default {
     },
     stopDrag(e) {
       this.activeSeparatorIndex = null;
+      document.body.style.removeProperty("cursor");
       document.removeEventListener("mousemove", this.drag);
     }
   }
