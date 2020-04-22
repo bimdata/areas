@@ -4,6 +4,7 @@
       <Window />
       <Window />
       <Window />
+      <Window />
     </VerticalSplitWindowContainer>
   </div>
 </template>

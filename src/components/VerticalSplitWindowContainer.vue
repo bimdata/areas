@@ -99,11 +99,13 @@ export default {
           ? 0
           : this.windowsRatio.slice(this.activeSeparatorIndex + 2).reduce(sum);
 
+      // set the ratio of the window at the left of the separator
       this.windowsRatio[this.activeSeparatorIndex] = clamp(
         containerRatio - sumPreWindowsRatio,
         this.minRatio,
         100 - (sumPreWindowsRatio + sumPostWindowsRatio + this.minRatio)
       );
+      // set the ratio of the window at the right of the separator
       this.windowsRatio[this.activeSeparatorIndex + 1] =
         100 -
         this.windowsRatio[this.activeSeparatorIndex] -
