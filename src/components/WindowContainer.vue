@@ -48,7 +48,7 @@ export default {
     },
     minRatio: {
       type: Number,
-      default: 10
+      default: 0
     }
   },
   components: {
