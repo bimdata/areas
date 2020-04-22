@@ -1,34 +1,59 @@
-<template>
-  <div class="window-manager">
-    <WindowContainer>
-      <Window>Coucou</Window>
-      <Window>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Repudiandae maiores placeat magni, ipsa debitis quaerat assumenda inventore cumque culpa, quisquam libero sed nobis esse! Neque id explicabo voluptatem repellat dolorum!</Window>
-      <WindowContainer direction="column">
-        <Window>
-          <img
-            src="https://media-exp1.licdn.com/dms/image/C4D0BAQHoCO5FSOrIGg/company-logo_200_200/0?e=1595462400&v=beta&t=IuKqJs7fxWdhdzpGbzrYtPqJnvpFMmLJIt4a-NdVylo"
-          />
-        </Window>
-        <Window>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Beatae ipsum iure ex praesentium, non eos, facilis sint maxime enim provident porro odit doloremque commodi odio voluptatibus alias nostrum totam accusamus?
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. In aspernatur quae sapiente reprehenderit aliquid ullam sit asperiores laboriosam, incidunt non molestiae hic nostrum nihil autem labore culpa beatae sunt animi.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi excepturi delectus eum eos, praesentium, distinctio corrupti quasi facere exercitationem facilis suscipit impedit? Recusandae doloribus expedita cupiditate, vel illum omnis totam.
-        </Window>
-      </WindowContainer>
-    </WindowContainer>
-  </div>
-</template>
-
 <script>
+import Dum1 from "./dummyComponents/dum1.vue";
+import Dum2 from "./dummyComponents/dum2.vue";
+import Dum3 from "./dummyComponents/dum3.vue";
+import Dum4 from "./dummyComponents/dum4.vue";
+
+const testConfig = {
+  direction: "row",
+  windows: [
+    Dum1,
+    Dum2,
+    {
+      direction: "column",
+      windows: [Dum3, Dum4]
+    }
+  ]
+};
+
 import Window from "./Window.vue";
 import WindowContainer from "./WindowContainer.vue";
 export default {
   name: "WindowManager",
+  render(h) {
+    return h(
+      "div",
+      { class: "window-manager" },
+      testConfig && testConfig.windows // TODO is type checking ok ?
+        ? [makeWindowContainer(h, testConfig.windows, testConfig.direction)]
+        : null
+    );
+  },
   components: {
     Window,
-    WindowContainer
+    WindowContainer,
+    // dum components
+    Dum1,
+    Dum2,
+    Dum3,
+    Dum4
   }
 };
+
+function makeWindowContainer(h, windows, direction = "row") {
+  return h(
+    WindowContainer,
+    { props: { direction } },
+    windows.map(win => {
+      //TODO type check to be sure that this is a component or a window container config
+      if (win.windows) {
+        return makeWindowContainer(h, win.windows, win.direction);
+      } else {
+        return h(Window, [h(win)]);
+      }
+    })
+  );
+}
 </script>
 
 <style scoped>

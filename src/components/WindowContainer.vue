@@ -135,7 +135,7 @@ export default {
         100 -
         this.windowsRatio[this.activeSeparatorIndex] -
         (sumPreWindowsRatio + sumPostWindowsRatio);
-      console.log(this.windowsRatio.reduce(sum));
+
       this.windowsRatio = Array.from(this.windowsRatio);
     },
     stopDrag(e) {
