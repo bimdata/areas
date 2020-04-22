@@ -5,19 +5,12 @@ export default {
   render(h) {
     const windows = this.windows;
     if (!windows || windows.length < 2) {
-      throw "Vertical Split can only work with at least 2 windows.";
+      throw "Window container can only work with at least 2 windows.";
     }
-    windows.forEach(win => {
-      if (!win.data.staticClass) {
-        win.data.staticClass = "window";
-      } else if (!win.data.staticClass.split(" ").includes("window")) {
-        win.data.staticClass = `${win.data.staticClass} window`;
-      }
-    });
 
     return h(
       "div",
-      { class: "vertical-split" },
+      { class: "window-container", style: { flexDirection: this.direction } },
       windows
         .map((win, i) => {
           win.data.style = this.windowsWidth[i]; // TODO seems to be a hack...
@@ -25,8 +18,13 @@ export default {
             ? [
                 Object.assign({}, win), // Need to recreate object to tell vue to rerender
                 h("div", {
-                  class: "vertical-separator",
-                  style: `width:${this.separatorWidth}px`,
+                  style: {
+                    [this.direction === "row"
+                      ? "width"
+                      : "height"]: `${this.separatorThickness}px`,
+                    cursor:
+                      this.direction === "row" ? "col-resize" : "row-resize"
+                  },
                   on: { mousedown: e => this.onSeparatorMouseDown(i, e) }
                 })
               ]
@@ -42,7 +40,21 @@ export default {
     };
   },
   props: {
-    separatorWidth: {
+    direction: {
+      type: String,
+      default: "row",
+      validator(direction) {
+        if (!["row", "column"].includes(direction)) {
+          console.error(
+            `Window container direction property can only be "row" or "column", received : "${direction}"`
+          );
+          return false;
+        } else {
+          return true;
+        }
+      }
+    },
+    separatorThickness: {
       type: Number,
       default: 3
     },
@@ -66,8 +78,10 @@ export default {
     windowsWidth() {
       return this.windowsRatio.map(
         ratio =>
-          `width: calc(${ratio}% - ${((this.windows.length - 1) *
-            this.separatorWidth) /
+          `${
+            this.direction === "row" ? "width" : "height"
+          }: calc(${ratio}% - ${((this.windows.length - 1) *
+            this.separatorThickness) /
             this.windows.length}px)`
       );
     },
@@ -81,15 +95,25 @@ export default {
       this.activeSeparatorIndex = separatorIndex;
       e.preventDefault();
       e.stopPropagation();
-      document.body.style.setProperty("cursor", "col-resize", "important");
+      document.body.style.setProperty(
+        "cursor",
+        this.direction === "row" ? "col-resize" : "row-resize",
+        "important"
+      );
 
       document.addEventListener("mousemove", this.drag);
       document.addEventListener("mouseup", e => this.stopDrag(e));
     },
     drag(e) {
-      const ex = e.clientX;
-      const { x, width } = this.$el.getBoundingClientRect();
-      const containerRatio = clamp(((ex - x) / width) * 100, 0, 100);
+      const clientPosition = this.direction === "row" ? e.clientX : e.clientY;
+      const { x, y, width, height } = this.$el.getBoundingClientRect();
+      const containerPosition = this.direction === "row" ? x : y;
+      const containerDimension = this.direction === "row" ? width : height;
+      const containerRatio = clamp(
+        ((clientPosition - containerPosition) / containerDimension) * 100,
+        0,
+        100
+      );
 
       const sumPreWindowsRatio =
         this.activeSeparatorIndex === 0
@@ -132,16 +156,9 @@ function sum(a, b) {
 </script>
 
 <style scoped>
-.vertical-split {
+.window-container {
   display: flex;
   width: 100%;
   height: 100%;
-}
-.vertical-separator {
-  background-color: darkslategrey;
-  cursor: col-resize;
-}
-.window {
-  height: 100%; /* TODO This may be changes by width in horizontal split */
 }
 </style>
