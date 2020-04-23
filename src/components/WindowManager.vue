@@ -59,8 +59,11 @@ export default {
       const window1 = this.getWindow(winId1);
       const window2 = this.getWindow(winId2);
 
-      win1Layer.windows.splice(win1Layer.windows.indexOf(window1), 1, window2);
-      win2Layer.windows.splice(win2Layer.windows.indexOf(window2), 1, window1);
+      const win1LayerIndex = win1Layer.windows.indexOf(window1);
+      const win2LayerIndex = win2Layer.windows.indexOf(window2);
+
+      win1Layer.windows[win1LayerIndex] = window2;
+      win2Layer.windows[win2LayerIndex] = window1;
 
       // TODO rerender should occure
 
