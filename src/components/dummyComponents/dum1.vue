@@ -4,9 +4,13 @@
 
 <script>
 export default {
-  inject: ["$context"],
+  name: "dum1",
+  // inject: ["$context"],
+  created() {
+    console.log("dum1 created");
+  },
   mounted() {
-    debugger
+    console.log("dum1 mounted");
   }
 };
 </script>

@@ -1,6 +1,7 @@
 <script>
 import Window from "./Window.vue";
 import WindowContainer from "./WindowContainer.vue";
+import Teleport from "./Teleport.vue";
 export default {
   name: "WindowManager",
   data() {
@@ -15,8 +16,13 @@ export default {
     }
   },
   render(h) {
-    console.log("window manager render")
+    console.log("window manager render");
     return h("div", { class: "window-manager" }, [
+      ...this.windows.map(win =>
+        h(Teleport, { props: { target: getDOMWindowId(win.id) }, key: Math.random() }, [
+          h(win.component)
+        ])
+      ),
       makeWindowContainer(h, this.layout.windows, this.layout.direction)
     ]);
   },
@@ -25,7 +31,7 @@ export default {
     Object.getPrototypeOf(this.$root).$windowManager = {
       context: {
         get window() {
-          console.log("try to get window")
+          console.log("try to get window");
         }
       }
     };

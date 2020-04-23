@@ -24,6 +24,8 @@ export default {
   methods: {
     onWindowClick() {
       console.log(`window ${this.id} clicked`); // TODO for develoment only
+      this.windowManager.swapWindows(this.id, 1);
+      // this.windowManager.splitWindow(this.id);
     }
   }
 };
