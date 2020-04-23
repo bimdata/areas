@@ -2,6 +2,7 @@
 import Window from "./Window.vue";
 
 export default {
+  name: "window-container",
   render(h) {
     const windows = this.windows;
     if (!windows || windows.length < 2) {

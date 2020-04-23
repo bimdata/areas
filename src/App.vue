@@ -1,14 +1,33 @@
 <template>
   <div id="app">
-    <WindowManager />
+    <WindowManager :cfg="testConfig"/>
   </div>
 </template>
 
 <script>
 import WindowManager from "./components/WindowManager.vue";
+import Dum1 from "./components/dummyComponents/dum1.vue";
+import Dum2 from "./components/dummyComponents/dum2.vue";
+import Dum3 from "./components/dummyComponents/dum3.vue";
+import Dum4 from "./components/dummyComponents/dum4.vue";
 
 export default {
   name: "App",
+  data() {
+    return {
+      testConfig: {
+        direction: "row",
+        windows: [
+          Dum1,
+          Dum2,
+          {
+            direction: "column",
+            windows: [Dum3, Dum4]
+          }
+        ]
+      }
+    };
+  },
   components: {
     WindowManager
   }
