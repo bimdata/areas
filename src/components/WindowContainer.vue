@@ -23,7 +23,8 @@ export default {
                       ? "width"
                       : "height"]: `${this.separatorThickness}px`,
                     cursor:
-                      this.direction === "row" ? "col-resize" : "row-resize"
+                      this.direction === "row" ? "col-resize" : "row-resize",
+                    flexShrink: 0
                   },
                   on: { mousedown: e => this.onSeparatorMouseDown(i, e) }
                 })
@@ -56,7 +57,7 @@ export default {
     },
     separatorThickness: {
       type: Number,
-      default: 3
+      default: 3 // TODO may half a pixel be a problem
     },
     minRatio: {
       type: Number,
@@ -80,9 +81,9 @@ export default {
         ratio =>
           `${
             this.direction === "row" ? "width" : "height"
-          }: calc(${ratio}% - ${((this.windows.length - 1) *
+          }: max(0px, calc(${ratio}% - ${((this.windows.length - 1) *
             this.separatorThickness) /
-            this.windows.length}px)`
+            this.windows.length}px))`
       );
     },
     windows() {
