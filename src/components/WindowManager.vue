@@ -7,7 +7,6 @@ export default {
   data() {
     return {
       draggingWindowId: null,
-      windowsContents: [], // TODO good naming ?
       contentWindowMap: new Map(),
       layout: null
     };
@@ -82,9 +81,9 @@ export default {
               id: idGen()
             };
             const contentObject = {
+              id: windowObject.id,
               component: win
             };
-            this.windowsContents.push(contentObject);
             this.contentWindowMap.set(contentObject, windowObject.id);
             return windowObject;
           }
@@ -95,12 +94,12 @@ export default {
   render(h) {
     console.log("window manager render");
     return h("div", { class: "window-manager" }, [
-      ...this.windowsContents.map(windowContent =>
+      ...[...this.contentWindowMap.entries()].map(([windowContent, windowId]) =>
         h(
           Teleport,
           {
             props: {
-              target: getDOMWindowId(this.contentWindowMap.get(windowContent))
+              target: getDOMWindowId(windowId)
             }
           },
           [h(windowContent.component)]
