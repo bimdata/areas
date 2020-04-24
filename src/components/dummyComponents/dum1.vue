@@ -11,6 +11,9 @@ export default {
   },
   mounted() {
     console.log("dum1 mounted");
+  },
+  destroyed() {
+    console.log("dum1 mounted");
   }
 };
 </script>
