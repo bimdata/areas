@@ -1,6 +1,4 @@
 <script>
-import Window from "./Window.vue";
-
 export default {
   name: "window-container",
   render(h) {
@@ -64,9 +62,6 @@ export default {
       type: Number,
       default: 0
     }
-  },
-  components: {
-    Window
   },
   created() {
     this.windowsRatio = Array(this.windows.length);
