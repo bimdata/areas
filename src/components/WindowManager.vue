@@ -8,7 +8,8 @@ export default {
     return {
       draggingWindowId: null,
       contentWindowMap: new Map(),
-      layout: null
+      layout: null,
+      containerKeyGen: makeIdGenerator()
     };
   },
   props: {
@@ -41,17 +42,52 @@ export default {
     }
   },
   methods: {
-    splitWindow(winId1) {},
-    swapWindows(winId1, winId2) {
+    splitWindow(windowId, e) {
+      console.log("slit windows");
+      // TODO first change the layout accordingly and see what happen :P
+      const layer = this.findWindowLayer(windowId);
+      const newWindowId = this.windows[this.windows.length - 1].id + 1;
+      const newWindowObject = {
+        id: newWindowId,
+        type: "window"
+      };
+      // TODO Add empty component to test.. may be remove in prod
+      this.contentWindowMap.set(
+        {
+          id: newWindowId,
+          component: {
+            render(h) {
+              return h("div", ["Empty component"]);
+            }
+          }
+        },
+        newWindowId
+      );
+
+      const layerWindowObject = layer.windows.find(win => win.id === windowId);
+      layer.windows.splice(
+        layer.windows.indexOf(layerWindowObject) + 1, // TODO +1 mean at the right of the splitted one... configurable?
+        0,
+        newWindowObject
+      );
+      layer.key = this.containerKeyGen();
+      getLayerAncestors(layer).forEach(
+        ancestorLayer => (ancestorLayer.key = this.containerKeyGen())
+      );
+      this.$nextTick(() => {
+        this.$refs.teleports.forEach(teleport => teleport.attach());
+      });
+    },
+    swapWindows(windowId1, windowId2) {
       const getContent = id =>
         [...this.contentWindowMap.entries()].find(
           ([content, winId]) => winId === id
         )[0];
-      const win1Content = getContent(winId1);
-      const win2Content = getContent(winId2);
+      const win1Content = getContent(windowId1);
+      const win2Content = getContent(windowId2);
 
-      this.contentWindowMap.set(win1Content, winId2);
-      this.contentWindowMap.set(win2Content, winId1);
+      this.contentWindowMap.set(win1Content, windowId2);
+      this.contentWindowMap.set(win2Content, windowId1);
 
       // Maps are not reactive :/
       this.contentWindowMap = new Map(this.contentWindowMap);
@@ -67,10 +103,12 @@ export default {
     parseCfg(cfg) {
       const idGen = makeIdGenerator();
       this.layout = this.parseLayer(cfg, idGen);
+      addParentPropertyToLayers(null, this.layout);
     },
     parseLayer(layer, idGen) {
       return {
         type: "layer",
+        key: this.containerKeyGen(),
         direction: layer.direction,
         windows: layer.windows.map(win => {
           if (win.windows) {
@@ -81,7 +119,7 @@ export default {
               id: idGen()
             };
             const contentObject = {
-              id: windowObject.id,
+              id: windowObject.id, // TODO is it usefull to be used as key to not rerender it ?
               component: win
             };
             this.contentWindowMap.set(contentObject, windowObject.id);
@@ -89,6 +127,24 @@ export default {
           }
         })
       };
+    },
+    displayLayout(h, layout) {
+      return this.makeWindowContainer(h, layout);
+    },
+    makeWindowContainer(h, layer) {
+      const { windows, direction = "row", key } = layer;
+      return h(
+        WindowContainer,
+        { props: { direction }, key },
+        windows.map(win => {
+          if (win.windows) {
+            // If windows property, layer, window otherwise
+            return this.makeWindowContainer(h, win);
+          } else {
+            return makeWindow(h, win);
+          }
+        })
+      );
     }
   },
   render(h) {
@@ -100,32 +156,35 @@ export default {
           {
             props: {
               target: getDOMWindowId(windowId)
-            }
+            },
+            ref: "teleports",
+            refInFor: true
           },
           [h(windowContent.component)]
         )
       ),
-      makeWindowContainer(h, this.layout.windows, this.layout.direction)
+      this.displayLayout(h, this.layout)
     ]);
   }
 };
 
-// const containerIdGen = makeIdGenerator();
-function makeWindowContainer(h, windows, direction = "row") {
-  // const containerId = containerIdGen();
-  return h(
-    WindowContainer,
-    { props: { direction } /*key: `winContainer${containerId}`*/ },
-    windows.map(win => {
-      if (win.windows) {
-        // If windows property, layer, window otherwise
-        return makeWindowContainer(h, win.windows, win.direction);
-      } else {
-        return makeWindow(h, win);
-      }
-    })
-  );
+function getLayerAncestors(layer) {
+  const ancestors = [];
+  let curentLayer = layer;
+  while (curentLayer.parent) {
+    ancestors.push(layer.parent);
+    curentLayer = layer.parent;
+  }
+  return ancestors;
 }
+
+function addParentPropertyToLayers(parent, layer) {
+  layer.parent = parent;
+  layer.windows
+    .filter(win => win.type === "layer")
+    .forEach(childLayer => addParentPropertyToLayers(layer, childLayer));
+}
+
 function makeWindow(h, win) {
   return h(
     Window,

@@ -57,9 +57,10 @@ export default {
     onDragLeave(e) {
       // console.log("dragleave");
     },
-    onWindowClick() {
-      // // console.log(`window ${this.id} clicked`); // TODO for develoment only
-      // this.windowManager.swapWindows(1, this.id);
+    onWindowClick(e) {
+      if (e.altKey) {
+        this.windowManager.splitWindow(this.id, e);
+      }
     }
   }
 };
