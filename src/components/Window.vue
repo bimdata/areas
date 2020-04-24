@@ -1,5 +1,15 @@
 <template>
-  <div class="window" @click="onWindowClick">
+  <div
+    class="window"
+    @click="onWindowClick"
+    draggable="true"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @dragenter="onDragEnter"
+    @drag="onDrag"
+    @drop="onDrop"
+    @dragend="onDragEnd"
+  >
     <slot />
   </div>
 </template>
@@ -22,10 +32,34 @@ export default {
     this.$emit("created", this);
   },
   methods: {
+    onDrag() {
+      this.windowManager.draggingWindowId = this.id;
+    },
+    onDragEnd() {
+      this.windowManager.draggingWindowId = null;
+    },
+    onDrop() {
+      if (this.windowManager.draggingWindowId) {
+        this.windowManager.swapWindows(
+          this.windowManager.draggingWindowId,
+          this.id
+        );
+      }
+    },
+    onDragEnter(e) {
+      // console.log("dragenter");
+      // document.body.style.setProperty("cursor", "add", "important");
+    },
+    onDragOver(e) {
+      e.preventDefault();
+      // console.log("draghover");
+    },
+    onDragLeave(e) {
+      // console.log("dragleave");
+    },
     onWindowClick() {
-      console.log(`window ${this.id} clicked`); // TODO for develoment only
-      this.windowManager.swapWindows(this.id, 1);
-      // this.windowManager.splitWindow(this.id);
+      // // console.log(`window ${this.id} clicked`); // TODO for develoment only
+      // this.windowManager.swapWindows(1, this.id);
     }
   }
 };

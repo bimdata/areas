@@ -6,6 +6,7 @@ export default {
   name: "WindowManager",
   data() {
     return {
+      draggingWindowId: null,
       windowsContents: [], // TODO good naming ?
       contentWindowMap: new Map(),
       layout: null
