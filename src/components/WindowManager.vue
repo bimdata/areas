@@ -6,6 +6,8 @@ export default {
   name: "WindowManager",
   data() {
     return {
+      windowsContents: [], // TODO good naming ?
+      contentWindowMap: new Map(),
       layout: null
     };
   },
@@ -14,17 +16,6 @@ export default {
       type: Object,
       required: true
     }
-  },
-  render(h) {
-    console.log("window manager render");
-    return h("div", { class: "window-manager" }, [
-      ...this.windows.map(win =>
-        h(Teleport, { props: { target: getDOMWindowId(win.id) }, key: Math.random() }, [
-          h(win.component)
-        ])
-      ),
-      makeWindowContainer(h, this.layout.windows, this.layout.direction)
-    ]);
   },
   created() {
     this.parseCfg(this.cfg);
@@ -52,25 +43,18 @@ export default {
   methods: {
     splitWindow(winId1) {},
     swapWindows(winId1, winId2) {
-      if (winId1 === winId2) return;
-      const win1Layer = this.findWindowLayer(winId1);
-      const win2Layer = this.findWindowLayer(winId2);
+      const getContent = id =>
+        [...this.contentWindowMap.entries()].find(
+          ([content, winId]) => winId === id
+        )[0];
+      const win1Content = getContent(winId1);
+      const win2Content = getContent(winId2);
 
-      const window1 = this.getWindow(winId1);
-      const window2 = this.getWindow(winId2);
+      this.contentWindowMap.set(win1Content, winId2);
+      this.contentWindowMap.set(win2Content, winId1);
 
-      const win1LayerIndex = win1Layer.windows.indexOf(window1);
-      const win2LayerIndex = win2Layer.windows.indexOf(window2);
-
-      win1Layer.windows[win1LayerIndex] = window2;
-      win2Layer.windows[win2LayerIndex] = window1;
-
-      // TODO rerender should occure
-
-      win1Layer.windows = Array.from(win1Layer.windows);
-      win2Layer.windows = Array.from(win2Layer.windows);
-
-      this.layout = Object.assign({}, this.layout);
+      // Maps are not reactive :/
+      this.contentWindowMap = new Map(this.contentWindowMap);
     },
     findWindowLayer(winId) {
       return this.layers.find(layer =>
@@ -92,18 +76,67 @@ export default {
           if (win.windows) {
             return this.parseLayer(win, idGen);
           } else {
-            return {
+            const windowObject = {
               type: "window",
-              id: idGen(),
-              component: win,
-              instance: null
+              id: idGen()
             };
+            const contentObject = {
+              component: win
+            };
+            this.windowsContents.push(contentObject);
+            this.contentWindowMap.set(contentObject, windowObject.id);
+            return windowObject;
           }
         })
       };
     }
+  },
+  render(h) {
+    console.log("window manager render");
+    return h("div", { class: "window-manager" }, [
+      ...this.windowsContents.map(windowContent =>
+        h(
+          Teleport,
+          {
+            props: {
+              target: getDOMWindowId(this.contentWindowMap.get(windowContent))
+            }
+          },
+          [h(windowContent.component)]
+        )
+      ),
+      makeWindowContainer(h, this.layout.windows, this.layout.direction)
+    ]);
   }
 };
+
+// const containerIdGen = makeIdGenerator();
+function makeWindowContainer(h, windows, direction = "row") {
+  // const containerId = containerIdGen();
+  return h(
+    WindowContainer,
+    { props: { direction } /*key: `winContainer${containerId}`*/ },
+    windows.map(win => {
+      if (win.windows) {
+        // If windows property, layer, window otherwise
+        return makeWindowContainer(h, win.windows, win.direction);
+      } else {
+        return makeWindow(h, win);
+      }
+    })
+  );
+}
+function makeWindow(h, win) {
+  return h(
+    Window,
+    {
+      // key: win.id,
+      props: { id: win.id }
+      // on: { created: instance => (win.instance = instance) }
+    },
+    [h("div", { domProps: { id: getDOMWindowId(win.id) } })]
+  );
+}
 
 const getWindows = layer => layer.windows.filter(win => win.type === "window");
 const getLayers = layer => layer.windows.filter(win => win.type === "layer");
@@ -126,33 +159,6 @@ const getNestedLayers = layer => {
 
 const sortById = (a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
 
-const containerIdGen = makeIdGenerator();
-function makeWindowContainer(h, windows, direction = "row") {
-  const containerId = containerIdGen();
-  return h(
-    WindowContainer,
-    { props: { direction }, key: `winContainer${containerId}` },
-    windows.map(win => {
-      //TODO type check to be sure that this is a component or a window container config
-      if (win.windows) {
-        return makeWindowContainer(h, win.windows, win.direction);
-      } else {
-        return makeWindow(h, win);
-      }
-    })
-  );
-}
-function makeWindow(h, win) {
-  return h(
-    Window,
-    {
-      key: win.id,
-      props: { id: win.id },
-      on: { created: instance => (win.instance = instance) }
-    },
-    [h("div", { domProps: { id: getDOMWindowId(win.id) } })]
-  );
-}
 const getDOMWindowId = id => `window-${id}`;
 
 function* idGenerator() {
