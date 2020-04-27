@@ -60,6 +60,8 @@ export default {
     onWindowClick(e) {
       if (e.altKey) {
         this.windowManager.splitWindow(this.id, e);
+      } else if (e.shiftKey) {
+        this.windowManager.deleteWindow(this.id, e);
       }
     }
   }
@@ -70,5 +72,7 @@ export default {
 .window {
   background-color: cornsilk;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 </style>

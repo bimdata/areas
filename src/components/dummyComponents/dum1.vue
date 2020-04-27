@@ -13,7 +13,7 @@ export default {
     console.log("dum1 mounted");
   },
   destroyed() {
-    console.log("dum1 mounted");
+    console.log("dum1 destroyed");
   }
 };
 </script>

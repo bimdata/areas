@@ -43,6 +43,60 @@ export default {
     }
   },
   methods: {
+    mergeRatios(layer, windowIndex) {
+      if (windowIndex === 0) {
+        const firstRatio = layer.ratios.shift();
+        const secondRatio = layer.ratios.shift();
+        layer.ratios.unshift(firstRatio + secondRatio);
+        // const content = [...this.contentWindowMap.entries()].find(
+        //   ([c, winId]) => winId === windowId
+        // )[0]; // TODO is a map the best collection to use ... ???
+        const deletedWindow = layer.windows.shift();
+        // this.contentWindowMap.delete(content);
+        // this.contentWindowMap = new Map(this.contentWindowMap);
+        this.updateLayerTreeKeys(layer, false);
+        return deletedWindow;
+      } else {
+        const windowToDeleteRatio = layer.ratios[windowIndex];
+        const previousWindowRatio = layer.ratios[windowIndex - 1];
+
+        const deletedWindows = layer.ratios.splice(
+          windowIndex - 1,
+          2,
+          windowToDeleteRatio + previousWindowRatio
+        );
+
+        layer.windows.splice(windowIndex, 1);
+        return deletedWindows[0];
+      }
+    },
+    deleteLayerOrMergeRatio(layer, windowIndex) {
+      if (layer.windows.length > 2) {
+        this.mergeRatios(layer, windowIndex);
+      } else {
+        // delete the container
+        const parentLayer = layer.parent;
+        const deletedWindow = layer.windows.splice(windowIndex, 1)[0];
+        const remainingWindow = layer.windows.pop();
+        if (parentLayer) {
+          const layerIndex = parentLayer.windows.findIndex(
+            win => win.type === "layer" && win.id === layer.id
+          );
+          parentLayer.windows.splice(layerIndex, 1, remainingWindow);
+        } else {
+          this.layout = remainingWindow;
+        }
+      }
+    },
+    deleteWindow(windowId) {
+      const layer = this.getWindowLayer(windowId);
+      if (!layer)
+        throw `Cannont delete window with id "${windowId}" because this is the root window.`;
+      const windowObject = layer.windows.find(win => win.id === windowId);
+      const windowIndex = layer.windows.indexOf(windowObject);
+      this.deleteLayerOrMergeRatio(layer, windowIndex);
+      this.updateLayerTreeKeys(layer, false);
+    },
     updateContainerRatio(containerId, ratios) {
       const layer = this.getLayer(containerId);
       // Array api methods need to be used for reactivity
@@ -54,7 +108,7 @@ export default {
     splitWindow(windowId, e) {
       // TODO handle vertical or horizontal split
       console.log("slit windows");
-      const layer = this.findWindowLayer(windowId);
+      const layer = this.getWindowLayer(windowId);
       const newWindowId = this.windows[this.windows.length - 1].id + 1;
       const newWindowObject = {
         id: newWindowId,
@@ -84,13 +138,19 @@ export default {
       layer.ratios.splice(windowIndex, 1, windowRatio / 2, windowRatio / 2);
 
       // RerenderChange
+      this.updateLayerTreeKeys(layer);
+    },
+    updateLayerTreeKeys(layer, reattach = true) {
+      // TODO change naming
       layer.key = this.containerKeyGen();
       getLayerAncestors(layer).forEach(
         ancestorLayer => (ancestorLayer.key = this.containerKeyGen())
       );
-      this.$nextTick(() => {
-        this.$refs.teleports.forEach(teleport => teleport.attach());
-      });
+      if (false) {
+        this.$nextTick(() => {
+          this.$refs.teleports.forEach(teleport => teleport.attach());
+        });
+      }
     },
     swapWindows(windowId1, windowId2) {
       const getContent = id =>
@@ -106,7 +166,7 @@ export default {
       // Maps are not reactive :/
       this.contentWindowMap = new Map(this.contentWindowMap);
     },
-    findWindowLayer(winId) {
+    getWindowLayer(winId) {
       return this.layers.find(layer =>
         layer.windows.map(win => win.id).includes(winId)
       );
@@ -157,7 +217,9 @@ export default {
       };
     },
     displayLayout(h, layout) {
-      return this.makeWindowContainer(h, layout);
+      return layout.type === "layer"
+        ? this.makeWindowContainer(h, layout)
+        : makeWindow(h, layout);
     },
     makeWindowContainer(h, layer) {
       const { windows, direction = "row", id, key } = layer;
@@ -173,24 +235,28 @@ export default {
           }
         })
       );
+    },
+    getTeleports(h) {
+      return [...this.contentWindowMap.entries()].map(
+        ([windowContent, windowId]) =>
+          h(
+            Teleport,
+            {
+              props: {
+                target: getDOMWindowId(windowId)
+              },
+              ref: "teleports",
+              refInFor: true
+            },
+            [h(windowContent.component)]
+          )
+      );
     }
   },
   render(h) {
     console.log("window manager render");
     return h("div", { class: "window-manager" }, [
-      ...[...this.contentWindowMap.entries()].map(([windowContent, windowId]) =>
-        h(
-          Teleport,
-          {
-            props: {
-              target: getDOMWindowId(windowId)
-            },
-            ref: "teleports",
-            refInFor: true
-          },
-          [h(windowContent.component)]
-        )
-      ),
+      // ...this.getTeleports(h),
       this.displayLayout(h, this.layout)
     ]);
   }
@@ -236,11 +302,14 @@ const getNestedWindows = layer => [
 ];
 
 const getNestedLayers = layer => {
+  if (layer.type === "window") {
+    return [];
+  }
   const childLayers = getLayers(layer);
   if (childLayers && childLayers.length) {
     return [layer, ...childLayers.map(getNestedLayers).flat()];
   } else {
-    return layer;
+    return [layer];
   }
 };
 
