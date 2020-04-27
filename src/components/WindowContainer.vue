@@ -35,11 +35,20 @@ export default {
   },
   data() {
     return {
-      windowsRatio: null,
       activeSeparatorIndex: null
     };
   },
+  inject: ["windowManager"],
   props: {
+    // TODO id may be injected with factory instead of props...
+    id: {
+      type: Number,
+      require: true
+    },
+    windowsRatio: {
+      type: Array,
+      required: true
+    },
     direction: {
       type: String,
       default: "row",
@@ -62,14 +71,6 @@ export default {
       type: Number,
       default: 0
     }
-  },
-  created() {
-    this.windowsRatio = Array(this.windows.length);
-    this.windowsRatio.fill(100 / this.windows.length);
-    // Ensure that the sum of all element is 100
-    const [, ...headElements] = Array.from(this.windowsRatio);
-    const sumHeadElements = headElements.reduce(sum);
-    this.windowsRatio[this.windowsRatio.length - 1] = 100 - sumHeadElements;
   },
   computed: {
     windowsWidth() {
@@ -121,19 +122,20 @@ export default {
           ? 0
           : this.windowsRatio.slice(this.activeSeparatorIndex + 2).reduce(sum);
 
+      const newRatios = Array.from(this.windowsRatio);
       // set the ratio of the window at the left of the separator
-      this.windowsRatio[this.activeSeparatorIndex] = clamp(
+      newRatios[this.activeSeparatorIndex] = clamp(
         containerRatio - sumPreWindowsRatio,
         this.minRatio,
         100 - (sumPreWindowsRatio + sumPostWindowsRatio + this.minRatio)
       );
-      // set the ratio of the window at the right of the separator
-      this.windowsRatio[this.activeSeparatorIndex + 1] =
+      // // set the ratio of the window at the right of the separator
+      newRatios[this.activeSeparatorIndex + 1] =
         100 -
-        this.windowsRatio[this.activeSeparatorIndex] -
+        newRatios[this.activeSeparatorIndex] -
         (sumPreWindowsRatio + sumPostWindowsRatio);
 
-      this.windowsRatio = Array.from(this.windowsRatio);
+      this.windowManager.updateContainerRatio(this.id, newRatios);
     },
     stopDrag(e) {
       this.activeSeparatorIndex = null;

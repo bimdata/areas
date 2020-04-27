@@ -9,6 +9,7 @@ export default {
       draggingWindowId: null,
       contentWindowMap: new Map(),
       layout: null,
+      containerIdGen: makeIdGenerator(),
       containerKeyGen: makeIdGenerator()
     };
   },
@@ -42,9 +43,17 @@ export default {
     }
   },
   methods: {
+    updateContainerRatio(containerId, ratios) {
+      const layer = this.getLayer(containerId);
+      // Array api methods need to be used for reactivity
+      for (let ratio of ratios) {
+        layer.ratios.shift();
+        layer.ratios.push(ratio);
+      }
+    },
     splitWindow(windowId, e) {
+      // TODO handle vertical or horizontal split
       console.log("slit windows");
-      // TODO first change the layout accordingly and see what happen :P
       const layer = this.findWindowLayer(windowId);
       const newWindowId = this.windows[this.windows.length - 1].id + 1;
       const newWindowObject = {
@@ -65,11 +74,16 @@ export default {
       );
 
       const layerWindowObject = layer.windows.find(win => win.id === windowId);
+      const windowIndex = layer.windows.indexOf(layerWindowObject);
       layer.windows.splice(
-        layer.windows.indexOf(layerWindowObject) + 1, // TODO +1 mean at the right of the splitted one... configurable?
+        windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
         0,
         newWindowObject
       );
+      const windowRatio = layer.ratios[windowIndex];
+      layer.ratios.splice(windowIndex, 1, windowRatio / 2, windowRatio / 2);
+
+      // RerenderChange
       layer.key = this.containerKeyGen();
       getLayerAncestors(layer).forEach(
         ancestorLayer => (ancestorLayer.key = this.containerKeyGen())
@@ -100,16 +114,30 @@ export default {
     getWindow(id) {
       return this.windows.find(win => win.id === id);
     },
+    getLayer(id) {
+      return this.layers.find(layer => layer.id === id);
+    },
     parseCfg(cfg) {
       const idGen = makeIdGenerator();
       this.layout = this.parseLayer(cfg, idGen);
       addParentPropertyToLayers(null, this.layout);
     },
     parseLayer(layer, idGen) {
+      if (layer.ratios) {
+        // TODO may test aray type and percentage sum
+        // this.windowsRatio = Array(this.windows.length);
+        // this.windowsRatio.fill(100 / this.windows.length);
+        // // Ensure that the sum of all element is 100
+        // const [, ...headElements] = Array.from(this.windowsRatio);
+        // const sumHeadElements = headElements.reduce(sum);
+        // this.windowsRatio[this.windowsRatio.length - 1] = 100 - sumHeadElements;
+      }
       return {
         type: "layer",
+        id: this.containerIdGen(),
         key: this.containerKeyGen(),
         direction: layer.direction,
+        ratios: layer.ratios,
         windows: layer.windows.map(win => {
           if (win.windows) {
             return this.parseLayer(win, idGen);
@@ -132,10 +160,10 @@ export default {
       return this.makeWindowContainer(h, layout);
     },
     makeWindowContainer(h, layer) {
-      const { windows, direction = "row", key } = layer;
+      const { windows, direction = "row", id, key } = layer;
       return h(
         WindowContainer,
-        { props: { direction }, key },
+        { props: { direction, windowsRatio: layer.ratios, id }, key },
         windows.map(win => {
           if (win.windows) {
             // If windows property, layer, window otherwise

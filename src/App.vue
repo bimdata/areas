@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <WindowManager :cfg="testConfig"/>
+    <WindowManager :cfg="testConfig" />
   </div>
 </template>
 
@@ -22,9 +22,11 @@ export default {
           Dum2,
           {
             direction: "column",
-            windows: [Dum3, Dum4]
+            windows: [Dum3, Dum4],
+            ratios: [70, 30]
           }
-        ]
+        ],
+        ratios: [5, 35, 60]
       }
     };
   },
