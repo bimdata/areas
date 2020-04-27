@@ -1,6 +1,7 @@
 <template>
   <div
     class="window"
+    @click.right="onRighClick"
     @click="onWindowClick"
     draggable="true"
     @dragover="onDragOver"
@@ -59,10 +60,14 @@ export default {
     },
     onWindowClick(e) {
       if (e.altKey) {
-        this.windowManager.splitWindow(this.id, e);
+        this.windowManager.splitWindow(this.id, "row", e);
       } else if (e.shiftKey) {
-        this.windowManager.deleteWindow(this.id, e);
+        this.windowManager.splitWindow(this.id, "column", e);
       }
+    },
+    onRighClick(e) {
+      e.preventDefault();
+      this.windowManager.deleteWindow(this.id, e);
     }
   }
 };

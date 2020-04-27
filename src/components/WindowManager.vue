@@ -105,40 +105,76 @@ export default {
         layer.ratios.push(ratio);
       }
     },
-    splitWindow(windowId, e) {
+    getNextWindowId() {
+      return this.windows[this.windows.length - 1].id + 1;
+    },
+    splitWindow(windowId, direction = "row", e) {
       // TODO handle vertical or horizontal split
       console.log("slit windows");
       const layer = this.getWindowLayer(windowId);
-      const newWindowId = this.windows[this.windows.length - 1].id + 1;
+      const newWindowId = this.getNextWindowId();
       const newWindowObject = {
         id: newWindowId,
         type: "window"
       };
       // TODO Add empty component to test.. may be remove in prod
-      this.contentWindowMap.set(
-        {
-          id: newWindowId,
-          component: {
-            render(h) {
-              return h("div", ["Empty component"]);
-            }
-          }
-        },
-        newWindowId
-      );
+      // this.contentWindowMap.set(
+      //   {
+      //     id: newWindowId,
+      //     component: {
+      //       render(h) {
+      //         return h("div", ["Empty component"]);
+      //       }
+      //     }
+      //   },
+      //   newWindowId
+      // );
 
-      const layerWindowObject = layer.windows.find(win => win.id === windowId);
-      const windowIndex = layer.windows.indexOf(layerWindowObject);
-      layer.windows.splice(
-        windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
-        0,
-        newWindowObject
-      );
-      const windowRatio = layer.ratios[windowIndex];
-      layer.ratios.splice(windowIndex, 1, windowRatio / 2, windowRatio / 2);
+      if (!layer) {
+        // window is root
+        this.layout = {
+          type: "layer",
+          id: this.containerIdGen(),
+          key: this.containerKeyGen(),
+          direction,
+          ratios: [50, 50],
+          windows: [this.layout, newWindowObject]
+        };
+      } else {
+        // window is in layer
+        const layerWindowObject = layer.windows.find(
+          win => win.id === windowId
+        );
+        const windowIndex = layer.windows.indexOf(layerWindowObject);
+        const windowRatio = layer.ratios[windowIndex];
+        if (layer.direction === direction) {
+          layer.windows.splice(
+            windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
+            0,
+            newWindowObject
+          );
+          layer.ratios.splice(windowIndex, 1, windowRatio / 2, windowRatio / 2);
+        } else {
+          const newLayer = {
+            type: "layer",
+            id: this.containerIdGen(),
+            key: this.containerKeyGen(),
+            direction,
+            ratios: [50, 50],
+            windows: [
+              layerWindowObject,
+              {
+                id: this.getNextWindowId(),
+                type: "window"
+              }
+            ]
+          };
+          layer.windows.splice(windowIndex, 1, newLayer);
+        }
+        this.updateLayerTreeKeys(layer);
+      }
 
       // RerenderChange
-      this.updateLayerTreeKeys(layer);
     },
     updateLayerTreeKeys(layer, reattach = true) {
       // TODO change naming
@@ -294,12 +330,15 @@ function makeWindow(h, win) {
 const getWindows = layer => layer.windows.filter(win => win.type === "window");
 const getLayers = layer => layer.windows.filter(win => win.type === "layer");
 
-const getNestedWindows = layer => [
-  ...getWindows(layer),
-  ...getLayers(layer)
-    .map(getNestedWindows)
-    .flat()
-];
+const getNestedWindows = layer =>
+  layer.type === "layer"
+    ? [
+        ...getWindows(layer),
+        ...getLayers(layer)
+          .map(getNestedWindows)
+          .flat()
+      ]
+    : [layer];
 
 const getNestedLayers = layer => {
   if (layer.type === "window") {
