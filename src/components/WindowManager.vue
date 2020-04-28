@@ -38,9 +38,6 @@ export default {
     deleteWindow(windowId) {
       this.$refs.layout.deleteWindow(windowId);
     },
-    getNextWindowId() {
-      return this.windows[this.windows.length - 1].id + 1;
-    },
     splitWindow(windowId, direction = "row", e) {
       console.log("slit windows");
       this.$refs.layout.splitWindow(windowId, direction, e);
@@ -83,9 +80,9 @@ export default {
         key: this.containerKeyGen(),
         direction: layer.direction,
         ratios: layer.ratios,
-        windows: layer.windows.map(win => {
-          if (win.windows) {
-            return this.parseLayer(win, idGen);
+        children: layer.children.map(child => {
+          if (child.children) {
+            return this.parseLayer(child, idGen);
           } else {
             const windowObject = {
               type: "window",
@@ -93,7 +90,7 @@ export default {
             };
             const contentObject = {
               id: windowObject.id, // TODO is it usefull to be used as key to not rerender it ?
-              component: win
+              component: child
             };
             this.contentWindowMap.set(contentObject, windowObject.id);
             return windowObject;

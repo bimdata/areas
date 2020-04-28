@@ -18,7 +18,7 @@ export default layout => ({
   },
   methods: {
     getLayerParent(layer) {
-      return this.layers.length ? this.layers.find(parentLayer => parentLayer.windows.includes(layer)) : null;
+      return this.layers.length ? this.layers.find(parentLayer => parentLayer.children.includes(layer)) : null;
     },
     getLayerAncestors(layer) {
       const ancestors = [];
@@ -40,7 +40,7 @@ export default layout => ({
     },
     getWindowLayer(winId) {
       return this.layers.find(layer =>
-        layer.windows.filter(win => win.type === "window").map(win => win.id).includes(winId)
+        layer.children.filter(child => child.type === "window").map(win => win.id).includes(winId)
       );
     },
     getWindow(id) {
@@ -76,17 +76,17 @@ export default layout => ({
           key: this.getNextLayerKey(),
           direction,
           ratios: [50, 50],
-          windows: [this.layout, newWindowObject]
+          children: [this.layout, newWindowObject]
         };
       } else {
         // window is in layer
-        const layerWindowObject = layer.windows.find(
+        const layerWindowObject = layer.children.filter(child => child.type === "window").find(
           win => win.id === windowId
         );
-        const windowIndex = layer.windows.indexOf(layerWindowObject);
+        const windowIndex = layer.children.indexOf(layerWindowObject);
         const windowRatio = layer.ratios[windowIndex];
         if (layer.direction === direction) {
-          layer.windows.splice(
+          layer.children.splice(
             windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
             0,
             newWindowObject
@@ -99,7 +99,7 @@ export default layout => ({
             key: this.getNextLayerKey(),
             direction,
             ratios: [50, 50],
-            windows: [
+            children: [
               layerWindowObject,
               {
                 id: this.getNextWindowId(),
@@ -107,7 +107,7 @@ export default layout => ({
               }
             ]
           };
-          layer.windows.splice(windowIndex, 1, newLayer);
+          layer.children.splice(windowIndex, 1, newLayer);
         }
         console.log("update keys");
         this.updateLayerTreeKeys(layer);
@@ -120,7 +120,7 @@ export default layout => ({
         const firstRatio = layer.ratios.shift();
         const secondRatio = layer.ratios.shift();
         layer.ratios.unshift(firstRatio + secondRatio);
-        const deletedWindow = layer.windows.shift();
+        const deletedWindow = layer.children.shift();
         this.updateLayerTreeKeys(layer, false);
         return deletedWindow;
       } else {
@@ -133,20 +133,20 @@ export default layout => ({
           windowToDeleteRatio + previousWindowRatio
         );
 
-        layer.windows.splice(windowIndex, 1);
+        layer.children.splice(windowIndex, 1);
         return deletedWindows[0];
       }
     },
     deleteLayer(layer, windowIndex) {
       // delete the container
       const parentLayer = this.getLayerParent(layer);
-      layer.windows.splice(windowIndex, 1);
-      const remainingWindow = layer.windows.pop();
+      layer.children.splice(windowIndex, 1);
+      const remainingWindow = layer.children.pop();
       if (parentLayer) {
-        const layerIndex = parentLayer.windows.findIndex(
-          win => win.type === "layer" && win.id === layer.id
+        const layerIndex = parentLayer.children.findIndex(
+          child => child.type === "layer" && child.id === layer.id
         );
-        parentLayer.windows.splice(layerIndex, 1, remainingWindow);
+        parentLayer.children.splice(layerIndex, 1, remainingWindow);
       } else {
         this.layout = remainingWindow;
       }
@@ -155,9 +155,9 @@ export default layout => ({
       const layer = this.getWindowLayer(windowId);
       if (!layer)
         throw `Cannont delete window with id "${windowId}" because this is the root window.`;
-      const windowObject = layer.windows.find(win => win.id === windowId);
-      const windowIndex = layer.windows.indexOf(windowObject);
-      if (layer.windows.length > 2) {
+      const windowObject = layer.children.filter(child => child.type === "window").find(win => win.id === windowId);
+      const windowIndex = layer.children.indexOf(windowObject);
+      if (layer.children.length > 2) {
         this.mergeRatios(layer, windowIndex);
         this.updateLayerTreeKeys(layer, false);
       } else {
@@ -177,16 +177,16 @@ export default layout => ({
 });
 
 function makeWindowContainer(h, layer) {
-  const { windows, direction = "row", id, key } = layer;
+  const { children, direction = "row", id, key } = layer;
   return h(
     WindowContainer,
     { props: { direction, windowsRatio: layer.ratios, id }, key },
-    windows.map(win => {
-      if (win.windows) {
+    children.map(child => {
+      if (child.type === "layer") {
         // If windows property, layer, window otherwise
-        return makeWindowContainer(h, win);
+        return makeWindowContainer(h, child);
       } else {
-        return makeWindow(h, win);
+        return makeWindow(h, child);
       }
     })
   );
@@ -204,8 +204,8 @@ function makeWindow(h, win) {
   );
 }
 
-const getWindows = layer => layer.windows.filter(win => win.type === "window");
-const getLayers = layer => layer.windows.filter(win => win.type === "layer");
+const getWindows = layer => layer.children.filter(child => child.type === "window");
+const getLayers = layer => layer.children.filter(child => child.type === "layer");
 
 const getNestedWindows = layer =>
   layer.type === "layer"
