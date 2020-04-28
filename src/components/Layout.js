@@ -16,6 +16,9 @@ export default layout => ({
       return getNestedWindows(this.layout);
     }
   },
+  updated() {
+    this.$emit("updated");
+  },
   methods: {
     getLayerParent(layer) {
       return this.layers.length ? this.layers.find(parentLayer => parentLayer.children.includes(layer)) : null;

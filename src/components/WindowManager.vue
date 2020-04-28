@@ -7,10 +7,10 @@ export default {
   data() {
     return {
       draggingWindowId: null,
-      contentWindowMap: new Map(),
+      windowsContent: [],
       layoutComponent: null,
-      containerIdGen: makeIdGenerator(),
-      containerKeyGen: makeIdGenerator()
+      containerIdGen: makeIdGenerator(), // TODO find a way to get rid of it
+      containerKeyGen: makeIdGenerator() // TODO find a way to get rid of it
     };
   },
   props: {
@@ -35,8 +35,15 @@ export default {
     };
   },
   methods: {
+    onLayoutUpdated() {
+      this.reattachTeleports();
+    },
+    reattachTeleports() {
+      this.$refs.teleports.forEach(teleport => teleport.attach());
+    },
     deleteWindow(windowId) {
       this.$refs.layout.deleteWindow(windowId);
+      this.windowsContent.splice(windowId, 1, undefined);
     },
     splitWindow(windowId, way, e) {
       this.$refs.layout.splitWindow(windowId, way, e);
@@ -67,7 +74,7 @@ export default {
       if (layer.ratios) {
         if (
           layer.ratios.length !== layer.children.length ||
-          layer.ratios.reduce((acc, cur) => acc + cur) !== 100 // TODO perfect equality may be impossible due to float precision...
+          layer.ratios.reduce((acc, cur) => acc + cur) !== 100
         ) {
           throw "Layer is malformed. Each child must habe a ratio specifiec and the sum of all ratios must be 100";
         }
@@ -87,37 +94,44 @@ export default {
               id: idGen()
             };
             const contentObject = {
-              id: windowObject.id, // TODO is it usefull to be used as key to not rerender it ?
               component: child
             };
-            this.contentWindowMap.set(contentObject, windowObject.id);
+            this.windowsContent[windowObject.id] = contentObject;
             return windowObject;
           }
         })
       };
     },
     getTeleports(h) {
-      return [...this.contentWindowMap.entries()].map(
-        ([windowContent, windowId]) =>
-          h(
-            Teleport,
-            {
-              props: {
-                target: getDOMWindowId(windowId)
-              },
-              ref: "teleports",
-              refInFor: true
-            },
-            [h(windowContent.component)]
-          )
-      );
+      return this.windowsContent
+        .map((windowContent, windowId) =>
+          windowContent
+            ? h(
+                Teleport,
+                {
+                  props: {
+                    target: getDOMWindowId(windowId)
+                  },
+                  ref: "teleports",
+                  refInFor: true
+                },
+                [h(windowContent.component)]
+              )
+            : null
+        )
+        .filter(Boolean);
     }
   },
   render(h) {
     console.log("window manager render");
     return h("div", { class: "window-manager" }, [
-      // ...this.getTeleports(h),
-      h(this.layoutComponent, { ref: "layout" })
+      ...this.getTeleports(h),
+      h(this.layoutComponent, {
+        ref: "layout",
+        on: {
+          updated: this.onLayoutUpdated
+        }
+      })
     ]);
   }
 };
