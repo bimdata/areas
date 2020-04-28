@@ -109,11 +109,8 @@ export default layout => ({
           };
           layer.children.splice(windowIndex, 1, newLayer);
         }
-        console.log("update keys");
         this.updateLayerTreeKeys(layer);
       }
-
-      // RerenderChange
     },
     mergeRatios(layer, windowIndex) {
       if (windowIndex === 0) {
@@ -138,7 +135,6 @@ export default layout => ({
       }
     },
     deleteLayer(layer, windowIndex) {
-      // delete the container
       const parentLayer = this.getLayerParent(layer);
       layer.children.splice(windowIndex, 1);
       const remainingWindow = layer.children.pop();
@@ -183,7 +179,6 @@ function makeWindowContainer(h, layer) {
     { props: { direction, windowsRatio: layer.ratios, id }, key },
     children.map(child => {
       if (child.type === "layer") {
-        // If windows property, layer, window otherwise
         return makeWindowContainer(h, child);
       } else {
         return makeWindow(h, child);
@@ -196,9 +191,7 @@ function makeWindow(h, win) {
   return h(
     Window,
     {
-      // key: win.id,
       props: { id: win.id }
-      // on: { created: instance => (win.instance = instance) }
     },
     [h("div", { domProps: { id: getDOMWindowId(win.id) } })]
   );
@@ -225,7 +218,7 @@ const getNestedLayers = layer => {
   if (childLayers.length) {
     return [layer, ...childLayers.map(getNestedLayers).flat()];
   } else {
-    return [layer]; // TODO can we go here ?
+    return [layer];
   }
 };
 

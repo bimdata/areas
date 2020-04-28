@@ -40,7 +40,6 @@ export default {
   },
   inject: ["windowManager"],
   props: {
-    // TODO id may be injected with factory instead of props...
     id: {
       type: Number,
       require: true

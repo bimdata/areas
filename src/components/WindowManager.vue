@@ -39,7 +39,6 @@ export default {
       this.$refs.layout.deleteWindow(windowId);
     },
     splitWindow(windowId, direction = "row", e) {
-      console.log("slit windows");
       this.$refs.layout.splitWindow(windowId, direction, e);
     },
     updateContainerRatio(containerId, newRatios) {
