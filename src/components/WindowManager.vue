@@ -66,13 +66,12 @@ export default {
     },
     parseLayer(layer, idGen) {
       if (layer.ratios) {
-        // TODO may test aray type and percentage sum
-        // this.windowsRatio = Array(this.windows.length);
-        // this.windowsRatio.fill(100 / this.windows.length);
-        // // Ensure that the sum of all element is 100
-        // const [, ...headElements] = Array.from(this.windowsRatio);
-        // const sumHeadElements = headElements.reduce(sum);
-        // this.windowsRatio[this.windowsRatio.length - 1] = 100 - sumHeadElements;
+        if (
+          layer.ratios.length !== layer.children.length ||
+          layer.ratios.reduce((acc, cur) => acc + cur) !== 100 // TODO perfect equality may be impossible due to float precision...
+        ) {
+          throw "Layer is malformed. Each child must habe a ratio specifiec and the sum of all ratios must be 100";
+        }
       }
       return {
         type: "layer",
