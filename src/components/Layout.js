@@ -1,7 +1,8 @@
 import Window from "./Window.vue";
 import WindowContainer from "./WindowContainer.vue";
 
-export default (layout, ) => ({
+export default layout => ({
+  name: "Layout",
   data() {
     return {
       layout
@@ -16,18 +17,30 @@ export default (layout, ) => ({
     }
   },
   methods: {
+    getLayerParent(layer) {
+      return this.layers.length ? this.layers.find(parentLayer => parentLayer.windows.includes(layer)) : null;
+    },
+    getLayerAncestors(layer) {
+      const ancestors = [];
+      let parentLayer = this.getLayerParent(layer);
+      while (parentLayer) {
+        ancestors.push(parentLayer);
+        parentLayer = this.getLayerParent(parentLayer);
+      }
+      return ancestors;
+    },
     getNextWindowId() {
       return this.windows.sort(sortBy("id"))[this.windows.length - 1].id + 1;
     },
     getNextLayerId() {
-      return this.layers.sort(sortBy("id"))[this.layers.length - 1].id + 1;
+      return this.layers.length ? this.layers.sort(sortBy("id"))[this.layers.length - 1].id + 1 : 1;
     },
     getNextLayerKey() {
-      return this.layers.sort(sortBy("key"))[this.layers.length - 1].key + 1;
+      return this.layers.length ? this.layers.sort(sortBy("key"))[this.layers.length - 1].key + 1 : 1;
     },
     getWindowLayer(winId) {
       return this.layers.find(layer =>
-        layer.windows.map(win => win.id).includes(winId)
+        layer.windows.filter(win => win.type === "window").map(win => win.id).includes(winId)
       );
     },
     getWindow(id) {
@@ -40,17 +53,13 @@ export default (layout, ) => ({
       // TODO change naming
       let nextkey = this.getNextLayerKey();
       layer.key = nextkey++;
-      getLayerAncestors(layer).forEach(
+      this.getLayerAncestors(layer).forEach(
         ancestorLayer => (ancestorLayer.key = nextkey++)
       );
     },
     updateContainerRatio(containerId, ratios) {
       const layer = this.getLayer(containerId);
-      // Array api methods need to be used for reactivity
-      for (let ratio of ratios) {
-        layer.ratios.shift();
-        layer.ratios.push(ratio);
-      }
+      layer.ratios.splice(0, ratios.length, ...ratios);
     },
     splitWindow(windowId, direction = "row", e) {
       const layer = this.getWindowLayer(windowId);
@@ -59,19 +68,6 @@ export default (layout, ) => ({
         id: newWindowId,
         type: "window"
       };
-      // TODO Add empty component to test.. may be remove in prod
-      // this.contentWindowMap.set(
-      //   {
-      //     id: newWindowId,
-      //     component: {
-      //       render(h) {
-      //         return h("div", ["Empty component"]);
-      //       }
-      //     }
-      //   },
-      //   newWindowId
-      // );
-
       if (!layer) {
         // window is root
         this.layout = {
@@ -141,22 +137,18 @@ export default (layout, ) => ({
         return deletedWindows[0];
       }
     },
-    deleteLayerOrMergeRatio(layer, windowIndex) {
-      if (layer.windows.length > 2) {
-        this.mergeRatios(layer, windowIndex);
+    deleteLayer(layer, windowIndex) {
+      // delete the container
+      const parentLayer = this.getLayerParent(layer);
+      layer.windows.splice(windowIndex, 1);
+      const remainingWindow = layer.windows.pop();
+      if (parentLayer) {
+        const layerIndex = parentLayer.windows.findIndex(
+          win => win.type === "layer" && win.id === layer.id
+        );
+        parentLayer.windows.splice(layerIndex, 1, remainingWindow);
       } else {
-        // delete the container
-        const parentLayer = layer.parent;
-        const deletedWindow = layer.windows.splice(windowIndex, 1)[0];
-        const remainingWindow = layer.windows.pop();
-        if (parentLayer) {
-          const layerIndex = parentLayer.windows.findIndex(
-            win => win.type === "layer" && win.id === layer.id
-          );
-          parentLayer.windows.splice(layerIndex, 1, remainingWindow);
-        } else {
-          this.layout = remainingWindow;
-        }
+        this.layout = remainingWindow;
       }
     },
     deleteWindow(windowId) {
@@ -165,8 +157,16 @@ export default (layout, ) => ({
         throw `Cannont delete window with id "${windowId}" because this is the root window.`;
       const windowObject = layer.windows.find(win => win.id === windowId);
       const windowIndex = layer.windows.indexOf(windowObject);
-      this.deleteLayerOrMergeRatio(layer, windowIndex);
-      this.updateLayerTreeKeys(layer, false);
+      if (layer.windows.length > 2) {
+        this.mergeRatios(layer, windowIndex);
+        this.updateLayerTreeKeys(layer, false);
+      } else {
+        const parentLayer = this.getLayerParent(layer);
+        this.deleteLayer(layer, windowIndex);
+        if (parentLayer) {
+          this.updateLayerTreeKeys(parentLayer, false);
+        }
+      }
     }
   },
   render(h) {
@@ -190,16 +190,6 @@ function makeWindowContainer(h, layer) {
       }
     })
   );
-}
-
-function getLayerAncestors(layer) {
-  const ancestors = [];
-  let curentLayer = layer;
-  while (curentLayer.parent) {
-    ancestors.push(layer.parent);
-    curentLayer = layer.parent;
-  }
-  return ancestors;
 }
 
 function makeWindow(h, win) {
@@ -232,10 +222,10 @@ const getNestedLayers = layer => {
     return [];
   }
   const childLayers = getLayers(layer);
-  if (childLayers && childLayers.length) {
+  if (childLayers.length) {
     return [layer, ...childLayers.map(getNestedLayers).flat()];
   } else {
-    return [layer];
+    return [layer]; // TODO can we go here ?
   }
 };
 
