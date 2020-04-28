@@ -36,6 +36,7 @@ export default {
   },
   methods: {
     onLayoutUpdated() {
+      console.log("layout updated");
       this.reattachTeleports();
     },
     reattachTeleports() {
@@ -46,24 +47,22 @@ export default {
       this.windowsContent.splice(windowId, 1, undefined);
     },
     splitWindow(windowId, way, e) {
-      this.$refs.layout.splitWindow(windowId, way, e);
+      const newWindowObject = this.$refs.layout.splitWindow(windowId, way, e);
+      this.windowsContent[newWindowObject.id] = {
+        render: h => h("div", ["empty component"])
+      };
     },
     updateContainerRatio(containerId, newRatios) {
       this.$refs.layout.updateContainerRatio(containerId, newRatios);
     },
     swapWindows(windowId1, windowId2) {
-      const getContent = id =>
-        [...this.contentWindowMap.entries()].find(
-          ([content, winId]) => winId === id
-        )[0];
-      const win1Content = getContent(windowId1);
-      const win2Content = getContent(windowId2);
+      const window1content = this.windowsContent[windowId1];
+      const window2content = this.windowsContent[windowId2];
 
-      this.contentWindowMap.set(win1Content, windowId2);
-      this.contentWindowMap.set(win2Content, windowId1);
+      this.windowsContent.splice(windowId2, 1, window1content);
+      this.windowsContent.splice(windowId1, 1, window2content);
 
-      // Maps are not reactive :/
-      this.contentWindowMap = new Map(this.contentWindowMap);
+      this.$nextTick(() => this.reattachTeleports());
     },
     parseCfg(cfg) {
       const idGen = makeIdGenerator();

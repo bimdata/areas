@@ -108,15 +108,13 @@ export default layout => ({
             ratios: [50, 50],
             children: [
               layerWindowObject,
-              {
-                id: this.getNextWindowId(),
-                type: "window"
-              }
+              newWindowObject
             ]
           };
           layer.children.splice(windowIndex, 1, newLayer);
         }
         this.updateLayerTreeKeys(layer);
+        return newWindowObject;
       }
     },
     mergeRatios(layer, windowIndex) {
