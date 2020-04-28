@@ -5,3 +5,11 @@
     />
   </div>
 </template>
+
+<script>
+import Log from "./log.js";
+export default {
+  name: "dum3",
+  mixins: [Log]
+};
+</script>

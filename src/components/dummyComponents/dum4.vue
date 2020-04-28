@@ -5,3 +5,11 @@
     Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi excepturi delectus eum eos, praesentium, distinctio corrupti quasi facere exercitationem facilis suscipit impedit? Recusandae doloribus expedita cupiditate, vel illum omnis totam.
   </div>
 </template>
+
+<script>
+import Log from "./log.js";
+export default {
+  name: "dum4",
+  mixins: [Log]
+};
+</script>

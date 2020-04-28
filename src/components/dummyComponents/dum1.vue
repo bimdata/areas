@@ -3,17 +3,10 @@
 </template>
 
 <script>
+import Log from "./log.js";
 export default {
   name: "dum1",
   // inject: ["$context"],
-  created() {
-    console.log("dum1 created");
-  },
-  mounted() {
-    console.log("dum1 mounted");
-  },
-  destroyed() {
-    console.log("dum1 destroyed");
-  }
+  mixins: [Log]
 };
 </script>
