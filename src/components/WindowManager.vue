@@ -94,7 +94,8 @@ export default {
               id: idGen()
             };
             const contentObject = {
-              component: child
+              component: child,
+              id: windowObject.id
             };
             this.windowsContent[windowObject.id] = contentObject;
             return windowObject;
@@ -103,29 +104,34 @@ export default {
       };
     },
     getTeleports(h) {
-      return this.windowsContent
-        .map((windowContent, windowId) =>
-          windowContent
-            ? h(
-                Teleport,
-                {
-                  props: {
-                    target: getDOMWindowId(windowId)
+      return h(
+        "div",
+        { style: "display:none;" },
+        this.windowsContent
+          .map((windowContent, windowId) =>
+            windowContent
+              ? h(
+                  Teleport,
+                  {
+                    props: {
+                      target: getDOMWindowId(windowId)
+                    },
+                    ref: "teleports",
+                    refInFor: true,
+                    key: windowContent.id // needed to do not rerender components
                   },
-                  ref: "teleports",
-                  refInFor: true
-                },
-                [h(windowContent.component)]
-              )
-            : null
-        )
-        .filter(Boolean);
+                  [h(windowContent.component)]
+                )
+              : null
+          )
+          .filter(Boolean)
+      );
     }
   },
   render(h) {
     console.log("window manager render");
     return h("div", { class: "window-manager" }, [
-      ...this.getTeleports(h),
+      this.getTeleports(h),
       h(this.layoutComponent, {
         ref: "layout",
         on: {
