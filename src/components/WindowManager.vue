@@ -38,8 +38,8 @@ export default {
     deleteWindow(windowId) {
       this.$refs.layout.deleteWindow(windowId);
     },
-    splitWindow(windowId, direction = "row", e) {
-      this.$refs.layout.splitWindow(windowId, direction, e);
+    splitWindow(windowId, way, e) {
+      this.$refs.layout.splitWindow(windowId, way, e);
     },
     updateContainerRatio(containerId, newRatios) {
       this.$refs.layout.updateContainerRatio(containerId, newRatios);

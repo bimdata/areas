@@ -61,7 +61,11 @@ export default layout => ({
       const layer = this.getLayer(containerId);
       layer.ratios.splice(0, ratios.length, ...ratios);
     },
-    splitWindow(windowId, direction = "row", e) {
+    splitWindow(windowId, way, e) {
+      if (!["vertical", "horizontal"].includes(way)) {
+        throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}"`;
+      }
+      const direction = way === "vertical" ? "row" : "column";
       const layer = this.getWindowLayer(windowId);
       const newWindowId = this.getNextWindowId();
       const newWindowObject = {

@@ -60,9 +60,9 @@ export default {
     },
     onWindowClick(e) {
       if (e.altKey) {
-        this.windowManager.splitWindow(this.id, "row", e);
+        this.windowManager.splitWindow(this.id, "vertical", e);
       } else if (e.shiftKey) {
-        this.windowManager.splitWindow(this.id, "column", e);
+        this.windowManager.splitWindow(this.id, "horizontal", e);
       }
     },
     onRighClick(e) {
