@@ -49,8 +49,15 @@ export default {
     splitWindow(windowId, way, e) {
       const newWindowObject = this.$refs.layout.splitWindow(windowId, way, e);
       this.windowsContent[newWindowObject.id] = {
-        render: h => h("div", ["empty component"])
+        id: newWindowObject.id,
+        component: {
+          render: h => h("div", ["empty component"])
+        }
       };
+
+      this.$nextTick(() => {
+        this.windowsContent = Array.from(this.windowsContent);
+      });
     },
     updateContainerRatio(containerId, newRatios) {
       this.$refs.layout.updateContainerRatio(containerId, newRatios);

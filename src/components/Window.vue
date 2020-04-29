@@ -3,7 +3,7 @@
     class="window"
     @click.right="onRighClick"
     @click="onWindowClick"
-    draggable="true"
+    :draggable="draggable"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @dragenter="onDragEnter"
@@ -19,7 +19,8 @@
 export default {
   name: "window",
   props: {
-    id: { type: Number, require: true }
+    id: { type: Number, require: true },
+    draggable: {type: Boolean, default: true}
   },
   inject: ["windowManager"],
   provide() {
@@ -49,7 +50,7 @@ export default {
     },
     onDragEnter(e) {
       // console.log("dragenter");
-      // document.body.style.setProperty("cursor", "add", "important");
+      document.body.style.setProperty("cursor", "add", "important");
     },
     onDragOver(e) {
       e.preventDefault();
