@@ -17,12 +17,12 @@ export default {
     return {
       testConfig: {
         direction: "row",
-        windows: [
+        children: [
           Dum1,
           Dum2,
           {
             direction: "column",
-            windows: [Dum3, Dum4],
+            children: [Dum3, Dum4],
             ratios: [70, 30]
           }
         ],

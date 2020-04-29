@@ -1,8 +1,9 @@
 <template>
   <div
     class="window"
+    @click.right="onRighClick"
     @click="onWindowClick"
-    draggable="true"
+    :draggable="draggable"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @dragenter="onDragEnter"
@@ -18,7 +19,8 @@
 export default {
   name: "window",
   props: {
-    id: { type: Number, require: true }
+    id: { type: Number, require: true },
+    draggable: {type: Boolean, default: true}
   },
   inject: ["windowManager"],
   provide() {
@@ -48,7 +50,7 @@ export default {
     },
     onDragEnter(e) {
       // console.log("dragenter");
-      // document.body.style.setProperty("cursor", "add", "important");
+      document.body.style.setProperty("cursor", "add", "important");
     },
     onDragOver(e) {
       e.preventDefault();
@@ -59,8 +61,14 @@ export default {
     },
     onWindowClick(e) {
       if (e.altKey) {
-        this.windowManager.splitWindow(this.id, e);
+        this.windowManager.splitWindow(this.id, "vertical", e);
+      } else if (e.shiftKey) {
+        this.windowManager.splitWindow(this.id, "horizontal", e);
       }
+    },
+    onRighClick(e) {
+      e.preventDefault();
+      this.windowManager.deleteWindow(this.id, e);
     }
   }
 };
@@ -70,5 +78,7 @@ export default {
 .window {
   background-color: cornsilk;
   overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
 </style>

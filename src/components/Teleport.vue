@@ -13,6 +13,7 @@ export default {
     }
   },
   mounted() {
+    this.child = this.$el.firstChild;
     this.$watch(
       "target",
       () => {
@@ -29,12 +30,11 @@ export default {
       if (!targetElement) {
         throw `Teleport fails, no DOM element with id : "${this.target}"`;
       }
-      if (removeFromCurentParent) {
-        const parent = this.$el.parentElement;
-        parent.removeChild(this.$el);
+      if (removeFromCurentParent && this.$el.contains(this.child)) {
+        this.$el.removeChild(this.child);
       }
-      if (!targetElement.contains(this.$el)) {
-        targetElement.appendChild(this.$el);
+      if (!targetElement.contains(this.child)) {
+        targetElement.appendChild(this.child);
       }
     }
   }
