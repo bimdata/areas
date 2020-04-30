@@ -24,6 +24,7 @@ export default {
     };
   },
   mounted() {
+    this.$emit("mounted", { childInstance: this.$children[0] });
     this.child = this.$el.firstChild;
     this.$watch(
       "targetId",

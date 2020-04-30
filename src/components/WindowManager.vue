@@ -140,6 +140,11 @@ export default {
                     props: {
                       targetId: windowId
                     },
+                    on: {
+                      mounted({childInstance}) {
+                        windowContent.instance = childInstance;
+                      }
+                    },
                     ref: "teleports",
                     refInFor: true,
                     key: `teleportWindow${windowContent.id}` // needed to do not rerender components
