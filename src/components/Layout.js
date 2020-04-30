@@ -3,6 +3,7 @@ import WindowContainer from "./WindowContainer.vue";
 
 export default layout => ({
   name: "Layout",
+  inject: ["windowManager"],
   data() {
     return {
       layout
@@ -139,6 +140,29 @@ export default layout => ({
         return deletedWindows[0];
       }
     },
+    makeWindow(h, win) {
+      return h(
+        Window,
+        {
+          props: { id: win.id }
+        },
+        [h("div", { domProps: { id: this.windowManager.getDOMWindowId(win.id) } })]
+      );
+    },
+    makeWindowContainer(h, layer) {
+      const { children, direction = "row", id, key } = layer;
+      return h(
+        WindowContainer,
+        { props: { direction, windowsRatio: layer.ratios, id }, key: `windowContainer${key}` },
+        children.map(child => {
+          if (child.type === "layer") {
+            return this.makeWindowContainer(h, child);
+          } else {
+            return this.makeWindow(h, child);
+          }
+        })
+      );
+    },
     deleteLayer(layer, windowIndex) {
       const parentLayer = this.getLayerParent(layer);
       layer.children.splice(windowIndex, 1);
@@ -172,35 +196,10 @@ export default layout => ({
   },
   render(h) {
     return this.layout.type === "layer"
-      ? makeWindowContainer(h, this.layout)
-      : makeWindow(h, this.layout);
+      ? this.makeWindowContainer(h, this.layout)
+      : this.makeWindow(h, this.layout);
   }
 });
-
-function makeWindowContainer(h, layer) {
-  const { children, direction = "row", id, key } = layer;
-  return h(
-    WindowContainer,
-    { props: { direction, windowsRatio: layer.ratios, id }, key },
-    children.map(child => {
-      if (child.type === "layer") {
-        return makeWindowContainer(h, child);
-      } else {
-        return makeWindow(h, child);
-      }
-    })
-  );
-}
-
-function makeWindow(h, win) {
-  return h(
-    Window,
-    {
-      props: { id: win.id }
-    },
-    [h("div", { domProps: { id: getDOMWindowId(win.id) } })]
-  );
-}
 
 const getWindows = layer => layer.children.filter(child => child.type === "window");
 const getLayers = layer => layer.children.filter(child => child.type === "layer");
@@ -228,5 +227,3 @@ const getNestedLayers = layer => {
 };
 
 const sortBy = p => (a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0);
-
-const getDOMWindowId = id => `window-${id}`;

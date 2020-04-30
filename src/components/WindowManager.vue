@@ -15,8 +15,13 @@ export default {
   },
   props: {
     cfg: {
+      // TODO change naming
       type: Object,
       required: true
+    },
+    windowIdPrefix: {
+      type: String,
+      default: "window-"
     }
   },
   created() {
@@ -109,6 +114,9 @@ export default {
         })
       };
     },
+    getDOMWindowId(id) {
+      return `${this.windowIdPrefix}${id}`;
+    },
     getTeleports(h) {
       return h(
         "div",
@@ -120,11 +128,11 @@ export default {
                   Teleport,
                   {
                     props: {
-                      target: getDOMWindowId(windowId)
+                      target: this.getDOMWindowId(windowId)
                     },
                     ref: "teleports",
                     refInFor: true,
-                    key: windowContent.id // needed to do not rerender components
+                    key: `teleportWindow${windowContent.id}` // needed to do not rerender components
                   },
                   [h(windowContent.component)]
                 )
@@ -147,8 +155,6 @@ export default {
     ]);
   }
 };
-
-const getDOMWindowId = id => `window-${id}`;
 
 function* idGenerator() {
   let i = 1;
