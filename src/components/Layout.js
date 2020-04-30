@@ -142,11 +142,7 @@ export default layout => ({
     },
     makeWindow(h, win) {
       return h(
-        Window,
-        {
-          props: { id: win.id }
-        },
-        [h("div", { domProps: { id: this.windowManager.getDOMWindowId(win.id) } })]
+        Window, { props: { id: win.id } }
       );
     },
     makeWindowContainer(h, layer) {

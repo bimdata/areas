@@ -11,7 +11,7 @@
     @drop="onDrop"
     @dragend="onDragEnd"
   >
-    <slot />
+    <div :id="windowManager.getDOMWindowId(id)"></div>
   </div>
 </template>
 
@@ -20,16 +20,9 @@ export default {
   name: "window",
   props: {
     id: { type: Number, require: true },
-    draggable: {type: Boolean, default: true}
+    draggable: { type: Boolean, default: true }
   },
   inject: ["windowManager"],
-  provide() {
-    return {
-      $context: {
-        window: this
-      }
-    };
-  },
   created() {
     this.$emit("created", this);
   },
