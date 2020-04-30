@@ -114,8 +114,8 @@ export default layout => ({
           layer.children.splice(windowIndex, 1, newLayer);
         }
         this.updateLayerTreeKeys(layer);
-        return newWindowObject;
       }
+      return newWindowObject;
     },
     mergeRatios(layer, windowIndex) {
       if (windowIndex === 0) {
