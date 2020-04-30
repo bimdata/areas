@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       draggingWindowId: null,
+      availableComponents: null,
       windowsContent: [],
       layoutComponent: null,
       containerIdGen: makeIdGenerator(), // TODO find a way to get rid of it
@@ -83,11 +84,13 @@ export default {
       this.$nextTick(() => this.reattachTeleports());
     },
     parseCfg(cfg) {
-      const idGen = makeIdGenerator();
-      const layout = this.parseLayer(cfg, idGen);
+      const idGen = makeIdGenerator(); // TODO find a way to get rid of it
+      this.availableComponents = cfg.components;
+      const layout = this.parseLayer(cfg.layout, idGen); // TODO add more complete type test for cfg
       this.layoutComponent = makeLayoutComponent(layout);
     },
     parseLayer(layer, idGen) {
+      // TODO parseLayer will not work if starting with only one window !!!
       if (layer.ratios) {
         if (
           layer.ratios.length !== layer.children.length ||
@@ -111,7 +114,8 @@ export default {
               id: idGen()
             };
             const contentObject = {
-              component: child,
+              component: this.availableComponents[child.componentIndex],
+              props: child.cfg,
               id: windowObject.id
             };
             this.windowsContent[windowObject.id] = contentObject;
@@ -140,7 +144,7 @@ export default {
                     refInFor: true,
                     key: `teleportWindow${windowContent.id}` // needed to do not rerender components
                   },
-                  [h(windowContent.component)]
+                  [h(windowContent.component, { props: windowContent.props })]
                 )
               : null
           )

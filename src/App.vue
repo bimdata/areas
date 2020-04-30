@@ -16,17 +16,41 @@ export default {
   data() {
     return {
       testConfig: {
-        direction: "row",
-        children: [
-          Dum1,
-          Dum2,
-          {
-            direction: "column",
-            children: [Dum3, Dum4],
-            ratios: [70, 30]
-          }
-        ],
-        ratios: [5, 35, 60]
+        components: [Dum1, Dum2, Dum3, Dum4],
+        layout: {
+          direction: "row",
+          children: [
+            {
+              componentIndex: 0,
+              cfg: {
+                text: "Jean jean"
+              }
+            },
+            {
+              componentIndex: 1,
+              cfg: null
+            },
+            {
+              direction: "column",
+              children: [
+                {
+                  componentIndex: 2,
+                  cfg: null
+                },
+                {
+                  componentIndex: 1,
+                  cfg: null
+                },
+                {
+                  componentIndex: 3,
+                  cfg: null
+                }
+              ],
+              ratios: [20, 50, 30]
+            }
+          ],
+          ratios: [5, 35, 60]
+        }
       }
     };
   },
