@@ -40,6 +40,12 @@ export default {
     };
   },
   methods: {
+    getWindows() {
+      return this.$refs.layout.getWindowInstances();
+    },
+    getWindow(id) {
+      return this.getWindows().find(win => win.id === id);
+    },
     onLayoutUpdated() {
       console.log("layout updated");
       this.reattachTeleports();
@@ -128,7 +134,7 @@ export default {
                   Teleport,
                   {
                     props: {
-                      target: this.getDOMWindowId(windowId)
+                      targetId: windowId
                     },
                     ref: "teleports",
                     refInFor: true,

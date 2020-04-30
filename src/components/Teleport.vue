@@ -7,15 +7,26 @@
 <script>
 export default {
   props: {
-    target: {
-      type: String,
+    targetId: {
+      type: Number,
       require: true
     }
+  },
+  inject: ["windowManager"],
+  provide() {
+    const self = this;
+    return {
+      $context: {
+        get window() {
+          return self.windowManager.getWindow(self.targetId);
+        }
+      }
+    };
   },
   mounted() {
     this.child = this.$el.firstChild;
     this.$watch(
-      "target",
+      "targetId",
       () => {
         this.attach(true);
       },
@@ -26,7 +37,9 @@ export default {
   },
   methods: {
     attach(removeFromCurentParent = false) {
-      const targetElement = document.getElementById(this.target);
+      const targetElement = document.getElementById(
+        this.windowManager.getDOMWindowId(this.targetId)
+      );
       if (!targetElement) {
         throw `Teleport fails, no DOM element with id : "${this.target}"`;
       }

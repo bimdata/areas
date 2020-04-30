@@ -50,6 +50,9 @@ export default layout => ({
     getWindow(id) {
       return this.windows.find(win => win.id === id);
     },
+    getWindowInstances() {
+      return this.$refs.windows;
+    },
     getLayer(id) {
       return this.layers.find(layer => layer.id === id);
     },
@@ -142,7 +145,7 @@ export default layout => ({
     },
     makeWindow(h, win) {
       return h(
-        Window, { props: { id: win.id } }
+        Window, { props: { id: win.id }, ref: "windows", refInFor: true }
       );
     },
     makeWindowContainer(h, layer) {
