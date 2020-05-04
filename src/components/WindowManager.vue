@@ -6,6 +6,7 @@ export default {
   name: "WindowManager",
   data() {
     return {
+      windowIdPrefix: null,
       draggingWindowId: null,
       availableComponents: null,
       windowsContent: [],
@@ -16,16 +17,12 @@ export default {
   },
   props: {
     cfg: {
-      // TODO change naming
       type: Object,
       required: true
-    },
-    windowIdPrefix: {
-      type: String,
-      default: "window-"
     }
   },
   created() {
+    this.windowIdPrefix = this.cfg.windowIdPrefix || "window-";
     this.parseCfg(this.cfg);
     Object.getPrototypeOf(this.$root).$windowManager = {
       context: {
