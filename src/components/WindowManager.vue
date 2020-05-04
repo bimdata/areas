@@ -29,13 +29,6 @@ export default {
       render: h => h("div", ["empty component"])
     };
     this.parseCfg(this.cfg);
-    Object.getPrototypeOf(this.$root).$windowManager = {
-      context: {
-        get window() {
-          console.log("try to get window");
-        }
-      }
-    };
   },
   provide() {
     return {
