@@ -60,17 +60,17 @@ export default {
     },
     getCurrentLayout() {
       const layout = this.$refs.layout.getLayout();
-      return layout.type === "layer"
-        ? this.reverseParseLayer(layout)
+      return layout.type === "container"
+        ? this.reverseparseContainer(layout)
         : reverseParseWindow(layout);
     },
-    reverseParseLayer(layer) {
+    reverseparseContainer(container) {
       return {
-        direction: layer.direction,
-        ratios: roundRatios(layer.ratios),
-        children: layer.children.map(child =>
-          child.type === "layer"
-            ? this.reverseParseLayer(child)
+        direction: container.direction,
+        ratios: roundRatios(container.ratios),
+        children: container.children.map(child =>
+          child.type === "container"
+            ? this.reverseparseContainer(child)
             : this.reverseParseWindow(child)
         )
       };
@@ -137,7 +137,7 @@ export default {
     },
     parseLayout(layout) {
       return layout.children
-        ? this.parseLayer(layout)
+        ? this.parseContainer(layout)
         : this.parseWindow(layout); // TODO add more complete type test for cfg
     },
     parseWindow(win) {
@@ -157,24 +157,24 @@ export default {
       this.windowsContent[windowObject.id] = contentObject;
       return windowObject;
     },
-    parseLayer(layer) {
-      if (layer.ratios) {
+    parseContainer(container) {
+      if (container.ratios) {
         if (
-          layer.ratios.length !== layer.children.length ||
-          layer.ratios.reduce((acc, cur) => acc + cur) !== 100
+          container.ratios.length !== container.children.length ||
+          container.ratios.reduce((acc, cur) => acc + cur) !== 100
         ) {
-          throw "Layer is malformed. Each child must habe a ratio specifiec and the sum of all ratios must be 100";
+          throw "container is malformed. Each child must habe a ratio specifiec and the sum of all ratios must be 100";
         }
       }
       return {
-        type: "layer",
+        type: "container",
         id: this.containerIdGen(),
         key: this.containerKeyGen(),
-        direction: layer.direction,
-        ratios: layer.ratios,
-        children: layer.children.map(child => {
+        direction: container.direction,
+        ratios: container.ratios,
+        children: container.children.map(child => {
           if (child.children) {
-            return this.parseLayer(child);
+            return this.parseContainer(child);
           } else {
             return this.parseWindow(child);
           }
