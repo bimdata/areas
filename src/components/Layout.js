@@ -37,13 +37,13 @@ export default layout => ({
       return ancestors;
     },
     getNextWindowId() {
-      return this.windows.sort(sortBy("id"))[this.windows.length - 1].id + 1;
+      return this.windowManager.getNextWindowId();
     },
     getNextLayerId() {
-      return this.layers.length ? this.layers.sort(sortBy("id"))[this.layers.length - 1].id + 1 : 1;
+      return this.windowManager.getNextContainerId();
     },
     getNextLayerKey() {
-      return this.layers.length ? this.layers.sort(sortBy("key"))[this.layers.length - 1].key + 1 : 1;
+      return this.windowManager.getNextContainerId();
     },
     getWindowLayer(winId) {
       return this.layers.find(layer =>
@@ -61,10 +61,9 @@ export default layout => ({
     },
     updateLayerTreeKeys(layer) {
       // TODO change naming
-      let nextkey = this.getNextLayerKey();
-      layer.key = nextkey++;
+      layer.key = this.getNextLayerKey();
       this.getLayerAncestors(layer).forEach(
-        ancestorLayer => (ancestorLayer.key = nextkey++)
+        ancestorLayer => (ancestorLayer.key = this.getNextLayerKey())
       );
     },
     updateContainerRatio(containerId, ratios) {
@@ -122,6 +121,7 @@ export default layout => ({
         }
         this.updateLayerTreeKeys(layer);
       }
+      return newWindowId;
     },
     mergeRatios(layer, windowIndex) {
       if (windowIndex === 0) {

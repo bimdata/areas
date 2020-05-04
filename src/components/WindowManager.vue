@@ -32,6 +32,15 @@ export default {
     };
   },
   methods: {
+    getNextWindowId() {
+      return this.windowIdGen();
+    },
+    getNextContainerId() {
+      return this.containerIdGen();
+    },
+    getNextContainerKey() {
+      return this.containerKeyGen();
+    },
     loadLayout(layout) {
       this.buildLayout(layout);
     },
@@ -96,8 +105,7 @@ export default {
       this.windowsContent.splice(windowId, 1, undefined);
     },
     splitWindow(windowId, way, e) {
-      this.$refs.layout.splitWindow(windowId, way, e);
-      const newWindowId = this.windowIdGen();
+      const newWindowId = this.$refs.layout.splitWindow(windowId, way, e);
       this.windowsContent[newWindowId] = {
         id: newWindowId,
         component: this.emptyComponent
