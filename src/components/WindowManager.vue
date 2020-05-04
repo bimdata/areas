@@ -11,8 +11,9 @@ export default {
       availableComponents: null,
       windowsContent: [],
       layoutComponent: null,
-      containerIdGen: makeIdGenerator(), // TODO find a way to get rid of it
-      containerKeyGen: makeIdGenerator() // TODO find a way to get rid of it
+      containerIdGen: makeIdGenerator(),
+      containerKeyGen: makeIdGenerator(),
+      windowIdGen: makeIdGenerator()
     };
   },
   props: {
@@ -81,12 +82,11 @@ export default {
       this.$nextTick(() => this.reattachTeleports());
     },
     parseCfg(cfg) {
-      const idGen = makeIdGenerator(); // TODO find a way to get rid of it
       this.availableComponents = cfg.components;
-      const layout = this.parseLayer(cfg.layout, idGen); // TODO add more complete type test for cfg
+      const layout = this.parseLayer(cfg.layout); // TODO add more complete type test for cfg
       this.layoutComponent = makeLayoutComponent(layout);
     },
-    parseLayer(layer, idGen) {
+    parseLayer(layer) {
       // TODO parseLayer will not work if starting with only one window !!!
       if (layer.ratios) {
         if (
@@ -104,11 +104,11 @@ export default {
         ratios: layer.ratios,
         children: layer.children.map(child => {
           if (child.children) {
-            return this.parseLayer(child, idGen);
+            return this.parseLayer(child);
           } else {
             const windowObject = {
               type: "window",
-              id: idGen()
+              id: this.windowIdGen()
             };
             const contentObject = {
               name: child.name,
