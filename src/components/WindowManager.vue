@@ -114,8 +114,9 @@ export default {
               id: idGen()
             };
             const contentObject = {
+              name: child.name,
               component: this.availableComponents[child.componentIndex],
-              props: child.cfg,
+              cfg: child.cfg,
               id: windowObject.id
             };
             this.windowsContent[windowObject.id] = contentObject;
@@ -123,6 +124,12 @@ export default {
           }
         })
       };
+    },
+    getComponentByName(name) {
+      return this.windowsContent
+        .filter(Boolean)
+        .filter(windowContent => windowContent.name)
+        .find(windowContent => windowContent.name === name);
     },
     getDOMWindowId(id) {
       return `${this.windowIdPrefix}${id}`;
@@ -141,7 +148,7 @@ export default {
                       targetId: windowId
                     },
                     on: {
-                      mounted({childInstance}) {
+                      mounted({ childInstance }) {
                         windowContent.instance = childInstance;
                       }
                     },
@@ -149,7 +156,7 @@ export default {
                     refInFor: true,
                     key: `teleportWindow${windowContent.id}` // needed to do not rerender components
                   },
-                  [h(windowContent.component, { props: windowContent.props })]
+                  [h(windowContent.component, { ...windowContent.cfg })]
                 )
               : null
           )

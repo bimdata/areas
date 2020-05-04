@@ -10,6 +10,9 @@
 import Log from "./log.js";
 export default {
   name: "dum4",
-  mixins: [Log]
+  mixins: [Log],
+  mounted() {
+    this.$emit("mounted");
+  }
 };
 </script>

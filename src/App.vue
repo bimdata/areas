@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <WindowManager :cfg="testConfig" />
+    <WindowManager :cfg="testConfig" ref="wm" />
   </div>
 </template>
 
@@ -21,9 +21,12 @@ export default {
           direction: "row",
           children: [
             {
+              name: "comp1",
               componentIndex: 0,
               cfg: {
-                text: "Jean jean"
+                props: {
+                  text: "Jean jean"
+                }
               }
             },
             {
@@ -43,7 +46,13 @@ export default {
                 },
                 {
                   componentIndex: 3,
-                  cfg: null
+                  cfg: {
+                    on: {
+                      mounted() {
+                        console.log("Can know if mounted here !");
+                      }
+                    }
+                  }
                 }
               ],
               ratios: [20, 50, 30]
@@ -53,6 +62,11 @@ export default {
         }
       }
     };
+  },
+  mounted() {
+    setTimeout(() => {
+      this.$refs.wm.getComponentByName("comp1").cfg.props.text = "=D";
+    }, 3000);
   },
   components: {
     WindowManager
