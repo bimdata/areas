@@ -30,19 +30,16 @@ export default {
               }
             },
             {
-              componentIndex: 1,
-              cfg: null
+              componentIndex: 1
             },
             {
               direction: "column",
               children: [
                 {
-                  componentIndex: 2,
-                  cfg: null
+                  componentIndex: 2
                 },
                 {
-                  componentIndex: 1,
-                  cfg: null
+                  componentIndex: null // empty component
                 },
                 {
                   componentIndex: 3,
@@ -64,6 +61,7 @@ export default {
     };
   },
   mounted() {
+    window.wm = this.$refs.wm;
     setTimeout(() => {
       this.$refs.wm.getComponentByName("comp1").cfg.props.text = "=D";
     }, 3000);

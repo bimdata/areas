@@ -9,12 +9,12 @@ export default {
       windowIdPrefix: null,
       draggingWindowId: null,
       availableComponents: null,
-      windowsContent: [],
+      windowsContent: null,
       layoutComponent: null,
       emptyComponent: null,
-      containerIdGen: makeIdGenerator(),
-      containerKeyGen: makeIdGenerator(),
-      windowIdGen: makeIdGenerator()
+      containerIdGen: null,
+      containerKeyGen: null,
+      windowIdGen: null
     };
   },
   props: {
@@ -24,10 +24,6 @@ export default {
     }
   },
   created() {
-    this.windowIdPrefix = this.cfg.windowIdPrefix || "window-";
-    this.emptyComponent = this.cfg.emptyComponent || {
-      render: h => h("div", ["empty component"])
-    };
     this.parseCfg(this.cfg);
   },
   provide() {
@@ -36,6 +32,52 @@ export default {
     };
   },
   methods: {
+    loadLayout(layout) {
+      this.buildLayout(layout);
+    },
+    buildLayout(layout, firstRender = false) {
+      this.windowsContent = [];
+
+      if (firstRender) {
+        this.containerIdGen = makeIdGenerator();
+        this.containerKeyGen = makeIdGenerator();
+        this.windowIdGen = makeIdGenerator();
+      } else {
+        // no need to reattach at first render... optimization
+        this.$nextTick(() => this.reattachTeleports());
+      }
+
+      this.layoutComponent = makeLayoutComponent(this.parseLayout(layout));
+    },
+    getCurrentLayout() {
+      const layout = this.$refs.layout.getLayout();
+      return layout.type === "layer"
+        ? this.reverseParseLayer(layout)
+        : reverseParseWindow(layout);
+    },
+    reverseParseLayer(layer) {
+      return {
+        direction: layer.direction,
+        ratios: roundRatios(layer.ratios),
+        children: layer.children.map(child =>
+          child.type === "layer"
+            ? this.reverseParseLayer(child)
+            : this.reverseParseWindow(child)
+        )
+      };
+    },
+    reverseParseWindow(win) {
+      const windowContent = this.windowsContent[win.id];
+      const componentIndex = this.availableComponents.indexOf(
+        windowContent.component
+      );
+      const windowObject = {
+        componentIndex: componentIndex === -1 ? null : componentIndex,
+        ...(windowContent.cfg && { cfg: windowContent.cfg }), // will not add the property if undefined
+        ...(windowContent.name && { name: windowContent.name }) // will not add the property if undefined
+      };
+      return windowObject;
+    },
     getWindows() {
       return this.$refs.layout.getWindowInstances();
     },
@@ -54,9 +96,10 @@ export default {
       this.windowsContent.splice(windowId, 1, undefined);
     },
     splitWindow(windowId, way, e) {
-      const newWindowObject = this.$refs.layout.splitWindow(windowId, way, e);
-      this.windowsContent[newWindowObject.id] = {
-        id: newWindowObject.id,
+      this.$refs.layout.splitWindow(windowId, way, e);
+      const newWindowId = this.windowIdGen();
+      this.windowsContent[newWindowId] = {
+        id: newWindowId,
         component: this.emptyComponent
       };
 
@@ -77,11 +120,17 @@ export default {
       this.$nextTick(() => this.reattachTeleports());
     },
     parseCfg(cfg) {
+      this.windowIdPrefix = this.cfg.windowIdPrefix || "window-";
+      this.emptyComponent = this.cfg.emptyComponent || {
+        render: h => h("div", ["empty component"])
+      };
       this.availableComponents = cfg.components;
-      const layout = cfg.layout.children
-        ? this.parseLayer(cfg.layout)
-        : this.parseWindow(cfg.layout); // TODO add more complete type test for cfg
-      this.layoutComponent = makeLayoutComponent(layout);
+      this.buildLayout(cfg.layout, true);
+    },
+    parseLayout(layout) {
+      return layout.children
+        ? this.parseLayer(layout)
+        : this.parseWindow(layout); // TODO add more complete type test for cfg
     },
     parseWindow(win) {
       const windowObject = {
@@ -90,7 +139,10 @@ export default {
       };
       const contentObject = {
         name: win.name,
-        component: this.availableComponents[win.componentIndex],
+        component:
+          win.componentIndex !== null
+            ? this.availableComponents[win.componentIndex]
+            : this.emptyComponent,
         cfg: win.cfg,
         id: windowObject.id
       };
@@ -173,6 +225,13 @@ export default {
     ]);
   }
 };
+
+function roundRatios(ratios) {
+  const roundedRatios = ratios.map(Math.round);
+  roundedRatios[roundedRatios.length - 1] =
+    100 - roundedRatios.slice(0, -1).reduce((a, b) => a + b); // Ensure the sum is 100
+  return roundedRatios;
+}
 
 function* idGenerator() {
   let i = 1;

@@ -21,6 +21,9 @@ export default layout => ({
     this.$emit("updated");
   },
   methods: {
+    getLayout() {
+      return this.layout;
+    },
     getLayerParent(layer) {
       return this.layers.length ? this.layers.find(parentLayer => parentLayer.children.includes(layer)) : null;
     },
@@ -119,7 +122,6 @@ export default layout => ({
         }
         this.updateLayerTreeKeys(layer);
       }
-      return newWindowObject;
     },
     mergeRatios(layer, windowIndex) {
       if (windowIndex === 0) {
