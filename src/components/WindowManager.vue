@@ -11,6 +11,7 @@ export default {
       availableComponents: null,
       windowsContent: [],
       layoutComponent: null,
+      emptyComponent: null,
       containerIdGen: makeIdGenerator(),
       containerKeyGen: makeIdGenerator(),
       windowIdGen: makeIdGenerator()
@@ -24,6 +25,9 @@ export default {
   },
   created() {
     this.windowIdPrefix = this.cfg.windowIdPrefix || "window-";
+    this.emptyComponent = this.cfg.emptyComponent || {
+      render: h => h("div", ["empty component"])
+    };
     this.parseCfg(this.cfg);
     Object.getPrototypeOf(this.$root).$windowManager = {
       context: {
@@ -60,9 +64,7 @@ export default {
       const newWindowObject = this.$refs.layout.splitWindow(windowId, way, e);
       this.windowsContent[newWindowObject.id] = {
         id: newWindowObject.id,
-        component: {
-          render: h => h("div", ["empty component"])
-        }
+        component: this.emptyComponent
       };
 
       this.$nextTick(() => {
