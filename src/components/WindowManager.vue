@@ -85,11 +85,26 @@ export default {
     },
     parseCfg(cfg) {
       this.availableComponents = cfg.components;
-      const layout = this.parseLayer(cfg.layout); // TODO add more complete type test for cfg
+      const layout = cfg.layout.children
+        ? this.parseLayer(cfg.layout)
+        : this.parseWindow(cfg.layout); // TODO add more complete type test for cfg
       this.layoutComponent = makeLayoutComponent(layout);
     },
+    parseWindow(win) {
+      const windowObject = {
+        type: "window",
+        id: this.windowIdGen()
+      };
+      const contentObject = {
+        name: win.name,
+        component: this.availableComponents[win.componentIndex],
+        cfg: win.cfg,
+        id: windowObject.id
+      };
+      this.windowsContent[windowObject.id] = contentObject;
+      return windowObject;
+    },
     parseLayer(layer) {
-      // TODO parseLayer will not work if starting with only one window !!!
       if (layer.ratios) {
         if (
           layer.ratios.length !== layer.children.length ||
@@ -108,18 +123,7 @@ export default {
           if (child.children) {
             return this.parseLayer(child);
           } else {
-            const windowObject = {
-              type: "window",
-              id: this.windowIdGen()
-            };
-            const contentObject = {
-              name: child.name,
-              component: this.availableComponents[child.componentIndex],
-              cfg: child.cfg,
-              id: windowObject.id
-            };
-            this.windowsContent[windowObject.id] = contentObject;
-            return windowObject;
+            return this.parseWindow(child);
           }
         })
       };
