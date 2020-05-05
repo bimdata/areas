@@ -6,6 +6,7 @@ export default {
   name: "WindowManager",
   data() {
     return {
+      activeWindowId: null,
       windowIdPrefix: null,
       draggingWindowId: null,
       availableComponents: null,
@@ -32,6 +33,9 @@ export default {
     };
   },
   methods: {
+    setActiveWindowId(id) {
+      this.activeWindowId = id;
+    },
     getNextWindowId() {
       return this.windowIdGen();
     },

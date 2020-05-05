@@ -74,6 +74,12 @@ export default layout => ({
       if (!["vertical", "horizontal"].includes(way)) {
         throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}"`;
       }
+      const {
+        horizontalPercentage,
+        verticalPercentage
+      } = this.windowManager.getWindow(windowId).getLocalMouseCoordinates(e);
+      const firstRatio = way === "vertical" ? verticalPercentage : horizontalPercentage;
+      const secondRatio = 100 - firstRatio;
       const direction = way === "vertical" ? "row" : "column";
       const container = this.getWindowContainer(windowId);
       const newWindowId = this.getNextWindowId();
@@ -88,7 +94,7 @@ export default layout => ({
           id: this.getNextContainerId(),
           key: this.getNextContainerKey(),
           direction,
-          ratios: [50, 50],
+          ratios: [firstRatio, secondRatio],
           children: [this.layout, newWindowObject]
         };
       } else {
@@ -98,20 +104,22 @@ export default layout => ({
         );
         const windowIndex = container.children.indexOf(containerWindowObject);
         const windowRatio = container.ratios[windowIndex];
+        const newFirstRatio = firstRatio / 100 * windowRatio;
+        const newSecondRatio = windowRatio - newFirstRatio;
         if (container.direction === direction) {
           container.children.splice(
             windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
             0,
             newWindowObject
           );
-          container.ratios.splice(windowIndex, 1, windowRatio / 2, windowRatio / 2);
+          container.ratios.splice(windowIndex, 1, newFirstRatio, newSecondRatio);
         } else {
           const newContainer = {
             type: "container",
             id: this.getNextContainerId(),
             key: this.getNextContainerKey(),
             direction,
-            ratios: [50, 50],
+            ratios: [firstRatio, secondRatio],
             children: [
               containerWindowObject,
               newWindowObject
@@ -226,5 +234,3 @@ const getNestedContainers = container => {
     return [container];
   }
 };
-
-const sortBy = p => (a, b) => (a[p] > b[p] ? 1 : a[p] < b[p] ? -1 : 0);
