@@ -1,7 +1,11 @@
 <template>
   <div
     class="window"
-    :class="{'window-active': isWindowActive}"
+    :class="{
+      'window-active': isWindowActive,
+      'window-active-vertical-splitting': windowManager.splitMode === 'vertical',
+      'window-active-horizontal-splitting': windowManager.splitMode === 'horizontal',
+      }"
     @click.right="onRighClick"
     @click="onWindowClick"
     :draggable="draggable"
@@ -18,12 +22,12 @@
     <div
       class="window-vertical-split"
       :style="{left: `${verticalSplitLeft}px`}"
-      v-if="!isOverlayDisplayed"
+      v-if="verticalSplitDisplayed"
     ></div>
     <div
       class="window-horizontal-split"
       :style="{top: `${horizontalSplitTop}px`}"
-      v-if="!isOverlayDisplayed"
+      v-if="horizontalSplitDisplayed"
     ></div>
     <div :id="windowManager.getDOMWindowId(id)"></div>
   </div>
@@ -51,7 +55,22 @@ export default {
       return this.id === this.windowManager.activeWindowId;
     },
     isOverlayDisplayed() {
-      return !this.isWindowActive;
+      return (
+        !this.isWindowActive &&
+        (this.windowManager.splitMode || this.windowManager.dragAndDropMode)
+      );
+    },
+    verticalSplitDisplayed() {
+      return this.isWindowActive && this.isVerticalSplitMode;
+    },
+    horizontalSplitDisplayed() {
+      return this.isWindowActive && this.isHorizontalSplitMode;
+    },
+    isVerticalSplitMode() {
+      return this.windowManager.splitMode === "vertical";
+    },
+    isHorizontalSplitMode() {
+      return this.windowManager.splitMode === "horizontal";
     }
   },
   methods: {
@@ -124,7 +143,7 @@ export default {
 <style scoped>
 .window {
   background-color: cornsilk;
-  overflow: hidden;
+  overflow: scroll;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -143,12 +162,18 @@ export default {
   position: absolute;
   width: 3px;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: red;
 }
 .window-horizontal-split {
   position: absolute;
   width: 100%;
   height: 3px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: red;
+}
+.window-active-vertical-splitting {
+  cursor: col-resize;
+}
+.window-active-horizontal-splitting {
+  cursor: row-resize;
 }
 </style>

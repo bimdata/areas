@@ -6,6 +6,8 @@ export default {
   name: "WindowManager",
   data() {
     return {
+      dragAndDropMode: false,
+      splitMode: null,
       activeWindowId: null,
       windowIdPrefix: null,
       draggingWindowId: null,
@@ -33,6 +35,24 @@ export default {
     };
   },
   methods: {
+    onMouseMove(e) {
+      // TODO for development only, may be used by user instead of hardcoded here
+      this.setDragAndDropMode(e.metaKey);
+      this.setSplitMode(
+        e.shiftKey ? "horizontal" : e.altKey ? "vertical" : null
+      );
+    },
+    setSplitMode(mode) {
+      if (!["vertical", "horizontal", null].includes(mode)) {
+        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}"`;
+      }
+      if (this.splitMode !== mode) {
+        this.splitMode = mode;
+      }
+    },
+    setDragAndDropMode(active = true) {
+      this.dragAndDropMode = active;
+    },
     setActiveWindowId(id) {
       this.activeWindowId = id;
     },
@@ -226,15 +246,24 @@ export default {
   },
   render(h) {
     console.log("window manager render");
-    return h("div", { class: "window-manager" }, [
-      this.getTeleports(h),
-      h(this.layoutComponent, {
-        ref: "layout",
+    return h(
+      "div",
+      {
+        class: "window-manager",
         on: {
-          updated: this.onLayoutUpdated
+          mousemove: e => this.onMouseMove(e)
         }
-      })
-    ]);
+      },
+      [
+        this.getTeleports(h),
+        h(this.layoutComponent, {
+          ref: "layout",
+          on: {
+            updated: this.onLayoutUpdated
+          }
+        })
+      ]
+    );
   }
 };
 
