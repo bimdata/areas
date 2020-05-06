@@ -10,7 +10,6 @@ export default {
       splitMode: null,
       activeWindowId: null,
       windowIdPrefix: null,
-      draggingWindowId: null,
       availableComponents: null,
       windowsContent: null,
       layoutComponent: null,

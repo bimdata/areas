@@ -5,6 +5,8 @@
       'window-active': isWindowActive,
       'window-active-vertical-splitting': windowManager.splitMode === 'vertical',
       'window-active-horizontal-splitting': windowManager.splitMode === 'horizontal',
+      'window-active-grab': windowManager.dragAndDropMode && !dragging,
+      'window-active-grabbing': dragging,
       }"
     @click.right="onRighClick"
     @click="onWindowClick"
@@ -12,24 +14,28 @@
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @dragenter="onDragEnter"
-    @drag="onDrag"
+    @dragstart="onDragStart"
     @drop="onDrop"
     @dragend="onDragEnd"
     @mouseenter="onMouseEnter"
     @mousemove="onMouseMove"
   >
+    <!-- TODO the next two elements should be merged as one -->
     <div class="window-overlay" v-if="isOverlayDisplayed"></div>
+    <div class="window-overlay-dragover" v-if="dragover && !dragging">
+      <div class="dash-area"></div>
+    </div>
     <div
       class="window-vertical-split"
-      :style="{left: `${verticalSplitLeft}px`}"
+      :style="{left: `${verticalSplitLeft}%`}"
       v-if="verticalSplitDisplayed"
     ></div>
     <div
       class="window-horizontal-split"
-      :style="{top: `${horizontalSplitTop}px`}"
+      :style="{top: `${horizontalSplitTop}%`}"
       v-if="horizontalSplitDisplayed"
     ></div>
-    <div :id="windowManager.getDOMWindowId(id)"></div>
+    <div class="window-content" :id="windowManager.getDOMWindowId(id)"></div>
   </div>
 </template>
 
@@ -38,6 +44,8 @@ export default {
   name: "window",
   data() {
     return {
+      dragover: false,
+      dragging: false,
       verticalSplitLeft: null,
       horizontalSplitTop: null
     };
@@ -61,10 +69,18 @@ export default {
       );
     },
     verticalSplitDisplayed() {
-      return this.isWindowActive && this.isVerticalSplitMode;
+      return (
+        this.isWindowActive &&
+        this.isVerticalSplitMode &&
+        this.verticalSplitLeft !== null
+      );
     },
     horizontalSplitDisplayed() {
-      return this.isWindowActive && this.isHorizontalSplitMode;
+      return (
+        this.isWindowActive &&
+        this.isHorizontalSplitMode &&
+        this.horizontalSplitTop !== null
+      );
     },
     isVerticalSplitMode() {
       return this.windowManager.splitMode === "vertical";
@@ -74,33 +90,37 @@ export default {
     }
   },
   methods: {
-    onDrag() {
-      this.windowManager.draggingWindowId = this.id;
+    onDragStart(dragEvent) {
+      this.dragging = true;
+      dragEvent.dataTransfer.setData("windowmanager-windowid", String(this.id));
+      dragEvent.dataTransfer.effectAllowed = "move";
     },
     onDragEnd() {
-      this.windowManager.draggingWindowId = null;
+      this.dragging = false;
     },
-    onDrop() {
-      if (this.windowManager.draggingWindowId) {
-        this.windowManager.swapWindows(
-          this.windowManager.draggingWindowId,
-          this.id
-        );
+    onDrop(dragEvent) {
+      this.dragover = false;
+      const windowId = parseInt(
+        dragEvent.dataTransfer.getData("windowmanager-windowid"),
+        10
+      );
+      this.windowManager.swapWindows(windowId, this.id);
+    },
+    onDragEnter(dragEvent) {
+      if (dragEvent.dataTransfer.types.includes("windowmanager-windowid")) {
+        this.dragover = true;
       }
     },
-    onDragEnter(e) {
-      // console.log("dragenter");
-      document.body.style.setProperty("cursor", "add", "important");
-    },
-    onDragOver(e) {
-      e.preventDefault();
-      // console.log("draghover");
+    onDragOver(dragEvent) {
+      if (dragEvent.dataTransfer.types.includes("windowmanager-windowid")) {
+        dragEvent.preventDefault();
+        dragEvent.dataTransfer.dropEffect = "move";
+      }
     },
     onDragLeave(e) {
-      // console.log("dragleave");
+      this.dragover = false;
     },
     onWindowClick(e) {
-      // this.windowManager.setActiveWindowId(this.id);
       if (e.altKey) {
         this.windowManager.splitWindow(this.id, "vertical", e);
       } else if (e.shiftKey) {
@@ -112,10 +132,13 @@ export default {
       this.windowManager.deleteWindow(this.id, e);
     },
     onMouseMove(e) {
-      const { top, left } = this.getLocalMouseCoordinates(e);
+      const {
+        verticalPercentage,
+        horizontalPercentage
+      } = this.getLocalMouseCoordinates(e);
 
-      this.verticalSplitLeft = left;
-      this.horizontalSplitTop = top;
+      this.verticalSplitLeft = verticalPercentage;
+      this.horizontalSplitTop = horizontalPercentage;
     },
     getLocalMouseCoordinates(e) {
       const { height, width, x, y } = this.$el.getBoundingClientRect();
@@ -124,6 +147,7 @@ export default {
       const left = clientX - x;
       const verticalPercentage = (left / width) * 100;
       const horizontalPercentage = (top / height) * 100;
+
       return {
         top,
         left,
@@ -143,14 +167,13 @@ export default {
 <style scoped>
 .window {
   background-color: cornsilk;
-  overflow: scroll;
-  width: 100%;
-  height: 100%;
   box-sizing: border-box;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 .window-active {
-  /* border: rgba(255, 0, 0, 0.253) solid 2px; */
+  box-shadow: inset 0 0 5px grey;
 }
 .window-overlay {
   position: absolute;
@@ -158,14 +181,37 @@ export default {
   height: 100%;
   background-color: rgba(128, 128, 128, 0.199);
 }
-.window-vertical-split {
+.window-overlay {
   position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(128, 128, 128, 0.199);
+}
+.window-overlay-dragover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.dash-area {
+  height: 100%;
+  box-sizing: border-box;
+  border: dashed 5px grey;
+}
+.window-vertical-split {
+  pointer-events: none;
+  position: absolute;
+  margin-left: -1px;
   width: 3px;
   height: 100%;
   background-color: red;
 }
 .window-horizontal-split {
+  pointer-events: none;
   position: absolute;
+  margin-top: -1px;
   width: 100%;
   height: 3px;
   background-color: red;
@@ -175,5 +221,16 @@ export default {
 }
 .window-active-horizontal-splitting {
   cursor: row-resize;
+}
+.window-active-grab {
+  cursor: grab;
+}
+.window-active-grabbing {
+  cursor: grabbing;
+}
+.window-content {
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
 }
 </style>
