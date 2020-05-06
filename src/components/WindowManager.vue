@@ -16,7 +16,8 @@ export default {
       emptyComponent: null,
       containerIdGen: null,
       containerKeyGen: null,
-      windowIdGen: null
+      windowIdGen: null,
+      windowContentIdGen: null
     };
   },
   props: {
@@ -34,6 +35,32 @@ export default {
     };
   },
   methods: {
+    changeWindowComponent(windowId, componentCfg = {}) {
+      if (
+        !this.windowsContent
+          .map((wc, i) => (wc ? i : null))
+          .filter(Boolean)
+          .includes(windowId)
+      ) {
+        throw `Impossible to change component. Window id "${windowId}" does not exist.`;
+      }
+      const { cfg, componentIndex, name } = componentCfg;
+      if (
+        !Object.keys(this.availableComponents).includes(String(componentIndex))
+      ) {
+        throw `Impossible to change component. Component index "${componentIndex}" is not available.`;
+      }
+      const id = this.windowContentIdGen();
+      const newWindowContentObject = {
+        id,
+        component: this.availableComponents[componentIndex],
+        ...(cfg && { cfg }),
+        ...(name && { name })
+      };
+      this.windowsContent.splice(windowId, 1, newWindowContentObject);
+
+      // this.reattachTeleports();
+    },
     onMouseMove(e) {
       // TODO for development only, may be used by user instead of hardcoded here
       this.setDragAndDropMode(e.metaKey);
@@ -74,6 +101,7 @@ export default {
         this.containerIdGen = makeIdGenerator();
         this.containerKeyGen = makeIdGenerator();
         this.windowIdGen = makeIdGenerator();
+        this.windowContentIdGen = makeIdGenerator();
       } else {
         // no need to reattach at first render... optimization
         this.$nextTick(() => this.reattachTeleports());
@@ -135,7 +163,7 @@ export default {
         insertNewAfter
       );
       this.windowsContent[newWindowId] = {
-        id: newWindowId,
+        id: this.windowContentIdGen(),
         component: this.emptyComponent
       };
 
@@ -180,7 +208,7 @@ export default {
             ? this.availableComponents[win.componentIndex]
             : this.emptyComponent,
         cfg: win.cfg,
-        id: windowObject.id
+        id: this.windowContentIdGen()
       };
       this.windowsContent[windowObject.id] = contentObject;
       return windowObject;
@@ -233,7 +261,7 @@ export default {
                     },
                     on: {
                       mounted({ childInstance }) {
-                        windowContent.instance = childInstance;
+                        windowContent.instance = childInstance; // TODO is it really usefull here ???
                       }
                     },
                     ref: "teleports",

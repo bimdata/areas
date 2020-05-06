@@ -47,6 +47,9 @@ export default {
       if (removeFromCurentParent && this.$el.contains(this.child)) {
         this.$el.removeChild(this.child);
       }
+      while (targetElement.hasChildNodes()) {
+        targetElement.removeChild(targetElement.firstChild);
+      }
       if (!targetElement.contains(this.child)) {
         targetElement.appendChild(this.child);
       }
