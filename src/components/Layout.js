@@ -70,7 +70,7 @@ export default layout => ({
       const container = this.getContainer(containerId);
       container.ratios.splice(0, ratios.length, ...ratios);
     },
-    splitWindow(windowId, way, percentage) {
+    splitWindow(windowId, way, percentage, insertNewAfter = true) {
       if (!["vertical", "horizontal"].includes(way)) {
         throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}"`;
       }
@@ -85,13 +85,14 @@ export default layout => ({
       };
       if (!container) {
         // window is root
+        const children = insertNewAfter ? [this.layout, newWindowObject] : [newWindowObject, this.layout];
         this.layout = {
           type: "container",
           id: this.getNextContainerId(),
           key: this.getNextContainerKey(),
           direction,
           ratios: [firstRatio, secondRatio],
-          children: [this.layout, newWindowObject]
+          children
         };
       } else {
         // window is in container
@@ -104,22 +105,20 @@ export default layout => ({
         const newSecondRatio = windowRatio - newFirstRatio;
         if (container.direction === direction) {
           container.children.splice(
-            windowIndex + 1, // TODO +1 mean at the right of the splitted one... configurable?
+            windowIndex + (insertNewAfter ? 1 : 0),
             0,
             newWindowObject
           );
           container.ratios.splice(windowIndex, 1, newFirstRatio, newSecondRatio);
         } else {
+          const children = insertNewAfter ? [containerWindowObject, newWindowObject] : [newWindowObject, containerWindowObject];
           const newContainer = {
             type: "container",
             id: this.getNextContainerId(),
             key: this.getNextContainerKey(),
             direction,
             ratios: [firstRatio, secondRatio],
-            children: [
-              containerWindowObject,
-              newWindowObject
-            ]
+            children
           };
           container.children.splice(windowIndex, 1, newContainer);
         }

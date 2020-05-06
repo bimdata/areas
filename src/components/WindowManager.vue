@@ -127,8 +127,13 @@ export default {
       this.$refs.layout.deleteWindow(windowId);
       this.windowsContent.splice(windowId, 1, undefined);
     },
-    splitWindow(windowId, way, e) {
-      const newWindowId = this.$refs.layout.splitWindow(windowId, way, e);
+    splitWindow(windowId, way, percentage, insertNewAfter) {
+      const newWindowId = this.$refs.layout.splitWindow(
+        windowId,
+        way,
+        percentage,
+        insertNewAfter
+      );
       this.windowsContent[newWindowId] = {
         id: newWindowId,
         component: this.emptyComponent
