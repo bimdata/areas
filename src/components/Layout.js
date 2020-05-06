@@ -70,15 +70,11 @@ export default layout => ({
       const container = this.getContainer(containerId);
       container.ratios.splice(0, ratios.length, ...ratios);
     },
-    splitWindow(windowId, way, e) {
+    splitWindow(windowId, way, percentage) {
       if (!["vertical", "horizontal"].includes(way)) {
         throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}"`;
       }
-      const {
-        horizontalPercentage,
-        verticalPercentage
-      } = this.windowManager.getWindow(windowId).getLocalMouseCoordinates(e);
-      const firstRatio = way === "vertical" ? verticalPercentage : horizontalPercentage;
+      const firstRatio = percentage
       const secondRatio = 100 - firstRatio;
       const direction = way === "vertical" ? "row" : "column";
       const container = this.getWindowContainer(windowId);

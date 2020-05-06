@@ -121,10 +121,18 @@ export default {
       this.dragover = false;
     },
     onWindowClick(e) {
+      const {
+        horizontalPercentage,
+        verticalPercentage
+      } = this.getLocalMouseCoordinates(e);
       if (e.altKey) {
-        this.windowManager.splitWindow(this.id, "vertical", e);
+        this.windowManager.splitWindow(this.id, "vertical", verticalPercentage);
       } else if (e.shiftKey) {
-        this.windowManager.splitWindow(this.id, "horizontal", e);
+        this.windowManager.splitWindow(
+          this.id,
+          "horizontal",
+          horizontalPercentage
+        );
       }
     },
     onRighClick(e) {
