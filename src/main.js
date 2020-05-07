@@ -1,8 +1,3 @@
-import Vue from 'vue'
-import App from './App.vue'
+import WindowManager from "./WindowManager.vue";
 
-Vue.config.productionTip = false
-
-new Vue({
-  render: function (h) { return h(App) },
-}).$mount('#app')
+export default WindowManager;

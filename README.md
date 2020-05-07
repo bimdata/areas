@@ -1,19 +1,18 @@
-# windowmanager
+# Window Manager
 
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
+Build for produciton :
 ```
 npm run build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Build on change for development :
+```
+npm run start
+```
+
+To run the example, run an http server at root after building in develoment mode: (example with http-server)
+```
+npm i
+npm run start
+http-server .
+```
