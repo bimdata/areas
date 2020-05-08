@@ -6,21 +6,25 @@
   "module": "dist/windowmanager.esm.js",
   "unpkg": "dist/windowmanager.js",
   "scripts": {
-    "test": "jest",
-    "build": "rollup -c --environment BUILD:production",
+    "test:unit": "jest ./unitTest",
+    "test:e2e": "npm run build:prod && start-server-and-test 'npm run serve -- -p 3030' 3030 cy:run",
+    "serve": "http-server . -c-1",
+    "cy:run": "cypress run",
+    "build:dev": "rollup -c --environment BUILD:development",
+    "build:prod": "rollup -c --environment BUILD:production",
     "prebuild": "rm -rf dist",
-    "start": "rollup --watch -c --environment BUILD:development",
-    "prepublishOnly": "npm run build"
+    "dev": "npm run build:dev -- --watch & npm run serve -- -o",
+    "prepublishOnly": "npm run build:prod"
   },
   "author": "BIMData.io",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bimdata/viewer-window-manager.git"
+    "url": "git+https://github.com/bimdata/window-manager.git"
   },
   "bugs": {
-    "url": "https://github.com/bimdata/viewer-window-manager/issues"
+    "url": "https://github.com/bimdata/window-manager/issues"
   },
-  "homepage": "https://github.com/bimdata/viewer-window-manager#readme",
+  "homepage": "https://github.com/bimdata/window-manager#readme",
   "license": "MIT",
   "keywords": [
     "window",
@@ -29,14 +33,17 @@
     "drag and drop"
   ],
   "devDependencies": {
-    "babel-core": "^7.0.0-bridge.0",
     "@babel/preset-env": "^7.9.6",
     "@vue/test-utils": "^1.0.2",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^26.0.1",
+    "cypress": "^4.5.0",
+    "http-server": "^0.12.3",
     "jest": "^26.0.1",
     "rollup": "^2.8.2",
     "rollup-plugin-terser": "^5.3.0",
     "rollup-plugin-vue": "5.1.6",
+    "start-server-and-test": "^1.11.0",
     "vue": "^2.6.11",
     "vue-jest": "^3.0.5",
     "vue-template-compiler": "^2.6.11"

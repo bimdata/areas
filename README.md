@@ -2,17 +2,16 @@
 
 Build for produciton :
 ```
-npm run build
+npm run build:prod
 ```
 
-Build on change for development :
+Build on change for development and serve :
 ```
-npm run start
+npm run dev
 ```
 
-To run the example, run an http server at root after building in develoment mode: (example with http-server)
+Test :
 ```
-npm i
-npm run start
-http-server .
+npm run test:unit
+npm run test:e2e
 ```
