@@ -1,4 +1,7 @@
-# Window Manager
+<div style="display: flex; flex-direction: column; align-items: center;">
+<p><img width="150" src="./areas.png" alt="Areas logo"></p>
+<h1>Areas</h2>
+</div>
 
 Build for produciton :
 ```
