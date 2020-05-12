@@ -5,6 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Window manager</title>
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+  </style>
 </head>
 
 <body>
@@ -13,12 +19,12 @@
     import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.esm.browser.js';
     import WindowManager from "../../dist/windowmanager.esm.js";
 
-    window.mountApp = cfg =>
+    window.mountApp = ({ cfg, width = 800, height = 500 }) =>
       new Vue({
         render(h) {
-          return h("div", { style: "width: 80%; margin: auto; height: 600px;", domProps: { id: "app" } }, [h(WindowManager,
+          return h("div", { style: `width: ${width}px; height: ${height}px;`, domProps: { id: "app" } }, [h(WindowManager,
             {
-              ref: "windowmanager",
+              ref: "areas",
               props: {
                 cfg
               }
