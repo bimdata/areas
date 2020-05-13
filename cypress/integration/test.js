@@ -83,14 +83,8 @@ describe('Dual vertical areas', () => {
       // TODO this should take into accout separator width !
       const area1TheoreticalWidth = WIDTH * 30 / 100;
       const area2TheoreticalWidth = WIDTH * 70 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -110,14 +104,8 @@ describe('Dual vertical areas', () => {
       // TODO this should take into accout separator width !
       const area1TheoreticalWidth = WIDTH * 10 / 100;
       const area2TheoreticalWidth = WIDTH * 90 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -160,14 +148,8 @@ describe('Dual horizontal areas', () => {
       // TODO this should take into accout separator width !
       const area1TheoreticalHeight = HEIGHT * 16 / 100;
       const area2TheoreticalHeight = HEIGHT * 84 / 100;
-      expect(area1.clientHeight).to.be.within(
-        area1TheoreticalHeight - MARGIN_OF_ERROR,
-        area1TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area1.clientHeight).to.be.closeTo(area1TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
     });
   });
 
@@ -187,14 +169,8 @@ describe('Dual horizontal areas', () => {
       // TODO this should take into accout separator width !
       const area1TheoreticalHeight = HEIGHT * 50 / 100;
       const area2TheoreticalHeight = HEIGHT * 50 / 100;
-      expect(area1.clientHeight).to.be.within(
-        area1TheoreticalHeight - MARGIN_OF_ERROR,
-        area1TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area1.clientHeight).to.be.closeTo(area1TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
     });
   });
 
@@ -244,18 +220,9 @@ describe('Three areas in the same direction (vertical)', () => {
       const area1TheoreticalWidth = WIDTH * 30 / 100;
       const area2TheoreticalWidth = WIDTH * 30 / 100;
       const area3TheoreticalWidth = WIDTH * 40 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -278,18 +245,9 @@ describe('Three areas in the same direction (vertical)', () => {
       const area1TheoreticalWidth = WIDTH * 50 / 100;
       const area2TheoreticalWidth = WIDTH * 10 / 100;
       const area3TheoreticalWidth = WIDTH * 40 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -311,18 +269,9 @@ describe('Three areas in the same direction (vertical)', () => {
       const area1TheoreticalWidth = WIDTH * 60 / 100;
       const area2TheoreticalWidth = 0;
       const area3TheoreticalWidth = WIDTH * 40 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -347,14 +296,8 @@ describe('Three areas in the same direction (vertical)', () => {
 
       const area1TheoreticalWidth = WIDTH * 60 / 100;
       const area2TheoreticalWidth = WIDTH * 40 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
 
     cy.get("@areas").invoke("deleteWindow", 1);
@@ -419,30 +362,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area1.clientHeight).to.equal(HEIGHT);
       const area2TheoreticalHeight = HEIGHT * 15 / 100;
       const area3TheoreticalHeight = HEIGHT * 85 / 100;
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area3.clientHeight).to.be.within(
-        area3TheoreticalHeight - MARGIN_OF_ERROR,
-        area3TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
       const area1TheoreticalWidth = WIDTH * 20 / 100;
       const area2TheoreticalWidth = WIDTH * 80 / 100;
       const area3TheoreticalWidth = WIDTH * 80 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -459,30 +387,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area1.clientHeight).to.equal(HEIGHT);
       const area2TheoreticalHeight = HEIGHT * 15 / 100;
       const area3TheoreticalHeight = HEIGHT * 85 / 100;
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area3.clientHeight).to.be.within(
-        area3TheoreticalHeight - MARGIN_OF_ERROR,
-        area3TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
       const area1TheoreticalWidth = WIDTH * 50 / 100;
       const area2TheoreticalWidth = WIDTH * 50 / 100;
       const area3TheoreticalWidth = WIDTH * 50 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
 
     cy.get(SEPARATOR_SELECTOR).last()
@@ -496,30 +409,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area1.clientHeight).to.equal(HEIGHT);
       const area2TheoreticalHeight = HEIGHT * 78 / 100;
       const area3TheoreticalHeight = HEIGHT * 22 / 100;
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area3.clientHeight).to.be.within(
-        area3TheoreticalHeight - MARGIN_OF_ERROR,
-        area3TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
       const area1TheoreticalWidth = WIDTH * 50 / 100;
       const area2TheoreticalWidth = WIDTH * 50 / 100;
       const area3TheoreticalWidth = WIDTH * 50 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 
@@ -543,14 +441,8 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
 
       const area1TheoreticalWidth = WIDTH * 20 / 100;
       const area2TheoreticalWidth = WIDTH * 80 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
 
     cy.get("@areas").invoke("deleteWindow", 1);
@@ -608,30 +500,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area1.clientHeight).to.equal(HEIGHT);
       const area2TheoreticalHeight = HEIGHT * 15 / 100;
       const area3TheoreticalHeight = HEIGHT * 85 / 100;
-      expect(area2.clientHeight).to.be.within(
-        area2TheoreticalHeight - MARGIN_OF_ERROR,
-        area2TheoreticalHeight + MARGIN_OF_ERROR
-      );
-      expect(area3.clientHeight).to.be.within(
-        area3TheoreticalHeight - MARGIN_OF_ERROR,
-        area3TheoreticalHeight + MARGIN_OF_ERROR
-      );
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
       const area1TheoreticalWidth = WIDTH * 20 / 100;
       const area2TheoreticalWidth = WIDTH * 80 / 100;
       const area3TheoreticalWidth = WIDTH * 80 / 100;
-      expect(area1.clientWidth).to.be.within(
-        area1TheoreticalWidth - MARGIN_OF_ERROR,
-        area1TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area2.clientWidth).to.be.within(
-        area2TheoreticalWidth - MARGIN_OF_ERROR,
-        area2TheoreticalWidth + MARGIN_OF_ERROR
-      );
-      expect(area3.clientWidth).to.be.within(
-        area3TheoreticalWidth - MARGIN_OF_ERROR,
-        area3TheoreticalWidth + MARGIN_OF_ERROR
-      );
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   })
 });
