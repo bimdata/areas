@@ -72,7 +72,7 @@ export default layout => ({
     },
     splitWindow(windowId, way, percentage, insertNewAfter = true) {
       if (!["vertical", "horizontal"].includes(way)) {
-        throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}"`;
+        throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}".`;
       }
       const firstRatio = percentage
       const secondRatio = 100 - firstRatio;

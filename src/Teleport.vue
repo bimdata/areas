@@ -42,7 +42,7 @@ export default {
         this.windowManager.getDOMWindowId(this.targetId)
       );
       if (!targetElement) {
-        throw `Teleport fails, no DOM element with id : "${this.targetId}"`;
+        throw `Teleport fails, no DOM element with id : "${this.targetId}".`;
       }
       if (removeFromCurentParent && this.$el.contains(this.child)) {
         this.$el.removeChild(this.child);

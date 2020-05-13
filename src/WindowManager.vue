@@ -70,7 +70,7 @@ export default {
     },
     setSplitMode(mode) {
       if (!["vertical", "horizontal", null].includes(mode)) {
-        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}"`;
+        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}".`;
       }
       if (this.splitMode !== mode) {
         this.splitMode = mode;
@@ -145,7 +145,6 @@ export default {
       return this.getWindows().find(win => win.id === id);
     },
     onLayoutUpdated() {
-      console.log("layout updated");
       this.reattachTeleports();
     },
     reattachTeleports() {
@@ -194,9 +193,12 @@ export default {
     parseLayout(layout) {
       return layout.children
         ? this.parseContainer(layout)
-        : this.parseWindow(layout); // TODO add more complete type test for cfg
+        : this.parseWindow(layout);
     },
     parseWindow(win) {
+      if (!this.availableComponents[win.componentIndex]) {
+        throw `The component with index "${win.componentIndex}" does not exist. "componentIndex" in cfg.layout must be a valid index in the cfg.components array.`
+      }
       const windowObject = {
         type: "window",
         id: this.windowIdGen()
@@ -219,7 +221,7 @@ export default {
           container.ratios.length !== container.children.length ||
           container.ratios.reduce((acc, cur) => acc + cur) !== 100
         ) {
-          throw "container is malformed. Each child must habe a ratio specifiec and the sum of all ratios must be 100";
+          throw "Container is malformed. Each child must have a ratio and the sum of all ratios must be 100.";
         }
       }
       return {
@@ -310,7 +312,7 @@ function* idGenerator() {
   while (i < Number.MAX_SAFE_INTEGER) {
     yield i++;
   }
-  throw "Cannot generate more ids";
+  throw "Cannot generate more ids.";
 }
 
 function makeIdGenerator() {
