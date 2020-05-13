@@ -478,13 +478,13 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   it("Should save and load layout", () => {
     cy.get("@areas").then(areas => areas.getCurrentLayout()).as('savedLayout');
 
-    cy.get("@areas").invoke("deleteWindow", 3);
-
     cy.get(SEPARATOR_SELECTOR)
       .first()
       .trigger('mousedown', "center")
       .trigger("mousemove", { clientX: WIDTH / 2 })
       .trigger('mouseup');
+
+    cy.get("@areas").invoke("deleteWindow", 3);
 
     cy.get("@areas")
       .then(areas => cy.get("@savedLayout").then(savedLayout => areas.loadLayout(savedLayout)));
