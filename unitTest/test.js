@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from "vue";
-import WindowManager from "../src/WindowManager.vue";
+import Areas from "../src/Areas.vue";
 
 const COMPONENT_TEST_1 = { render(h) { return h("div", "comp 1") } };
 const COMPONENT_TEST_2 = { render(h) { return h("div", "comp 2") } };
@@ -17,7 +17,7 @@ describe('Areas', () => {
       ],
       layout: { componentIndex: 0 }
     };
-    const wrapper = shallowMount(WindowManager, { propsData: { cfg } });
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -35,7 +35,7 @@ describe('Areas', () => {
         ]
       }
     };
-    const wrapper = shallowMount(WindowManager, { propsData: { cfg } });
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -54,7 +54,7 @@ describe('Areas', () => {
         ]
       }
     };
-    const wrapper = shallowMount(WindowManager, { propsData: { cfg } });
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -80,7 +80,7 @@ describe('Areas', () => {
         ]
       }
     };
-    const wrapper = shallowMount(WindowManager, { propsData: { cfg } });
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
   });
 
@@ -102,7 +102,7 @@ describe('Areas', () => {
     };
 
     spyOn(console, "error"); // Remove console error due to the trow
-    expect(() => shallowMount(WindowManager, { propsData: { cfg } })).toThrow();
+    expect(() => shallowMount(Areas, { propsData: { cfg } })).toThrow();
   });
 
   it("Should not allow user to give less ratios than children", () => {
@@ -123,7 +123,7 @@ describe('Areas', () => {
     };
 
     spyOn(console, "error"); // Remove console error due to the trow
-    expect(() => shallowMount(WindowManager, { propsData: { cfg } })).toThrow();
+    expect(() => shallowMount(Areas, { propsData: { cfg } })).toThrow();
   });
 
   it("Should not allow user to give inexisting component index", () => {
@@ -141,7 +141,7 @@ describe('Areas', () => {
     };
 
     spyOn(console, "error"); // Remove console error due to the trow
-    expect(() => shallowMount(WindowManager, { propsData: { cfg } })).toThrow();
+    expect(() => shallowMount(Areas, { propsData: { cfg } })).toThrow();
   });
 
   it("Should allow user to get component by name and update props (this should be reactive)", async () => {
@@ -168,7 +168,7 @@ describe('Areas', () => {
       }
     };
 
-    const wrapper = shallowMount(WindowManager, { propsData: { cfg } });
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
 
     wrapper.vm.getComponentByName("targetComponent").cfg.props.text = "text updated";

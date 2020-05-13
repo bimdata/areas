@@ -1,10 +1,10 @@
 {
-  "name": "@bimdata/windowmanager",
+  "name": "@bimdata/areas",
   "version": "0.1.0",
-  "description": "A Vuejs Blender style multi resizable/editable window manager to create custom layouts.",
-  "main": "dist/windowmanager.js",
-  "module": "dist/windowmanager.esm.js",
-  "unpkg": "dist/windowmanager.js",
+  "description": "A Vuejs Blender style multi resizable/editable area manager to create custom layouts.",
+  "main": "dist/areas.js",
+  "module": "dist/areas.esm.js",
+  "unpkg": "dist/areas.js",
   "scripts": {
     "test": "npm run test:unit & npm run test:e2e",
     "test:unit": "jest",
@@ -15,22 +15,24 @@
     "cy:open": "cypress open",
     "build:dev": "rollup -c --environment BUILD:development",
     "build:prod": "rollup -c --environment BUILD:production",
-    "prebuild": "rm -rf dist",
+    "prebuild:dev": "rm -rf dist",
+    "prebuild:prod": "rm -rf dist",
     "dev": "npm run build:dev -- --watch & npm run serve -- -o",
     "prepublishOnly": "npm run build:prod"
   },
   "author": "BIMData.io",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bimdata/window-manager.git"
+    "url": "git+https://github.com/bimdata/areas.git"
   },
   "bugs": {
-    "url": "https://github.com/bimdata/window-manager/issues"
+    "url": "https://github.com/bimdata/areas/issues"
   },
-  "homepage": "https://github.com/bimdata/window-manager#readme",
+  "homepage": "https://github.com/bimdata/areas#readme",
   "license": "MIT",
   "keywords": [
-    "window",
+    "areas",
+    "area",
     "layout",
     "resize",
     "drag and drop"

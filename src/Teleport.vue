@@ -12,13 +12,13 @@ export default {
       require: true
     }
   },
-  inject: ["windowManager"],
+  inject: ["areas"],
   provide() {
     const self = this;
     return {
       $context: {
-        get window() {
-          return self.windowManager.getWindow(self.targetId);
+        get area() {
+          return self.areas.getArea(self.targetId);
         }
       }
     };
@@ -39,7 +39,7 @@ export default {
   methods: {
     attach(removeFromCurentParent = false) {
       const targetElement = document.getElementById(
-        this.windowManager.getDOMWindowId(this.targetId)
+        this.areas.getDOMAreaId(this.targetId)
       );
       if (!targetElement) {
         throw `Teleport fails, no DOM element with id : "${this.targetId}".`;

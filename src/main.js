@@ -1,3 +1,3 @@
-import WindowManager from "./WindowManager.vue";
+import Areas from "./Areas.vue";
 
-export default WindowManager;
+export default Areas;

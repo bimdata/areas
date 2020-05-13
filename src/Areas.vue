@@ -3,21 +3,21 @@ import Teleport from "./Teleport.vue";
 import makeLayoutComponent from "./Layout.js";
 
 export default {
-  name: "WindowManager",
+  name: "areas",
   data() {
     return {
       dragAndDropMode: false,
       splitMode: null,
-      activeWindowId: null,
-      windowIdPrefix: null,
+      activeAreaId: null,
+      areaIdPrefix: null,
       availableComponents: null,
-      windowsContent: null,
+      areasContent: null,
       layoutComponent: null,
       emptyComponent: null,
       containerIdGen: null,
       containerKeyGen: null,
-      windowIdGen: null,
-      windowContentIdGen: null
+      areaIdGen: null,
+      areaContentIdGen: null
     };
   },
   props: {
@@ -31,18 +31,18 @@ export default {
   },
   provide() {
     return {
-      windowManager: this
+      areas: this
     };
   },
   methods: {
-    changeWindowComponent(windowId, componentCfg = {}) {
+    changeAreaComponent(areaId, componentCfg = {}) {
       if (
-        !this.windowsContent
+        !this.areasContent
           .map((wc, i) => (wc ? i : null))
           .filter(Boolean)
-          .includes(windowId)
+          .includes(areaId)
       ) {
-        throw `Impossible to change component. Window id "${windowId}" does not exist.`;
+        throw `Impossible to change component. Area id "${areaId}" does not exist.`;
       }
       const { cfg, componentIndex, name } = componentCfg;
       if (
@@ -50,14 +50,14 @@ export default {
       ) {
         throw `Impossible to change component. Component index "${componentIndex}" is not available.`;
       }
-      const id = this.windowContentIdGen();
-      const newWindowContentObject = {
+      const id = this.areaContentIdGen();
+      const newAreaContentObject = {
         id,
         component: this.availableComponents[componentIndex],
         ...(cfg && { cfg }),
         ...(name && { name })
       };
-      this.windowsContent.splice(windowId, 1, newWindowContentObject);
+      this.areasContent.splice(areaId, 1, newAreaContentObject);
 
       // this.reattachTeleports();
     },
@@ -79,11 +79,11 @@ export default {
     setDragAndDropMode(active = true) {
       this.dragAndDropMode = active;
     },
-    setActiveWindowId(id) {
-      this.activeWindowId = id;
+    setActiveAreaId(id) {
+      this.activeAreaId = id;
     },
-    getNextWindowId() {
-      return this.windowIdGen();
+    getNextAreaId() {
+      return this.areaIdGen();
     },
     getNextContainerId() {
       return this.containerIdGen();
@@ -95,13 +95,13 @@ export default {
       this.buildLayout(layout);
     },
     buildLayout(layout, firstRender = false) {
-      this.windowsContent = [];
+      this.areasContent = [];
 
       if (firstRender) {
         this.containerIdGen = makeIdGenerator();
         this.containerKeyGen = makeIdGenerator();
-        this.windowIdGen = makeIdGenerator();
-        this.windowContentIdGen = makeIdGenerator();
+        this.areaIdGen = makeIdGenerator();
+        this.areaContentIdGen = makeIdGenerator();
       } else {
         // no need to reattach at first render... optimization
         this.$nextTick(() => this.reattachTeleports());
@@ -113,7 +113,7 @@ export default {
       const layout = this.$refs.layout.getLayout();
       return layout.type === "container"
         ? this.reverseparseContainer(layout)
-        : reverseParseWindow(layout);
+        : reverseParseArea(layout);
     },
     reverseparseContainer(container) {
       return {
@@ -122,27 +122,27 @@ export default {
         children: container.children.map(child =>
           child.type === "container"
             ? this.reverseparseContainer(child)
-            : this.reverseParseWindow(child)
+            : this.reverseParseArea(child)
         )
       };
     },
-    reverseParseWindow(win) {
-      const windowContent = this.windowsContent[win.id];
+    reverseParseArea(area) {
+      const areaContent = this.areasContent[area.id];
       const componentIndex = this.availableComponents.indexOf(
-        windowContent.component
+        areaContent.component
       );
-      const windowObject = {
+      const areaObject = {
         componentIndex: componentIndex === -1 ? null : componentIndex,
-        ...(windowContent.cfg && { cfg: windowContent.cfg }), // will not add the property if undefined
-        ...(windowContent.name && { name: windowContent.name }) // will not add the property if undefined
+        ...(areaContent.cfg && { cfg: areaContent.cfg }), // will not add the property if undefined
+        ...(areaContent.name && { name: areaContent.name }) // will not add the property if undefined
       };
-      return windowObject;
+      return areaObject;
     },
-    getWindows() {
-      return this.$refs.layout.getWindowInstances();
+    getAreas() {
+      return this.$refs.layout.getAreaInstances();
     },
-    getWindow(id) {
-      return this.getWindows().find(win => win.id === id);
+    getArea(id) {
+      return this.getAreas().find(area => area.id === id);
     },
     onLayoutUpdated() {
       this.reattachTeleports();
@@ -150,40 +150,40 @@ export default {
     reattachTeleports() {
       this.$refs.teleports.forEach(teleport => teleport.attach());
     },
-    deleteWindow(windowId) {
-      this.$refs.layout.deleteWindow(windowId);
-      this.windowsContent.splice(windowId, 1, undefined);
+    deleteArea(areaId) {
+      this.$refs.layout.deleteArea(areaId);
+      this.areasContent.splice(areaId, 1, undefined);
     },
-    splitWindow(windowId, way, percentage, insertNewAfter) {
-      const newWindowId = this.$refs.layout.splitWindow(
-        windowId,
+    splitArea(areaId, way, percentage, insertNewAfter) {
+      const newAreaId = this.$refs.layout.splitArea(
+        areaId,
         way,
         percentage,
         insertNewAfter
       );
-      this.windowsContent[newWindowId] = {
-        id: this.windowContentIdGen(),
+      this.areasContent[newAreaId] = {
+        id: this.areaContentIdGen(),
         component: this.emptyComponent
       };
 
       this.$nextTick(() => {
-        this.windowsContent = Array.from(this.windowsContent);
+        this.areasContent = Array.from(this.areasContent);
       });
     },
     updateContainerRatio(containerId, newRatios) {
       this.$refs.layout.updateContainerRatio(containerId, newRatios);
     },
-    swapWindows(windowId1, windowId2) {
-      const window1content = this.windowsContent[windowId1];
-      const window2content = this.windowsContent[windowId2];
+    swapAreas(areaId1, areaId2) {
+      const area1content = this.areasContent[areaId1];
+      const area2content = this.areasContent[areaId2];
 
-      this.windowsContent.splice(windowId2, 1, window1content);
-      this.windowsContent.splice(windowId1, 1, window2content);
+      this.areasContent.splice(areaId2, 1, area1content);
+      this.areasContent.splice(areaId1, 1, area2content);
 
       this.$nextTick(() => this.reattachTeleports());
     },
     parseCfg(cfg) {
-      this.windowIdPrefix = this.cfg.windowIdPrefix || "window-";
+      this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
         render: h => h("div", ["empty component"])
       };
@@ -193,27 +193,30 @@ export default {
     parseLayout(layout) {
       return layout.children
         ? this.parseContainer(layout)
-        : this.parseWindow(layout);
+        : this.parseArea(layout);
     },
-    parseWindow(win) {
-      if (!this.availableComponents[win.componentIndex]) {
-        throw `The component with index "${win.componentIndex}" does not exist. "componentIndex" in cfg.layout must be a valid index in the cfg.components array.`
+    parseArea(area) {
+      if (
+        area.componentIndex !== null &&
+        !this.availableComponents[area.componentIndex]
+      ) {
+        throw `The component with index "${area.componentIndex}" does not exist. "componentIndex" in cfg.layout must be a valid index in the cfg.components array or null for empty component.`;
       }
-      const windowObject = {
-        type: "window",
-        id: this.windowIdGen()
+      const areaObject = {
+        type: "area",
+        id: this.areaIdGen()
       };
       const contentObject = {
-        name: win.name,
+        name: area.name,
         component:
-          win.componentIndex !== null
-            ? this.availableComponents[win.componentIndex]
+          area.componentIndex !== null
+            ? this.availableComponents[area.componentIndex]
             : this.emptyComponent,
-        cfg: win.cfg,
-        id: this.windowContentIdGen()
+        cfg: area.cfg,
+        id: this.areaContentIdGen()
       };
-      this.windowsContent[windowObject.id] = contentObject;
-      return windowObject;
+      this.areasContent[areaObject.id] = contentObject;
+      return areaObject;
     },
     parseContainer(container) {
       if (container.ratios) {
@@ -234,43 +237,43 @@ export default {
           if (child.children) {
             return this.parseContainer(child);
           } else {
-            return this.parseWindow(child);
+            return this.parseArea(child);
           }
         })
       };
     },
     getComponentByName(name) {
-      return this.windowsContent
+      return this.areasContent
         .filter(Boolean)
-        .filter(windowContent => windowContent.name)
-        .find(windowContent => windowContent.name === name);
+        .filter(areaContent => areaContent.name)
+        .find(areaContent => areaContent.name === name);
     },
-    getDOMWindowId(id) {
-      return `${this.windowIdPrefix}${id}`;
+    getDOMAreaId(id) {
+      return `${this.areaIdPrefix}${id}`;
     },
     getTeleports(h) {
       return h(
         "div",
         { style: "display:none;" },
-        this.windowsContent
-          .map((windowContent, windowId) =>
-            windowContent
+        this.areasContent
+          .map((areaContent, areaId) =>
+            areaContent
               ? h(
                   Teleport,
                   {
                     props: {
-                      targetId: windowId
+                      targetId: areaId
                     },
                     on: {
                       mounted({ childInstance }) {
-                        windowContent.instance = childInstance; // TODO is it really usefull here ???
+                        areaContent.instance = childInstance; // TODO is it really usefull here ???
                       }
                     },
                     ref: "teleports",
                     refInFor: true,
-                    key: `teleportWindow${windowContent.id}` // needed to do not rerender components
+                    key: `teleportArea${areaContent.id}` // needed to do not rerender components
                   },
-                  [h(windowContent.component, { ...windowContent.cfg })]
+                  [h(areaContent.component, { ...areaContent.cfg })]
                 )
               : null
           )
@@ -282,7 +285,7 @@ export default {
     return h(
       "div",
       {
-        class: "window-manager",
+        class: "area-manager",
         on: {
           mousemove: e => this.onMouseMove(e)
         }
@@ -322,7 +325,7 @@ function makeIdGenerator() {
 </script>
 
 <style scoped>
-.window-manager {
+.area-manager {
   background-color: darkslategrey;
   height: 100%;
   width: 100%;

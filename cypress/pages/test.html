@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Window manager</title>
+  <title>Areas</title>
   <style>
     * {
       margin: 0px;
@@ -17,12 +17,12 @@
   <div id="app"></div>
   <script type="module">
     import Vue from '../../node_modules/vue/dist/vue.esm.browser.js';
-    import WindowManager from "../../dist/windowmanager.esm.js";
+    import Areas from "../../dist/areas.esm.js";
 
     window.mountApp = ({ cfg, width = 800, height = 500 }) =>
       new Vue({
         render(h) {
-          return h("div", { style: `width: ${width}px; height: ${height}px;`, domProps: { id: "app" } }, [h(WindowManager,
+          return h("div", { style: `width: ${width}px; height: ${height}px;`, domProps: { id: "app" } }, [h(Areas,
             {
               ref: "areas",
               props: {

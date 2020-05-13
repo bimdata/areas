@@ -1,21 +1,21 @@
 <script>
 export default {
-  name: "window-container",
+  name: "container",
   render(h) {
-    const windows = this.windows;
-    if (!windows || windows.length < 2) {
-      throw "Window container can only work with at least 2 windows.";
+    const areas = this.areas;
+    if (!areas || areas.length < 2) {
+      throw "Container can only work with at least 2 areas.";
     }
 
     return h(
       "div",
-      { class: "window-container", style: { flexDirection: this.direction } },
-      windows
-        .map((win, i) => {
-          win.data.style = this.windowsWidth[i]; // TODO seems to be a hack...
-          return i !== windows.length - 1
+      { class: "container", style: { flexDirection: this.direction } },
+      areas
+        .map((area, i) => {
+          area.data.style = this.areasWidth[i]; // TODO seems to be a hack...
+          return i !== areas.length - 1
             ? [
-                Object.assign({}, win), // Need to recreate object to tell vue to rerender
+                Object.assign({}, area), // Need to recreate object to tell vue to rerender
                 h("div", {
                   attrs: {
                     "data-test": "separator"
@@ -31,7 +31,7 @@ export default {
                   on: { mousedown: e => this.onSeparatorMouseDown(i, e) }
                 })
               ]
-            : Object.assign({}, win); // Need to recreate object to tell vue to rerender
+            : Object.assign({}, area); // Need to recreate object to tell vue to rerender
         })
         .flat()
     );
@@ -41,13 +41,13 @@ export default {
       activeSeparatorIndex: null
     };
   },
-  inject: ["windowManager"],
+  inject: { "_areas": "areas" },
   props: {
     id: {
       type: Number,
       require: true
     },
-    windowsRatio: {
+    areasRatio: {
       type: Array,
       required: true
     },
@@ -57,7 +57,7 @@ export default {
       validator(direction) {
         if (!["row", "column"].includes(direction)) {
           console.error(
-            `Window container direction property can only be "row" or "column", received : "${direction}"`
+            `Container direction property can only be "row" or "column", received : "${direction}"`
           );
           return false;
         } else {
@@ -75,17 +75,17 @@ export default {
     }
   },
   computed: {
-    windowsWidth() {
-      return this.windowsRatio.map(
+    areasWidth() {
+      return this.areasRatio.map(
         ratio =>
           `${
             this.direction === "row" ? "width" : "height"
-          }: max(0px, calc(${ratio}% - ${((this.windows.length - 1) *
+          }: max(0px, calc(${ratio}% - ${((this.areas.length - 1) *
             this.separatorThickness) /
-            this.windows.length}px))`
+            this.areas.length}px))`
       );
     },
-    windows() {
+    areas() {
       return this.$slots.default;
     }
   },
@@ -115,29 +115,29 @@ export default {
         100
       );
 
-      const sumPreWindowsRatio =
+      const sumPreAreasRatio =
         this.activeSeparatorIndex === 0
           ? 0
-          : this.windowsRatio.slice(0, this.activeSeparatorIndex).reduce(sum);
-      const sumPostWindowsRatio =
-        this.activeSeparatorIndex === this.windows.length - 2
+          : this.areasRatio.slice(0, this.activeSeparatorIndex).reduce(sum);
+      const sumPostAreasRatio =
+        this.activeSeparatorIndex === this.areas.length - 2
           ? 0
-          : this.windowsRatio.slice(this.activeSeparatorIndex + 2).reduce(sum);
+          : this.areasRatio.slice(this.activeSeparatorIndex + 2).reduce(sum);
 
-      const newRatios = Array.from(this.windowsRatio);
-      // set the ratio of the window at the left of the separator
+      const newRatios = Array.from(this.areasRatio);
+      // set the ratio of the area at the left of the separator
       newRatios[this.activeSeparatorIndex] = clamp(
-        containerRatio - sumPreWindowsRatio,
+        containerRatio - sumPreAreasRatio,
         this.minRatio,
-        100 - (sumPreWindowsRatio + sumPostWindowsRatio + this.minRatio)
+        100 - (sumPreAreasRatio + sumPostAreasRatio + this.minRatio)
       );
-      // // set the ratio of the window at the right of the separator
+      // // set the ratio of the area at the right of the separator
       newRatios[this.activeSeparatorIndex + 1] =
         100 -
         newRatios[this.activeSeparatorIndex] -
-        (sumPreWindowsRatio + sumPostWindowsRatio);
+        (sumPreAreasRatio + sumPostAreasRatio);
 
-      this.windowManager.updateContainerRatio(this.id, newRatios);
+      this._areas.updateContainerRatio(this.id, newRatios);
     },
     stopDrag(e) {
       this.activeSeparatorIndex = null;
@@ -157,7 +157,7 @@ function sum(a, b) {
 </script>
 
 <style scoped>
-.window-container {
+.container {
   display: flex;
   width: 100%;
   height: 100%;

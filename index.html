@@ -4,21 +4,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Window manager</title>
+  <title>Areas</title>
 </head>
 
 <body>
   <div id="app"></div>
   <script type="module">
-    import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.esm.browser.js';
-    import WindowManager from "./dist/windowmanager.esm.js";
+    import Vue from '../../node_modules/vue/dist/vue.esm.browser.js';
+    import Areas from "./dist/areas.esm.js";
 
     const vm = new Vue({
       render: function (h) {
         return h("div", { style: "width: 80%; margin: auto; height: 600px;" }, [
-          h(WindowManager,
+          h(Areas,
             {
-              ref: "windowmanager",
+              ref: "areas",
               props: {
                 cfg: {
                   components: [
@@ -72,7 +72,7 @@
           )])
       },
     }).$mount('#app');
-    vm.$refs.windowmanager.getComponentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
+    vm.$refs.areas.getComponentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
   </script>
 </body>
 

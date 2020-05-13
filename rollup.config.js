@@ -8,11 +8,13 @@ console.log(`ROLLUP -- Building for ${isProduction ? "PRODUCTION" : "DEVELOPMENT
 export default {
   input: "src/main.js",
   output: [{
-    name: "windowmanager",
-    file: "dist/windowmanager.js",
+    sourcemap: !isProduction,
+    name: "areas",
+    file: "dist/areas.js",
     format: "umd"
   }, {
-    file: "dist/windowmanager.esm.js",
+    sourcemap: !isProduction,
+    file: "dist/areas.esm.js",
     format: "es"
   }],
   plugins: [

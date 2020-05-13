@@ -1,16 +1,16 @@
 <template>
   <div
-    class="window"
+    class="area"
     data-test="area"
     :class="{
-      'window-active': isWindowActive,
-      'window-active-vertical-splitting': windowManager.splitMode === 'vertical',
-      'window-active-horizontal-splitting': windowManager.splitMode === 'horizontal',
-      'window-active-grab': windowManager.dragAndDropMode && !dragging,
-      'window-active-grabbing': dragging,
+      'area-active': isAreaActive,
+      'area-active-vertical-splitting': areas.splitMode === 'vertical',
+      'area-active-horizontal-splitting': areas.splitMode === 'horizontal',
+      'area-active-grab': areas.dragAndDropMode && !dragging,
+      'area-active-grabbing': dragging,
       }"
     @click.right="onRighClick"
-    @click="onWindowClick"
+    @click="onAreaClick"
     :draggable="draggable"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -22,27 +22,27 @@
     @mousemove="onMouseMove"
   >
     <!-- TODO the next two elements should be merged as one -->
-    <div class="window-overlay" v-if="isOverlayDisplayed"></div>
-    <div class="window-overlay-dragover" v-if="dragover && !dragging">
+    <div class="area-overlay" v-if="isOverlayDisplayed"></div>
+    <div class="area-overlay-dragover" v-if="dragover && !dragging">
       <div class="dash-area"></div>
     </div>
     <div
-      class="window-vertical-split"
+      class="area-vertical-split"
       :style="{left: `${verticalSplitLeft}%`}"
       v-if="verticalSplitDisplayed"
     ></div>
     <div
-      class="window-horizontal-split"
+      class="area-horizontal-split"
       :style="{top: `${horizontalSplitTop}%`}"
       v-if="horizontalSplitDisplayed"
     ></div>
-    <div class="window-content" :id="windowManager.getDOMWindowId(id)"></div>
+    <div class="area-content" :id="areas.getDOMAreaId(id)"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "window",
+  name: "areacomponent", // cannot use area because it is a reserved HTML keyword
   data() {
     return {
       dragover: false,
@@ -55,45 +55,45 @@ export default {
     id: { type: Number, require: true },
     draggable: { type: Boolean, default: true }
   },
-  inject: ["windowManager"],
+  inject: ["areas"],
   created() {
     this.$emit("created", this);
   },
   computed: {
-    isWindowActive() {
-      return this.id === this.windowManager.activeWindowId;
+    isAreaActive() {
+      return this.id === this.areas.activeAreaId;
     },
     isOverlayDisplayed() {
       return (
-        !this.isWindowActive &&
-        (this.windowManager.splitMode || this.windowManager.dragAndDropMode)
+        !this.isAreaActive &&
+        (this.areas.splitMode || this.areas.dragAndDropMode)
       );
     },
     verticalSplitDisplayed() {
       return (
-        this.isWindowActive &&
+        this.isAreaActive &&
         this.isVerticalSplitMode &&
         this.verticalSplitLeft !== null
       );
     },
     horizontalSplitDisplayed() {
       return (
-        this.isWindowActive &&
+        this.isAreaActive &&
         this.isHorizontalSplitMode &&
         this.horizontalSplitTop !== null
       );
     },
     isVerticalSplitMode() {
-      return this.windowManager.splitMode === "vertical";
+      return this.areas.splitMode === "vertical";
     },
     isHorizontalSplitMode() {
-      return this.windowManager.splitMode === "horizontal";
+      return this.areas.splitMode === "horizontal";
     }
   },
   methods: {
     onDragStart(dragEvent) {
       this.dragging = true;
-      dragEvent.dataTransfer.setData("windowmanager-windowid", String(this.id));
+      dragEvent.dataTransfer.setData("areas-areaid", String(this.id));
       dragEvent.dataTransfer.effectAllowed = "move";
     },
     onDragEnd() {
@@ -101,19 +101,19 @@ export default {
     },
     onDrop(dragEvent) {
       this.dragover = false;
-      const windowId = parseInt(
-        dragEvent.dataTransfer.getData("windowmanager-windowid"),
+      const areaId = parseInt(
+        dragEvent.dataTransfer.getData("areas-areaid"),
         10
       );
-      this.windowManager.swapWindows(windowId, this.id);
+      this.areas.swapAreas(areaId, this.id);
     },
     onDragEnter(dragEvent) {
-      if (dragEvent.dataTransfer.types.includes("windowmanager-windowid")) {
+      if (dragEvent.dataTransfer.types.includes("areas-areaid")) {
         this.dragover = true;
       }
     },
     onDragOver(dragEvent) {
-      if (dragEvent.dataTransfer.types.includes("windowmanager-windowid")) {
+      if (dragEvent.dataTransfer.types.includes("areas-areaid")) {
         dragEvent.preventDefault();
         dragEvent.dataTransfer.dropEffect = "move";
       }
@@ -121,24 +121,20 @@ export default {
     onDragLeave(e) {
       this.dragover = false;
     },
-    onWindowClick(e) {
+    onAreaClick(e) {
       const {
         horizontalPercentage,
         verticalPercentage
       } = this.getLocalMouseCoordinates(e);
       if (e.altKey) {
-        this.windowManager.splitWindow(this.id, "vertical", verticalPercentage);
+        this.areas.splitArea(this.id, "vertical", verticalPercentage);
       } else if (e.shiftKey) {
-        this.windowManager.splitWindow(
-          this.id,
-          "horizontal",
-          horizontalPercentage
-        );
+        this.areas.splitArea(this.id, "horizontal", horizontalPercentage);
       }
     },
     onRighClick(e) {
       e.preventDefault();
-      this.windowManager.deleteWindow(this.id, e);
+      this.areas.deleteArea(this.id, e);
     },
     onMouseMove(e) {
       const {
@@ -165,8 +161,8 @@ export default {
       };
     },
     onMouseEnter() {
-      if (!this.isWindowActive) {
-        this.windowManager.setActiveWindowId(this.id);
+      if (!this.isAreaActive) {
+        this.areas.setActiveAreaId(this.id);
       }
     }
   }
@@ -174,29 +170,29 @@ export default {
 </script>
 
 <style scoped>
-.window {
+.area {
   background-color: cornsilk;
   box-sizing: border-box;
   position: relative;
   width: 100%;
   height: 100%;
 }
-.window-active {
+.area-active {
   box-shadow: inset 0 0 5px grey;
 }
-.window-overlay {
+.area-overlay {
   position: absolute;
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.199);
 }
-.window-overlay {
+.area-overlay {
   position: absolute;
   width: 100%;
   height: 100%;
   background-color: rgba(128, 128, 128, 0.199);
 }
-.window-overlay-dragover {
+.area-overlay-dragover {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -209,7 +205,7 @@ export default {
   box-sizing: border-box;
   border: dashed 5px grey;
 }
-.window-vertical-split {
+.area-vertical-split {
   pointer-events: none;
   position: absolute;
   margin-left: -1px;
@@ -217,7 +213,7 @@ export default {
   height: 100%;
   background-color: red;
 }
-.window-horizontal-split {
+.area-horizontal-split {
   pointer-events: none;
   position: absolute;
   margin-top: -1px;
@@ -225,19 +221,19 @@ export default {
   height: 3px;
   background-color: red;
 }
-.window-active-vertical-splitting {
+.area-active-vertical-splitting {
   cursor: col-resize;
 }
-.window-active-horizontal-splitting {
+.area-active-horizontal-splitting {
   cursor: row-resize;
 }
-.window-active-grab {
+.area-active-grab {
   cursor: grab;
 }
-.window-active-grabbing {
+.area-active-grabbing {
   cursor: grabbing;
 }
-.window-content {
+.area-content {
   overflow: scroll;
   width: 100%;
   height: 100%;

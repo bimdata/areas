@@ -1,9 +1,9 @@
-import Window from "./Window.vue";
-import WindowContainer from "./WindowContainer.vue";
+import Area from "./Area.vue";
+import Container from "./Container.vue";
 
 export default layout => ({
   name: "Layout",
-  inject: ["windowManager"],
+  inject: ["areas"],
   data() {
     return {
       layout
@@ -13,8 +13,8 @@ export default layout => ({
     containers() {
       return getNestedContainers(this.layout);
     },
-    windows() {
-      return getNestedWindows(this.layout);
+    areas() {
+      return getNestedAreas(this.layout);
     }
   },
   updated() {
@@ -36,25 +36,25 @@ export default layout => ({
       }
       return ancestors;
     },
-    getNextWindowId() {
-      return this.windowManager.getNextWindowId();
+    getNextAreaId() {
+      return this.areas.getNextAreaId();
     },
     getNextContainerId() {
-      return this.windowManager.getNextContainerId();
+      return this.areas.getNextContainerId();
     },
     getNextContainerKey() {
-      return this.windowManager.getNextContainerId();
+      return this.areas.getNextContainerId();
     },
-    getWindowContainer(winId) {
+    getAreaContainer(areaId) {
       return this.containers.find(container =>
-        container.children.filter(child => child.type === "window").map(win => win.id).includes(winId)
+        container.children.filter(child => child.type === "area").map(area => area.id).includes(areaId)
       );
     },
-    getWindow(id) {
-      return this.windows.find(win => win.id === id);
+    getArea(id) {
+      return this.areas.find(area => area.id === id);
     },
-    getWindowInstances() {
-      return this.$refs.windows;
+    getAreaInstances() {
+      return this.$refs.areas;
     },
     getContainer(id) {
       return this.containers.find(container => container.id === id);
@@ -70,22 +70,22 @@ export default layout => ({
       const container = this.getContainer(containerId);
       container.ratios.splice(0, ratios.length, ...ratios);
     },
-    splitWindow(windowId, way, percentage, insertNewAfter = true) {
+    splitArea(areaId, way, percentage, insertNewAfter = true) {
       if (!["vertical", "horizontal"].includes(way)) {
-        throw `Cannot split window. Bad way. Only accept "vertical" or "horizontal", get "${way}".`;
+        throw `Cannot split area. Bad way. Only accept "vertical" or "horizontal", get "${way}".`;
       }
       const firstRatio = percentage
       const secondRatio = 100 - firstRatio;
       const direction = way === "vertical" ? "row" : "column";
-      const container = this.getWindowContainer(windowId);
-      const newWindowId = this.getNextWindowId();
-      const newWindowObject = {
-        id: newWindowId,
-        type: "window"
+      const container = this.getAreaContainer(areaId);
+      const newAreaId = this.getNextAreaId();
+      const newAreaObject = {
+        id: newAreaId,
+        type: "area"
       };
       if (!container) {
-        // window is root
-        const children = insertNewAfter ? [this.layout, newWindowObject] : [newWindowObject, this.layout];
+        // area is root
+        const children = insertNewAfter ? [this.layout, newAreaObject] : [newAreaObject, this.layout];
         this.layout = {
           type: "container",
           id: this.getNextContainerId(),
@@ -95,23 +95,23 @@ export default layout => ({
           children
         };
       } else {
-        // window is in container
-        const containerWindowObject = container.children.filter(child => child.type === "window").find(
-          win => win.id === windowId
+        // area is in container
+        const containerAreaObject = container.children.filter(child => child.type === "area").find(
+          area => area.id === areaId
         );
-        const windowIndex = container.children.indexOf(containerWindowObject);
-        const windowRatio = container.ratios[windowIndex];
-        const newFirstRatio = firstRatio / 100 * windowRatio;
-        const newSecondRatio = windowRatio - newFirstRatio;
+        const areaIndex = container.children.indexOf(containerAreaObject);
+        const areaRatio = container.ratios[areaIndex];
+        const newFirstRatio = firstRatio / 100 * areaRatio;
+        const newSecondRatio = areaRatio - newFirstRatio;
         if (container.direction === direction) {
           container.children.splice(
-            windowIndex + (insertNewAfter ? 1 : 0),
+            areaIndex + (insertNewAfter ? 1 : 0),
             0,
-            newWindowObject
+            newAreaObject
           );
-          container.ratios.splice(windowIndex, 1, newFirstRatio, newSecondRatio);
+          container.ratios.splice(areaIndex, 1, newFirstRatio, newSecondRatio);
         } else {
-          const children = insertNewAfter ? [containerWindowObject, newWindowObject] : [newWindowObject, containerWindowObject];
+          const children = insertNewAfter ? [containerAreaObject, newAreaObject] : [newAreaObject, containerAreaObject];
           const newContainer = {
             type: "container",
             id: this.getNextContainerId(),
@@ -120,78 +120,79 @@ export default layout => ({
             ratios: [firstRatio, secondRatio],
             children
           };
-          container.children.splice(windowIndex, 1, newContainer);
+          container.children.splice(areaIndex, 1, newContainer);
         }
         this.updateContainerTreeKeys(container);
       }
-      return newWindowId;
+      return newAreaId;
     },
-    mergeRatios(container, windowIndex) {
-      if (windowIndex === 0) {
+    mergeRatios(container, areaIndex) {
+      if (areaIndex === 0) {
         const firstRatio = container.ratios.shift();
         const secondRatio = container.ratios.shift();
         container.ratios.unshift(firstRatio + secondRatio);
-        const deletedWindow = container.children.shift();
+        const deletedArea = container.children.shift();
         this.updateContainerTreeKeys(container, false);
-        return deletedWindow;
+        return deletedArea;
       } else {
-        const windowToDeleteRatio = container.ratios[windowIndex];
-        const previousWindowRatio = container.ratios[windowIndex - 1];
+        const areaToDeleteRatio = container.ratios[areaIndex];
+        const previousAreaRatio = container.ratios[areaIndex - 1];
 
-        const deletedWindows = container.ratios.splice(
-          windowIndex - 1,
+        const deletedAreas = container.ratios.splice(
+          areaIndex - 1,
           2,
-          windowToDeleteRatio + previousWindowRatio
+          areaToDeleteRatio + previousAreaRatio
         );
 
-        container.children.splice(windowIndex, 1);
-        return deletedWindows[0];
+        container.children.splice(areaIndex, 1);
+        return deletedAreas[0];
       }
     },
-    makeWindow(h, win) {
+    makeArea(h, area) {
       return h(
-        Window, { props: { id: win.id }, ref: "windows", refInFor: true }
+        Area, { props: { id: area.id }, ref: "areas", refInFor: true }
       );
     },
-    makeWindowContainer(h, container) {
+    makeContainer(h, container) {
       const { children, direction = "row", id, key } = container;
       return h(
-        WindowContainer,
-        { props: { direction, windowsRatio: container.ratios, id }, key: `windowContainer${key}` },
+        Container,
+        { props: { direction, areasRatio: container.ratios, id }, key: `areaContainer${key}` },
         children.map(child => {
           if (child.type === "container") {
-            return this.makeWindowContainer(h, child);
+            return this.makeContainer(h, child);
           } else {
-            return this.makeWindow(h, child);
+            return this.makeArea(h, child);
           }
         })
       );
     },
-    deleteContainer(container, windowIndex) {
+    deleteContainer(container, areaIndex) {
       const parentContainer = this.getContainerParent(container);
-      container.children.splice(windowIndex, 1);
-      const remainingWindow = container.children.pop();
+      container.children.splice(areaIndex, 1);
+      const remainingArea = container.children.pop();
       if (parentContainer) {
         const containerIndex = parentContainer.children.findIndex(
           child => child.type === "container" && child.id === container.id
         );
-        parentContainer.children.splice(containerIndex, 1, remainingWindow);
+        parentContainer.children.splice(containerIndex, 1, remainingArea);
       } else {
-        this.layout = remainingWindow;
+        this.layout = remainingArea;
       }
     },
-    deleteWindow(windowId) {
-      const container = this.getWindowContainer(windowId);
-      if (!container)
-        throw `Cannont delete window with id "${windowId}" because this is the root window.`;
-      const windowObject = container.children.filter(child => child.type === "window").find(win => win.id === windowId);
-      const windowIndex = container.children.indexOf(windowObject);
+    deleteArea(areaId) {
+      const container = this.getAreaContainer(areaId);
+      if (!container) {
+        throw `Cannot delete area with id "${areaId}" because this is the root area.`;
+      }
+      const areaObject = container.children.filter(child => child.type === "area").find(area => area.id === areaId);
+      const areaIndex = container.children.indexOf(areaObject);
       if (container.children.length > 2) {
-        this.mergeRatios(container, windowIndex);
+        this.mergeRatios(container, areaIndex);
         this.updateContainerTreeKeys(container, false);
       } else {
         const parentContainer = this.getContainerParent(container);
-        this.deleteContainer(container, windowIndex);
+        this.deleteContainer(container, areaIndex);
         if (parentContainer) {
           this.updateContainerTreeKeys(parentContainer, false);
         }
@@ -200,26 +201,26 @@ export default layout => ({
   },
   render(h) {
     return this.layout.type === "container"
-      ? this.makeWindowContainer(h, this.layout)
-      : this.makeWindow(h, this.layout);
+      ? this.makeContainer(h, this.layout)
+      : this.makeArea(h, this.layout);
   }
 });
 
-const getWindows = container => container.children.filter(child => child.type === "window");
+const getAreas = container => container.children.filter(child => child.type === "area");
 const getContainers = container => container.children.filter(child => child.type === "container");
 
-const getNestedWindows = container =>
+const getNestedAreas = container =>
   container.type === "container"
     ? [
-      ...getWindows(container),
+      ...getAreas(container),
       ...getContainers(container)
-        .map(getNestedWindows)
+        .map(getNestedAreas)
         .flat()
     ]
     : [container];
 
 const getNestedContainers = container => {
-  if (container.type === "window") {
+  if (container.type === "area") {
     return [];
   }
   const childContainers = getContainers(container);

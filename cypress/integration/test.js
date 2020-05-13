@@ -1,6 +1,6 @@
 const AREA_SELECTOR = "[data-test=area]";
 const SEPARATOR_SELECTOR = "[data-test=separator]";
-const ID_PREFIX = "window-";
+const ID_PREFIX = "area-";
 const WIDTH = 800;
 const HEIGHT = 600;
 // TODO MARGIN_OF_ERROR may be reduced after taking into accound separator thickness
@@ -34,14 +34,14 @@ describe('Simple area', () => {
     })
   });
 
-  it('Should throw an error if trying to delete the root window', () => {
+  it('Should throw an error if trying to delete the root area', () => {
     cy.get("@areas").then(areas => {
-      cy.spy(areas, "deleteWindow");
+      cy.spy(areas, "deleteArea");
       try {
-        areas.deleteWindow(1);
+        areas.deleteArea(1);
       } catch {
       } finally {
-        expect(areas.deleteWindow).to.have.throw();
+        expect(areas.deleteArea).to.have.throw();
       }
     });
   })
@@ -281,7 +281,7 @@ describe('Three areas in the same direction (vertical)', () => {
     cy.get(AREA_SELECTOR).contains("Ouille !");
     cy.get(AREA_SELECTOR).contains("Ola !");
 
-    cy.get("@areas").invoke("deleteWindow", 2);
+    cy.get("@areas").invoke("deleteArea", 2);
 
     cy.get(AREA_SELECTOR).contains("Hey !");
     cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
@@ -300,7 +300,7 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
 
-    cy.get("@areas").invoke("deleteWindow", 1);
+    cy.get("@areas").invoke("deleteArea", 1);
 
     cy.get(AREA_SELECTOR).contains("Hey !").should("not.exist");
     cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
@@ -426,7 +426,7 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get(AREA_SELECTOR).contains("Ola !");
     cy.get(AREA_SELECTOR).contains("Hey !");
 
-    cy.get("@areas").invoke("deleteWindow", 3);
+    cy.get("@areas").invoke("deleteArea", 3);
 
     cy.get(AREA_SELECTOR).contains("Ouille !");
     cy.get(AREA_SELECTOR).contains("Ola !");
@@ -445,7 +445,7 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
 
-    cy.get("@areas").invoke("deleteWindow", 1);
+    cy.get("@areas").invoke("deleteArea", 1);
 
     cy.get(AREA_SELECTOR).contains("Ouille !").should('not.exist');
     cy.get(AREA_SELECTOR).contains("Ola !");
@@ -465,11 +465,11 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}2`).contains("Ola !");
     cy.get(`#${ID_PREFIX}3`).contains("Hey !");
-    cy.get("@areas").invoke("swapWindows", 1, 2);
+    cy.get("@areas").invoke("swapAreas", 1, 2);
     cy.get(`#${ID_PREFIX}1`).contains("Ola !");
     cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}3`).contains("Hey !");
-    cy.get("@areas").invoke("swapWindows", 1, 3);
+    cy.get("@areas").invoke("swapAreas", 1, 3);
     cy.get(`#${ID_PREFIX}1`).contains("Hey !");
     cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}3`).contains("Ola !");
@@ -484,7 +484,7 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       .trigger("mousemove", { clientX: WIDTH / 2 })
       .trigger('mouseup');
 
-    cy.get("@areas").invoke("deleteWindow", 3);
+    cy.get("@areas").invoke("deleteArea", 3);
 
     cy.get("@areas")
       .then(areas => cy.get("@savedLayout").then(savedLayout => areas.loadLayout(savedLayout)));
