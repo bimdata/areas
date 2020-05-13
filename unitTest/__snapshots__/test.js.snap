@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Areas Should allow user to get component by name and update props (this should be reactive) 1`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub text=\\"empty\\"></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
+exports[`Areas Should allow user to get component by name and update props (this should be reactive) 2`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub text=\\"text updated\\"></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
+exports[`Areas Should work with only one area 1`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub text=\\"no text provided\\"></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
+exports[`Areas Should work with three areas in a custom layout 1`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+    <anonymous-stub targetid=\\"2\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+    <anonymous-stub targetid=\\"3\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
+exports[`Areas Should work with two areas in the same direction (column) 1`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+    <anonymous-stub targetid=\\"2\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
+exports[`Areas Should work with two areas in the same direction (row) 1`] = `
+"<div class=\\"window-manager\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+    <anonymous-stub targetid=\\"2\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
