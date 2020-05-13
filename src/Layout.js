@@ -43,7 +43,7 @@ export default layout => ({
       return this.areas.getNextContainerId();
     },
     getNextContainerKey() {
-      return this.areas.getNextContainerId();
+      return this.areas.getNextContainerKey();
     },
     getAreaContainer(areaId) {
       return this.containers.find(container =>
