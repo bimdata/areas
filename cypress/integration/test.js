@@ -1,31 +1,33 @@
-const MAIN_CLASS = ".window-manager";
+const AREA_SELECTOR = "[data-test=area]";
+const SEPARATOR_SELECTOR = "[data-test=separator]";
 const ID_PREFIX = "window-";
 const WIDTH = 800;
 const HEIGHT = 600;
-const AREA_MAIN_CLASS = ".window";
 // TODO MARGIN_OF_ERROR may be reduced after taking into accound separator thickness
 const MARGIN_OF_ERROR = 3; // Because ratio are percentage computed to px... not perfect
 
-// TODO fix the way elements are getted... especially separators. Cypress API can be use probably better.
-// TODO fix naming : app instead of areas as alias after mounting the app
 // TODO somae feature like swap may also be tested with mouse event instead of direct API (with drag and drop mode set for example)
+
+function initTest(cy, cfg) {
+  cy.visit('test');
+  cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT }))
+    .then(app => app.$refs.areas).as("areas");
+}
 
 describe('Simple area', () => {
   beforeEach(() => {
-    cy.visit('test');
     const cfg = {
       components: [{ render(h) { return h("div", "Hey !") } }],
       layout: {
         componentIndex: 0
       }
     };
-    cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT })).as("areas");
-    cy.get(MAIN_CLASS).as("root");
+    initTest(cy, cfg);
   });
 
   it('Should render the simple area within all available space', () => {
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").find(`#${ID_PREFIX}1`).should(el => {
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
       expect(el[0].clientHeight).to.equal(HEIGHT);
@@ -34,12 +36,12 @@ describe('Simple area', () => {
 
   it('Should throw an error if trying to delete the root window', () => {
     cy.get("@areas").then(areas => {
-      cy.spy(areas.$refs.areas, "deleteWindow");
+      cy.spy(areas, "deleteWindow");
       try {
-        areas.$refs.areas.deleteWindow(1);
+        areas.deleteWindow(1);
       } catch {
       } finally {
-        expect(areas.$refs.areas.deleteWindow).to.have.throw();
+        expect(areas.deleteWindow).to.have.throw();
       }
     });
   })
@@ -47,7 +49,6 @@ describe('Simple area', () => {
 
 describe('Dual vertical areas', () => {
   beforeEach(() => {
-    cy.visit('test');
     const cfg = {
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -65,15 +66,14 @@ describe('Dual vertical areas', () => {
         ]
       }
     };
-    cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT })).as("areas");
-    cy.get(MAIN_CLASS).as("root");
+    initTest(cy, cfg);
   });
 
   it('Should render the two areas with the correct width and height', () => {
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -95,10 +95,12 @@ describe('Dual vertical areas', () => {
   });
 
   it('Should update areas width when dragging the separator horizontally', () => {
-    cy.get("@root").get(".window-container").children().not(AREA_MAIN_CLASS)
-      .first().trigger('mousedown', "center").trigger("mousemove", { clientX: WIDTH / 10 });
+    cy.get(SEPARATOR_SELECTOR)
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientX: WIDTH / 10 })
+      .trigger('mouseup');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -123,7 +125,6 @@ describe('Dual vertical areas', () => {
 
 describe('Dual horizontal areas', () => {
   beforeEach(() => {
-    cy.visit('test');
     const cfg = {
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -142,15 +143,14 @@ describe('Dual horizontal areas', () => {
         ]
       }
     };
-    cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT })).as("areas");
-    cy.get(MAIN_CLASS).as("root");
+    initTest(cy, cfg);
   });
 
   it('Should render the two areas with the correct width and height', () => {
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -172,10 +172,12 @@ describe('Dual horizontal areas', () => {
   });
 
   it('Should update areas height when dragging the separator vertically', () => {
-    cy.get("@root").get(".window-container").children().not(AREA_MAIN_CLASS)
-      .first().trigger('mousedown', "center").trigger("mousemove", { clientY: HEIGHT / 2 }).trigger('mouseup');
+    cy.get(SEPARATOR_SELECTOR)
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientY: HEIGHT / 2 })
+      .trigger('mouseup');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -200,7 +202,6 @@ describe('Dual horizontal areas', () => {
 
 describe('Three areas in the same direction (vertical)', () => {
   beforeEach(() => {
-    cy.visit('test');
     const cfg = {
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -223,16 +224,15 @@ describe('Three areas in the same direction (vertical)', () => {
         ]
       }
     };
-    cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT })).as("areas");
-    cy.get(MAIN_CLASS).as("root");
+    initTest(cy, cfg);
   });
 
   it('Should render the three areas with the correct width and height', () => {
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ouille !");
-    cy.get("@root").contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -260,10 +260,13 @@ describe('Three areas in the same direction (vertical)', () => {
   });
 
   it('Should only update ratios of related areas when moving a separator', () => {
-    cy.get("@root").get(".window-container").children().not(AREA_MAIN_CLASS)
-      .first().trigger('mousedown', "center").trigger("mousemove", { clientX: WIDTH / 2 }).trigger('mouseup');
+    cy.get(SEPARATOR_SELECTOR)
+      .first()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientX: WIDTH / 2 })
+      .trigger('mouseup');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -291,10 +294,12 @@ describe('Three areas in the same direction (vertical)', () => {
   });
 
   it('Should not move separator away from another separator', () => {
-    cy.get("@root").get(".window-container").children().not(AREA_MAIN_CLASS)
-      .first().trigger('mousedown', "center").trigger("mousemove", { clientX: WIDTH }).trigger('mouseup');
+    cy.get(SEPARATOR_SELECTOR).first()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientX: WIDTH })
+      .trigger('mouseup');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -323,16 +328,17 @@ describe('Three areas in the same direction (vertical)', () => {
 
   it("Should fill the space and display the correct areas when deleting area", () => {
 
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ouille !");
-    cy.get("@root").contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
 
-    cy.get("@areas").then(areas => areas.$refs.areas.deleteWindow(2));
+    cy.get("@areas").invoke("deleteWindow", 2);
 
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ola !");
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -351,10 +357,13 @@ describe('Three areas in the same direction (vertical)', () => {
       );
     });
 
-    cy.get("@areas").then(areas => areas.$refs.areas.deleteWindow(1));
-    cy.get("@root").contains("Ola !");
+    cy.get("@areas").invoke("deleteWindow", 1);
 
-    cy.get("@root").get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).contains("Hey !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(1);
       const [area2] = els;
 
@@ -367,7 +376,6 @@ describe('Three areas in the same direction (vertical)', () => {
 
 describe('Three areas in a custom layout (a big left, two at the right, little at the top, big at the bottom)', () => {
   beforeEach(() => {
-    cy.visit('test');
     const cfg = {
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -396,16 +404,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
         ]
       }
     };
-    cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT })).as("areas");
-    cy.get(MAIN_CLASS).as("root");
+    initTest(cy, cfg);
   });
 
   it('Should render the three areas with the correct width and height', () => {
-    cy.get("@root").contains("Hey !");
-    cy.get("@root").contains("Ouille !");
-    cy.get("@root").contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -440,10 +447,12 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   });
 
   it('Should only update ratios of related areas when moving a separator', () => {
-    cy.get("@root").get(".window-container").children().not(AREA_MAIN_CLASS)
-      .first().trigger('mousedown', "center").trigger("mousemove", { clientX: WIDTH / 2 }).trigger('mouseup');
+    cy.get(SEPARATOR_SELECTOR).first()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientX: WIDTH / 2 })
+      .trigger('mouseup');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -476,10 +485,11 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       );
     });
 
-    cy.get("@root").get(".window-container").children().get(".window-container").children().not(AREA_MAIN_CLASS)
-      .last().trigger('mousedown', "center").trigger("mousemove", { clientY: HEIGHT * 0.78 });
+    cy.get(SEPARATOR_SELECTOR).last()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientY: HEIGHT * 0.78 });
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
       const [area1, area2, area3] = els;
 
@@ -514,16 +524,17 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   });
 
   it("Should fill the space and display the correct areas when deleting area", () => {
-    cy.get("@root").contains("Ouille !");
-    cy.get("@root").contains("Ola !");
-    cy.get("@root").contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !");
 
-    cy.get("@areas").then(areas => areas.$refs.areas.deleteWindow(3));
+    cy.get("@areas").invoke("deleteWindow", 3);
 
-    cy.get("@root").contains("Ouille !");
-    cy.get("@root").contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !").should('not.exist');
 
-    cy.get("@root").get(".window-container").children().get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
       const [area1, area2] = els;
 
@@ -542,10 +553,13 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       );
     });
 
-    cy.get("@areas").then(areas => areas.$refs.areas.deleteWindow(1));
-    cy.get("@root").contains("Ola !");
+    cy.get("@areas").invoke("deleteWindow", 1);
 
-    cy.get("@root").get(AREA_MAIN_CLASS).should(els => {
+    cy.get(AREA_SELECTOR).contains("Ouille !").should('not.exist');
+    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("Hey !").should('not.exist');
+
+    cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(1);
       const [area2] = els;
 
@@ -559,11 +573,11 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}2`).contains("Ola !");
     cy.get(`#${ID_PREFIX}3`).contains("Hey !");
-    cy.get("@areas").then(areas => areas.$refs.areas.swapWindows(1, 2));
+    cy.get("@areas").invoke("swapWindows", 1, 2);
     cy.get(`#${ID_PREFIX}1`).contains("Ola !");
     cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}3`).contains("Hey !");
-    cy.get("@areas").then(areas => areas.$refs.areas.swapWindows(1, 3));
+    cy.get("@areas").invoke("swapWindows", 1, 3);
     cy.get(`#${ID_PREFIX}1`).contains("Hey !");
     cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}3`).contains("Ola !");

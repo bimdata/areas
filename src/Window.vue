@@ -1,6 +1,7 @@
 <template>
   <div
     class="window"
+    data-test="area"
     :class="{
       'window-active': isWindowActive,
       'window-active-vertical-splitting': windowManager.splitMode === 'vertical',

@@ -17,6 +17,9 @@ export default {
             ? [
                 Object.assign({}, win), // Need to recreate object to tell vue to rerender
                 h("div", {
+                  attrs: {
+                    "data-test": "separator"
+                  },
                   style: {
                     [this.direction === "row"
                       ? "width"

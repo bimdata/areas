@@ -277,7 +277,6 @@ export default {
     }
   },
   render(h) {
-    console.log("window manager render");
     return h(
       "div",
       {
