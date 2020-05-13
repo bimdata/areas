@@ -581,5 +581,57 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get(`#${ID_PREFIX}1`).contains("Hey !");
     cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
     cy.get(`#${ID_PREFIX}3`).contains("Ola !");
+  });
+
+  it("Should save and load layout", () => {
+    cy.get("@areas").then(areas => areas.getCurrentLayout()).as('savedLayout');
+
+    cy.get("@areas").invoke("deleteWindow", 3);
+
+    cy.get(SEPARATOR_SELECTOR)
+      .first()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientX: WIDTH / 2 })
+      .trigger('mouseup');
+
+    cy.get("@areas")
+      .then(areas => cy.get("@savedLayout").then(savedLayout => areas.loadLayout(savedLayout)));
+
+    cy.get(`#${ID_PREFIX}4`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}5`).contains("Ola !");
+    cy.get(`#${ID_PREFIX}6`).contains("Hey !");
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(3);
+      const [area1, area2, area3] = els;
+
+      expect(area1.clientHeight).to.equal(HEIGHT);
+      const area2TheoreticalHeight = HEIGHT * 15 / 100;
+      const area3TheoreticalHeight = HEIGHT * 85 / 100;
+      expect(area2.clientHeight).to.be.within(
+        area2TheoreticalHeight - MARGIN_OF_ERROR,
+        area2TheoreticalHeight + MARGIN_OF_ERROR
+      );
+      expect(area3.clientHeight).to.be.within(
+        area3TheoreticalHeight - MARGIN_OF_ERROR,
+        area3TheoreticalHeight + MARGIN_OF_ERROR
+      );
+
+      const area1TheoreticalWidth = WIDTH * 20 / 100;
+      const area2TheoreticalWidth = WIDTH * 80 / 100;
+      const area3TheoreticalWidth = WIDTH * 80 / 100;
+      expect(area1.clientWidth).to.be.within(
+        area1TheoreticalWidth - MARGIN_OF_ERROR,
+        area1TheoreticalWidth + MARGIN_OF_ERROR
+      );
+      expect(area2.clientWidth).to.be.within(
+        area2TheoreticalWidth - MARGIN_OF_ERROR,
+        area2TheoreticalWidth + MARGIN_OF_ERROR
+      );
+      expect(area3.clientWidth).to.be.within(
+        area3TheoreticalWidth - MARGIN_OF_ERROR,
+        area3TheoreticalWidth + MARGIN_OF_ERROR
+      );
+    });
   })
 });
