@@ -21,6 +21,14 @@ describe('Areas', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
+  it("Should display the default empty component if componentIndex = null", () => {
+    const cfg = {
+      layout: { componentIndex: null }
+    };
+    const wrapper = shallowMount(Areas, { propsData: { cfg } });
+    expect(wrapper.html()).toMatchSnapshot();
+  });
+
   it("Should work with two areas in the same direction (row)", () => {
     const cfg = {
       components: [

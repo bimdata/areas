@@ -22,6 +22,17 @@ exports[`Areas Should allow user to get component by name and update props (this
 </div>"
 `;
 
+exports[`Areas Should display the default empty component if componentIndex = null 1`] = `
+"<div class=\\"areas\\">
+  <div style=\\"display: none;\\">
+    <anonymous-stub targetid=\\"1\\">
+      <anonymous-stub></anonymous-stub>
+    </anonymous-stub>
+  </div>
+  <layout-stub></layout-stub>
+</div>"
+`;
+
 exports[`Areas Should work with only one area 1`] = `
 "<div class=\\"areas\\">
   <div style=\\"display: none;\\">

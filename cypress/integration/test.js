@@ -5,6 +5,7 @@ const WIDTH = 800;
 const HEIGHT = 600;
 // TODO MARGIN_OF_ERROR may be reduced after taking into accound separator thickness
 const MARGIN_OF_ERROR = 3; // Because ratio are percentage computed to px... not perfect
+const EMPTY_COMPONENT_TEXT = "empty component";
 
 // TODO somae feature like swap may also be tested with mouse event instead of direct API (with drag and drop mode set for example)
 
@@ -31,7 +32,7 @@ describe('Simple area', () => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
       expect(el[0].clientHeight).to.equal(HEIGHT);
-    })
+    });
   });
 
   it('Should throw an error if trying to delete the root area', () => {
@@ -44,7 +45,56 @@ describe('Simple area', () => {
         expect(areas.deleteArea).to.have.throw();
       }
     });
-  })
+  });
+});
+
+describe('Default empty component', () => {
+  beforeEach(() => {
+    const cfg = {
+      layout: {
+        componentIndex: null
+      }
+    };
+    initTest(cy, cfg);
+  });
+
+  it('Should display the default empty component if componentIndex = null', () => {
+    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
+      expect(el).to.have.length(1);
+      expect(el[0].clientWidth).to.equal(WIDTH);
+      expect(el[0].clientHeight).to.equal(HEIGHT);
+    });
+  });
+});
+
+describe('Custom empty component', () => {
+  beforeEach(() => {
+    const cfg = {
+      emptyComponent: {
+        props: { text: { type: String } },
+        render(h) { return h("div", this.text) }
+      },
+      layout: {
+        componentIndex: null,
+        cfg: {
+          props: {
+            text: "CUSTOM EMPTY COMPONENT"
+          }
+        }
+      }
+    };
+    initTest(cy, cfg);
+  });
+
+  it('Should display the custom empty component if componentIndex = null and cfg should work', () => {
+    cy.get(AREA_SELECTOR).contains("CUSTOM EMPTY COMPONENT");
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
+      expect(el).to.have.length(1);
+      expect(el[0].clientWidth).to.equal(WIDTH);
+      expect(el[0].clientHeight).to.equal(HEIGHT);
+    });
+  });
 });
 
 describe('Dual vertical areas', () => {
