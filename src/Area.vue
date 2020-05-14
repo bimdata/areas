@@ -2,7 +2,7 @@
   <div
     class="area"
     data-test="area"
-    :style="{ cursor }"
+    :style="{ cursor, zIndex: dragover ? areas.zIndexStart + 2 : isAreaActive ? areas.zIndexStart + 1 : 'unset' }"
     :draggable="isDraggable"
     :class="{ 'area-active': isAreaActive }"
     @click="onAreaClick"
@@ -18,8 +18,10 @@
     <div
       class="area-overlay"
       :class="{
-      'area-overlay-dragover': dragover,
-      'area-overlay-delete': isAreaActive && isDeleteMode
+        'area-overlay-dragover': dragover && !isAreaActive,
+        'area-overlay-split': isAreaActive && isSplitMode,
+        'area-overlay-swap': isAreaActive && isSwapMode,
+        'area-overlay-delete': isAreaActive && isDeleteMode
       }"
       v-if="isOverlayDisplayed"
     ></div>
@@ -59,10 +61,7 @@ export default {
       return this.id === this.areas.activeAreaId;
     },
     isOverlayDisplayed() {
-      return (
-        (!this.isAreaActive && (this.isSplitMode || this.isSwapMode)) ||
-        this.isDeleteMode
-      );
+      return !this.isNoMode;
     },
     isSplitMode() {
       return this.isVerticalSplitMode || this.isHorizontalSplitMode;
@@ -78,6 +77,9 @@ export default {
     },
     isSwapMode() {
       return this.areas.swapMode;
+    },
+    isNoMode() {
+      return this.areas.noMode;
     },
     cursor() {
       if (this.isVerticalSplitMode) {
@@ -185,22 +187,37 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(128, 128, 128, 0.2);
+  background-color: var(--areas-overlay-color, rgba(128, 128, 128, 0.2));
+  outline-offset: var(--areas-overlay-outline-offset, unset);
+  outline: var(--areas-overlay-outline, unset);
+}
+.area-overlay-split {
+  background-color: var(--areas-overlay-split-color, transparent);
+  outline-offset: var(--areas-overlay-split-outline-offset, unset);
+  outline: var(--areas-overlay-split-outline, unset);
+}
+.area-overlay-swap {
+  background-color: var(--areas-overlay-swap-color, transparent);
+  outline-offset: var(--areas-overlay-swap-outline-offset, unset);
+  outline: var(--areas-overlay-swap-outline, unset);
 }
 .area-overlay-dragover {
-  background-color: rgba(0, 100, 0, 0.1);
-  outline-offset: -10px;
-  outline: 5px dashed rgba(0, 100, 0, 0.2);
+  background-color: var(--areas-overlay-swapover-color, rgba(0, 100, 0, 0.1));
+  outline-offset: var(--areas-overlay-swapover-outline-offset, -10px);
+  outline: var(
+    --areas-overlay-swapover-outline,
+    5px dashed rgba(0, 100, 0, 0.2)
+  );
 }
 .area-overlay-delete {
-  background-color: rgba(255, 0, 0, 0.1);
-  outline-offset: -7px;
-  outline: 3px dashed rgba(255, 0, 0, 0.2);
+  background-color: var(--areas-overlay-delete-color, rgba(255, 0, 0, 0.1));
+  outline-offset: var(--areas-overlay-delete-outline-offset, -7px);
+  outline: var(--areas-overlay-delete-outline, 3px dashed rgba(255, 0, 0, 0.2));
 }
 .area-split {
   pointer-events: none;
   position: absolute;
-  background-color: white;
+  background-color: var(--areas-split-line-color, white);
 }
 .area-split-vertical {
   width: 2px;

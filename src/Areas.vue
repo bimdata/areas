@@ -8,6 +8,10 @@ export default {
     cfg: {
       type: Object,
       required: true
+    },
+    zIndexStart: {
+      type: Number,
+      default: 0
     }
   },
   provide() {

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Areas Should allow user to get component by name and update props (this should be reactive) 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub text=\\"empty\\"></anonymous-stub>
@@ -12,7 +12,7 @@ exports[`Areas Should allow user to get component by name and update props (this
 `;
 
 exports[`Areas Should allow user to get component by name and update props (this should be reactive) 2`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub text=\\"text updated\\"></anonymous-stub>
@@ -23,7 +23,7 @@ exports[`Areas Should allow user to get component by name and update props (this
 `;
 
 exports[`Areas Should display the default empty component if componentIndex = null 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub></anonymous-stub>
@@ -34,7 +34,7 @@ exports[`Areas Should display the default empty component if componentIndex = nu
 `;
 
 exports[`Areas Should work with only one area 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub text=\\"no text provided\\"></anonymous-stub>
@@ -45,7 +45,7 @@ exports[`Areas Should work with only one area 1`] = `
 `;
 
 exports[`Areas Should work with three areas in a custom layout 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub></anonymous-stub>
@@ -62,7 +62,7 @@ exports[`Areas Should work with three areas in a custom layout 1`] = `
 `;
 
 exports[`Areas Should work with two areas in the same direction (column) 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub></anonymous-stub>
@@ -76,7 +76,7 @@ exports[`Areas Should work with two areas in the same direction (column) 1`] = `
 `;
 
 exports[`Areas Should work with two areas in the same direction (row) 1`] = `
-"<div class=\\"areas\\">
+"<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">
       <anonymous-stub></anonymous-stub>

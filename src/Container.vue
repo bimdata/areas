@@ -137,6 +137,7 @@ export default {
           h("div", {
             class: "container-separator-margin",
             style: {
+              zIndex: this._areas.zIndexStart + 2,
               [this.direction === "row" ? "left" : "top"]: `${-this
                 .separatorMargin}px`,
               width:
@@ -198,6 +199,5 @@ function sum(a, b) {
 }
 .container-separator-margin {
   position: absolute;
-  z-index: 1;
 }
 </style>
