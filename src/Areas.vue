@@ -4,6 +4,17 @@ import makeLayoutComponent from "./Layout.js";
 
 export default {
   name: "areas",
+  props: {
+    cfg: {
+      type: Object,
+      required: true
+    }
+  },
+  provide() {
+    return {
+      areas: this
+    };
+  },
   data() {
     return {
       dragAndDropMode: false,
@@ -20,180 +31,55 @@ export default {
       areaContentIdGen: null
     };
   },
-  props: {
-    cfg: {
-      type: Object,
-      required: true
-    }
-  },
   created() {
+    this.containerIdGen = makeIdGenerator();
+    this.containerKeyGen = makeIdGenerator();
+    this.areaIdGen = makeIdGenerator();
+    this.areaContentIdGen = makeIdGenerator();
+
     this.parseCfg(this.cfg);
   },
-  provide() {
-    return {
-      areas: this
-    };
-  },
   methods: {
-    changeAreaComponent(areaId, componentCfg = {}) {
-      if (
-        !this.areasContent
-          .map((wc, i) => (wc ? i : null))
-          .filter(Boolean)
-          .includes(areaId)
-      ) {
-        throw `Impossible to change component. Area id "${areaId}" does not exist.`;
-      }
-      const { cfg, componentIndex, name } = componentCfg;
-      if (
-        !Object.keys(this.availableComponents).includes(String(componentIndex))
-      ) {
-        throw `Impossible to change component. Component index "${componentIndex}" is not available.`;
-      }
-      const id = this.areaContentIdGen();
-      const newAreaContentObject = {
-        id,
-        component: this.availableComponents[componentIndex],
-        ...(cfg && { cfg }),
-        ...(name && { name })
-      };
-      this.areasContent.splice(areaId, 1, newAreaContentObject);
-
-      // this.reattachTeleports();
-    },
-    onMouseMove(e) {
-      // TODO for development only, may be used by user instead of hardcoded here
-      this.setDragAndDropMode(e.metaKey);
-      this.setSplitMode(
-        e.shiftKey ? "horizontal" : e.altKey ? "vertical" : null
-      );
-    },
-    setSplitMode(mode) {
-      if (!["vertical", "horizontal", null].includes(mode)) {
-        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}".`;
-      }
-      if (this.splitMode !== mode) {
-        this.splitMode = mode;
-      }
-    },
-    setDragAndDropMode(active = true) {
-      this.dragAndDropMode = active;
-    },
-    setActiveAreaId(id) {
-      this.activeAreaId = id;
-    },
-    getNextAreaId() {
-      return this.areaIdGen();
-    },
-    getNextContainerId() {
-      return this.containerIdGen();
-    },
-    getNextContainerKey() {
-      return this.containerKeyGen();
-    },
-    loadLayout(layout) {
-      this.buildLayout(layout);
-    },
-    buildLayout(layout, firstRender = false) {
-      this.areasContent = [];
-
-      if (firstRender) {
-        this.containerIdGen = makeIdGenerator();
-        this.containerKeyGen = makeIdGenerator();
-        this.areaIdGen = makeIdGenerator();
-        this.areaContentIdGen = makeIdGenerator();
-      } else {
-        // no need to reattach at first render... optimization
-        this.$nextTick(() => this.reattachTeleports());
-      }
-
-      this.layoutComponent = makeLayoutComponent(this.parseLayout(layout));
-    },
-    getCurrentLayout() {
-      const layout = this.$refs.layout.getLayout();
-      return layout.type === "container"
-        ? this.reverseparseContainer(layout)
-        : reverseParseArea(layout);
-    },
-    reverseparseContainer(container) {
-      return {
-        direction: container.direction,
-        ratios: roundRatios(container.ratios),
-        children: container.children.map(child =>
-          child.type === "container"
-            ? this.reverseparseContainer(child)
-            : this.reverseParseArea(child)
-        )
-      };
-    },
-    reverseParseArea(area) {
-      const areaContent = this.areasContent[area.id];
-      const componentIndex = this.availableComponents.indexOf(
-        areaContent.component
-      );
-      const areaObject = {
-        componentIndex: componentIndex === -1 ? null : componentIndex,
-        ...(areaContent.cfg && { cfg: areaContent.cfg }), // will not add the property if undefined
-        ...(areaContent.name && { name: areaContent.name }) // will not add the property if undefined
-      };
-      return areaObject;
-    },
-    getAreas() {
-      return this.$refs.layout.getAreaInstances();
-    },
-    getArea(id) {
-      return this.getAreas().find(area => area.id === id);
-    },
-    onLayoutUpdated() {
-      this.reattachTeleports();
-    },
-    reattachTeleports() {
-      this.$refs.teleports.forEach(teleport => teleport.attach());
-    },
-    deleteArea(areaId) {
-      this.$refs.layout.deleteArea(areaId);
-      this.areasContent.splice(areaId, 1, undefined);
-    },
-    splitArea(areaId, way, percentage, insertNewAfter) {
-      const newAreaId = this.$refs.layout.splitArea(
-        areaId,
-        way,
-        percentage,
-        insertNewAfter
-      );
-      this.areasContent[newAreaId] = {
-        id: this.areaContentIdGen(),
-        component: this.emptyComponent
-      };
-
-      this.$nextTick(() => {
-        this.areasContent = Array.from(this.areasContent);
-      });
-    },
-    updateContainerRatio(containerId, newRatios) {
-      this.$refs.layout.updateContainerRatio(containerId, newRatios);
-    },
-    swapAreas(areaId1, areaId2) {
-      const area1content = this.areasContent[areaId1];
-      const area2content = this.areasContent[areaId2];
-
-      this.areasContent.splice(areaId2, 1, area1content);
-      this.areasContent.splice(areaId1, 1, area2content);
-
-      this.$nextTick(() => this.reattachTeleports());
-    },
+    /******* PARSING CFG *******/
     parseCfg(cfg) {
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
         render: h => h("div", ["empty component"])
       };
       this.availableComponents = cfg.components;
-      this.buildLayout(cfg.layout, true);
+
+      const layout = this.parseLayout(cfg.layout);
+      this.buildLayout(layout);
     },
     parseLayout(layout) {
+      this.areasContent = [];
       return layout.children
         ? this.parseContainer(layout)
         : this.parseArea(layout);
+    },
+    parseContainer(container) {
+      if (container.ratios) {
+        if (
+          container.ratios.length !== container.children.length ||
+          container.ratios.reduce((acc, cur) => acc + cur) !== 100
+        ) {
+          throw "Container is malformed. Each child must have a ratio and the sum of all ratios must be 100.";
+        }
+      }
+      return {
+        type: "container",
+        id: this.containerIdGen(),
+        key: this.containerKeyGen(),
+        direction: container.direction || "row",
+        ratios: container.ratios,
+        children: container.children.map(child => {
+          if (child.children) {
+            return this.parseContainer(child);
+          } else {
+            return this.parseArea(child);
+          }
+        })
+      };
     },
     parseArea(area) {
       if (
@@ -218,29 +104,94 @@ export default {
       this.areasContent[areaObject.id] = contentObject;
       return areaObject;
     },
-    parseContainer(container) {
-      if (container.ratios) {
-        if (
-          container.ratios.length !== container.children.length ||
-          container.ratios.reduce((acc, cur) => acc + cur) !== 100
-        ) {
-          throw "Container is malformed. Each child must have a ratio and the sum of all ratios must be 100.";
-        }
+    buildLayout(layout) {
+      this.layoutComponent = makeLayoutComponent(layout);
+    },
+    /******* Methods to be used externally *******/
+    loadLayout(layout) {
+      this.buildLayout(this.parseLayout(layout));
+    },
+    getCurrentLayout() {
+      const layout = this.$refs.layout.getLayout();
+      return this.reverseParseLayout(layout);
+    },
+    changeAreaComponent(areaId, componentCfg = {}) {
+      if (
+        !this.areasContent
+          .map((areaContent, index) => (areaContent ? index : null))
+          .filter(Boolean)
+          .includes(areaId)
+      ) {
+        throw `Impossible to change component. Area id "${areaId}" does not exist.`;
       }
-      return {
-        type: "container",
-        id: this.containerIdGen(),
-        key: this.containerKeyGen(),
-        direction: container.direction,
-        ratios: container.ratios,
-        children: container.children.map(child => {
-          if (child.children) {
-            return this.parseContainer(child);
-          } else {
-            return this.parseArea(child);
-          }
-        })
+      const { cfg, componentIndex, name } = componentCfg;
+      if (
+        !Object.keys(this.availableComponents).includes(String(componentIndex))
+      ) {
+        throw `Impossible to change component. Component index "${componentIndex}" is not available.`;
+      }
+      const id = this.areaContentIdGen();
+      const newAreaContentObject = {
+        id,
+        component: this.availableComponents[componentIndex],
+        ...(cfg && { cfg }),
+        ...(name && { name })
       };
+      this.areasContent.splice(areaId, 1, newAreaContentObject);
+    },
+    onMouseMove(e) {
+      // TODO for development only, may be used by user instead of hardcoded here
+      this.setDragAndDropMode(e.metaKey);
+      this.setSplitMode(
+        e.shiftKey ? "horizontal" : e.altKey ? "vertical" : null
+      );
+    },
+    setSplitMode(mode) {
+      if (!["vertical", "horizontal", null].includes(mode)) {
+        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}".`;
+      }
+      if (this.splitMode !== mode) {
+        this.splitMode = mode;
+      }
+    },
+    setDragAndDropMode(active = true) {
+      if (typeof active !== "boolean") {
+        throw `setDragAndDropMode only accepts boolean, get "${typeof active}"`;
+      }
+      this.dragAndDropMode = active;
+    },
+    deleteArea(areaId) {
+      this.$refs.layout.deleteArea(areaId);
+      this.areasContent.splice(areaId, 1, undefined);
+    },
+    splitArea(areaId, way, percentage = 50, insertNewAfter = true) {
+      if (!["vertical", "horizontal"].includes(way)) {
+        throw `Cannot split area this way. Only accept "vertical" or "horizontal", get "${way}".`;
+      }
+      const newAreaId = this.$refs.layout.splitArea(
+        areaId,
+        way,
+        percentage,
+        insertNewAfter
+      );
+      this.areasContent[newAreaId] = {
+        id: this.areaContentIdGen(),
+        component: this.emptyComponent
+      };
+
+      this.$nextTick(() => {
+        // Wait for the layout to rerender
+        this.areasContent = Array.from(this.areasContent);
+      });
+    },
+    swapAreas(areaId1, areaId2) {
+      const area1content = this.areasContent[areaId1];
+      const area2content = this.areasContent[areaId2];
+
+      this.areasContent.splice(areaId2, 1, area1content);
+      this.areasContent.splice(areaId1, 1, area2content);
+
+      this.$nextTick(this.reattachTeleports);
     },
     getComponentByName(name) {
       return this.areasContent
@@ -248,10 +199,68 @@ export default {
         .filter(areaContent => areaContent.name)
         .find(areaContent => areaContent.name === name);
     },
+    /******* Methods to be used internally *******/
+    setActiveAreaId(id) {
+      this.activeAreaId = id;
+    },
+    getNextAreaId() {
+      return this.areaIdGen();
+    },
+    getNextContainerId() {
+      return this.containerIdGen();
+    },
+    getNextContainerKey() {
+      return this.containerKeyGen();
+    },
+    reverseParseLayout(layout) {
+      return layout.type === "container"
+        ? this.reverseParseContainer(layout)
+        : reverseParseArea(layout);
+    },
+    reverseParseContainer(container) {
+      return {
+        direction: container.direction,
+        ratios: roundRatios(container.ratios),
+        children: container.children.map(child =>
+          child.type === "container"
+            ? this.reverseParseContainer(child)
+            : this.reverseParseArea(child)
+        )
+      };
+    },
+    reverseParseArea(area) {
+      const areaContent = this.areasContent[area.id];
+      const componentIndex = this.availableComponents.indexOf(
+        areaContent.component
+      );
+      const areaObject = {
+        componentIndex: componentIndex === -1 ? null : componentIndex,
+        ...(areaContent.cfg && { cfg: areaContent.cfg }), // will not add the property if undefined
+        ...(areaContent.name && { name: areaContent.name }) // will not add the property if undefined
+      };
+      return areaObject;
+    },
+    getAreas() {
+      // TODO this may be removed if area are exposed to children another way
+      return this.$refs.layout.getAreaInstances();
+    },
+    getArea(id) {
+      // TODO this may be removed if area are exposed to children another way
+      return this.getAreas().find(area => area.id === id);
+    },
+    onLayoutUpdated() {
+      this.reattachTeleports();
+    },
+    reattachTeleports() {
+      this.$refs.teleports.forEach(teleport => teleport.attach());
+    },
+    updateContainerRatio(containerId, newRatios) {
+      this.$refs.layout.updateContainerRatio(containerId, newRatios);
+    },
     getDOMAreaId(id) {
       return `${this.areaIdPrefix}${id}`;
     },
-    getTeleports(h) {
+    renderTeleports(h) {
       return h(
         "div",
         { style: "display:none;" },
@@ -285,13 +294,13 @@ export default {
     return h(
       "div",
       {
-        class: "area-manager",
+        class: "areas",
         on: {
           mousemove: e => this.onMouseMove(e)
         }
       },
       [
-        this.getTeleports(h),
+        this.renderTeleports(h),
         h(this.layoutComponent, {
           ref: "layout",
           on: {
@@ -325,7 +334,8 @@ function makeIdGenerator() {
 </script>
 
 <style scoped>
-.area-manager {
+.areas {
+  /* TODO background color will affect the separator colors. It should be configurable. */
   background-color: darkslategrey;
   height: 100%;
   width: 100%;

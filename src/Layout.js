@@ -70,10 +70,7 @@ export default layout => ({
       const container = this.getContainer(containerId);
       container.ratios.splice(0, ratios.length, ...ratios);
     },
-    splitArea(areaId, way, percentage, insertNewAfter = true) {
-      if (!["vertical", "horizontal"].includes(way)) {
-        throw `Cannot split area. Bad way. Only accept "vertical" or "horizontal", get "${way}".`;
-      }
+    splitArea(areaId, way, percentage, insertNewAfter) {
       const firstRatio = percentage
       const secondRatio = 100 - firstRatio;
       const direction = way === "vertical" ? "row" : "column";

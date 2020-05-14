@@ -18,7 +18,7 @@ export default {
     return {
       $context: {
         get area() {
-          return self.areas.getArea(self.targetId);
+          return self.areas.getArea(self.targetId); // TODO this may not be exposed this way
         }
       }
     };
