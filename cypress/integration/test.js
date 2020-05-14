@@ -305,7 +305,7 @@ describe('Three areas in the same direction (vertical)', () => {
     cy.get(SEPARATOR_SELECTOR).first()
       .trigger('mousedown', "center")
       .trigger("mousemove", { clientX: WIDTH })
-      .trigger('mouseup');
+    // .trigger('mouseup'); // Can not mouseup because the separator is behind separator margin
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
