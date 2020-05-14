@@ -53,7 +53,7 @@
 
       },
       template: `
-        <div>
+        <div style="margin:10px;">
           <button type="button" @click="optionsShown = !optionsShown">{{ mainButtonContent }}</button>
           <template v-if="optionsShown">
             <input type="radio" id="radio0" :value="null" v-model="selectedOption">

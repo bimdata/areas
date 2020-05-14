@@ -188,11 +188,14 @@ export default {
   background-color: rgba(128, 128, 128, 0.2);
 }
 .area-overlay-dragover {
+  background-color: rgba(0, 100, 0, 0.1);
   outline-offset: -10px;
-  outline: 5px dashed rgba(128, 128, 128, 0.4);
+  outline: 5px dashed rgba(0, 100, 0, 0.2);
 }
 .area-overlay-delete {
   background-color: rgba(255, 0, 0, 0.1);
+  outline-offset: -7px;
+  outline: 3px dashed rgba(255, 0, 0, 0.2);
 }
 .area-split {
   pointer-events: none;
