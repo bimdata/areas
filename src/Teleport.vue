@@ -24,11 +24,14 @@ export default {
     };
   },
   mounted() {
-    this.$emit("mounted", { childInstance: this.$children[0] });
+    this.$emit("mounted", { childInstance: this.$children[0] }); // TODO may be changed
     this.child = this.$el.firstChild;
     this.$watch(
       "targetId",
       () => {
+        if (this.$el.contains(this.child)) {
+          this.$el.removeChild(this.child);
+        }
         this.attach(true);
       },
       {
@@ -37,15 +40,12 @@ export default {
     );
   },
   methods: {
-    attach(removeFromCurentParent = false) {
+    attach() {
       const targetElement = document.getElementById(
         this.areas.getDOMAreaId(this.targetId)
       );
       if (!targetElement) {
         throw `Teleport fails, no DOM element with id : "${this.targetId}".`;
-      }
-      if (removeFromCurentParent && this.$el.contains(this.child)) {
-        this.$el.removeChild(this.child);
       }
       while (targetElement.hasChildNodes()) {
         targetElement.removeChild(targetElement.firstChild);
