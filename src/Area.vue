@@ -2,15 +2,9 @@
   <div
     class="area"
     data-test="area"
+    :style="{ cursor }"
     :draggable="isDraggable"
-    :class="{
-      'area-active': isAreaActive,
-      'area-active-vertical-splitting': areas.splitVerticalMode,
-      'area-active-horizontal-splitting': areas.splitHorizontalMode,
-      'area-active-grab': isSwapMode && !dragging,
-      'area-active-grabbing': isSwapMode && dragging,
-      'area-active-delete': isDeleteMode
-      }"
+    :class="{ 'area-active': isAreaActive }"
     @click="onAreaClick"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -99,6 +93,19 @@ export default {
     },
     isSwapMode() {
       return this.areas.swapMode;
+    },
+    cursor() {
+      if (this.isVerticalSplitMode) {
+        return "var(--areas-vertical-split-cursor, col-resize)";
+      } else if (this.isHorizontalSplitMode) {
+        return "var(--areas-horizontal-split-cursor, row-resize)";
+      } else if (this.isSwapMode && !this.dragging) {
+        return "var(--areas-drag-cursor, grab)";
+      } else if (this.isSwapMode && this.dragging) {
+        return "var(--areas-dragging-cursor, grabbing)";
+      } else if (this.isDeleteMode) {
+        return "var(--areas-delete-cursor, crosshair)";
+      }
     }
   },
   methods: {
@@ -216,21 +223,6 @@ export default {
   margin-top: -1px;
   width: 100%;
   height: 2px;
-}
-.area-active-vertical-splitting {
-  cursor: col-resize;
-}
-.area-active-horizontal-splitting {
-  cursor: row-resize;
-}
-.area-active-grab {
-  cursor: grab;
-}
-.area-active-delete {
-  cursor: crosshair;
-}
-.area-active-grabbing {
-  cursor: grabbing;
 }
 .area-content {
   overflow: scroll;
