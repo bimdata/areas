@@ -26,7 +26,12 @@ export default {
     },
     separatorThickness: {
       type: Number,
-      default: 3
+      default: 2
+    },
+    separatorMargin: {
+      // used to help user to catch separator
+      type: Number,
+      default: 10
     },
     minRatio: {
       type: Number,
@@ -109,19 +114,40 @@ export default {
       document.removeEventListener("mousemove", this.drag);
     },
     renderSeparator(h, index) {
-      return h("div", {
-        attrs: {
-          "data-test": "separator"
+      return h(
+        "div",
+        {
+          attrs: {
+            "data-test": "separator"
+          },
+          class: "container-separator",
+          style: {
+            [this.direction === "row"
+              ? "width"
+              : "height"]: `${this.separatorThickness}px`,
+            cursor: this.direction === "row" ? "col-resize" : "row-resize",
+            flexShrink: 0
+          },
+          on: { mousedown: e => this.onSeparatorMouseDown(index, e) }
         },
-        style: {
-          [this.direction === "row"
-            ? "width"
-            : "height"]: `${this.separatorThickness}px`,
-          cursor: this.direction === "row" ? "col-resize" : "row-resize",
-          flexShrink: 0
-        },
-        on: { mousedown: e => this.onSeparatorMouseDown(index, e) }
-      });
+        [
+          h("div", {
+            class: "container-separator-margin",
+            style: {
+              [this.direction === "row" ? "left" : "top"]: `${-this
+                .separatorMargin}px`,
+              width:
+                this.direction === "row"
+                  ? `${this.separatorMargin * 2}px`
+                  : "100%",
+              height:
+                this.direction === "row"
+                  ? "100%"
+                  : `${this.separatorMargin * 2}px`
+            }
+          })
+        ]
+      );
     }
   },
   render(h) {
@@ -162,5 +188,13 @@ function sum(a, b) {
   display: flex;
   width: 100%;
   height: 100%;
+}
+.container-separator {
+  position: relative;
+}
+
+.container-separator-margin {
+  position: absolute;
+  z-index: 1;
 }
 </style>

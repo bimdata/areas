@@ -56,7 +56,9 @@ export default {
     /******* PARSING CFG *******/
     parseCfg(cfg) {
       const style = cfg.style || {};
+      // The following values no need to be reative, that is why they are not present on data object
       this.separatorThickness = style.separatorThickness;
+      this.separatorMargin = style.separatorMargin;
 
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
@@ -121,10 +123,10 @@ export default {
       return areaObject;
     },
     buildLayout(layout) {
-      this.layoutComponent = makeLayoutComponent(
-        layout,
-        this.separatorThickness
-      );
+      this.layoutComponent = makeLayoutComponent(layout, {
+        separatorThickness: this.separatorThickness,
+        separatorMargin: this.separatorMargin
+      });
     },
     /******* Methods to be used externally *******/
     loadLayout(layout) {
@@ -343,5 +345,6 @@ function makeIdGenerator() {
   height: 100%;
   width: 100%;
   display: flex;
+  overflow: hidden;
 }
 </style>
