@@ -41,7 +41,7 @@
 
 <script>
 export default {
-  name: "areacomponent", // cannot use area because it is a reserved HTML keyword
+  name: "area-component", // cannot use area because it is a reserved HTML keyword
   props: {
     id: { type: Number, require: true }
   },
