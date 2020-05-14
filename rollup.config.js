@@ -1,9 +1,26 @@
 import { terser } from "rollup-plugin-terser";
 import vue from 'rollup-plugin-vue';
+import serve from 'rollup-plugin-serve'
+import livereload from 'rollup-plugin-livereload'
 
 const isProduction = (process.env.BUILD === "production");
 
 console.log(`ROLLUP -- Building for ${isProduction ? "PRODUCTION" : "DEVELOPMENT"}`);
+
+const plugins = [
+  vue()
+];
+
+if (isProduction) {
+  plugins.push(
+    terser()
+  );
+} else {
+  plugins.push(
+    serve({ open: true, port: 8080, contentBase: '' }),
+    livereload('dist')
+  );
+}
 
 export default {
   input: "src/main.js",
@@ -17,8 +34,5 @@ export default {
     file: "dist/areas.esm.js",
     format: "es"
   }],
-  plugins: [
-    vue(),
-    isProduction ? terser() : null
-  ]
+  plugins
 };
