@@ -42,6 +42,9 @@ export default {
   methods: {
     /******* PARSING CFG *******/
     parseCfg(cfg) {
+      const style = cfg.style || {};
+      this.separatorThickness = style.separatorThickness;
+
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
         render: h => h("div", ["empty component"])
@@ -105,7 +108,10 @@ export default {
       return areaObject;
     },
     buildLayout(layout) {
-      this.layoutComponent = makeLayoutComponent(layout);
+      this.layoutComponent = makeLayoutComponent(
+        layout,
+        this.separatorThickness
+      );
     },
     /******* Methods to be used externally *******/
     loadLayout(layout) {

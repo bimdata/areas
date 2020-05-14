@@ -1,47 +1,6 @@
 <script>
 export default {
   name: "container",
-  render(h) {
-    const areas = this.areas;
-    if (!areas || areas.length < 2) {
-      throw "Container can only work with at least 2 areas.";
-    }
-
-    return h(
-      "div",
-      { class: "container", style: { flexDirection: this.direction } },
-      areas
-        .map((area, i) => {
-          area.data.style = this.areasWidth[i]; // TODO seems to be a hack...
-          return i !== areas.length - 1
-            ? [
-                Object.assign({}, area), // Need to recreate object to tell vue to rerender
-                h("div", {
-                  attrs: {
-                    "data-test": "separator"
-                  },
-                  style: {
-                    [this.direction === "row"
-                      ? "width"
-                      : "height"]: `${this.separatorThickness}px`,
-                    cursor:
-                      this.direction === "row" ? "col-resize" : "row-resize",
-                    flexShrink: 0
-                  },
-                  on: { mousedown: e => this.onSeparatorMouseDown(i, e) }
-                })
-              ]
-            : Object.assign({}, area); // Need to recreate object to tell vue to rerender
-        })
-        .flat()
-    );
-  },
-  data() {
-    return {
-      activeSeparatorIndex: null
-    };
-  },
-  inject: { "_areas": "areas" },
   props: {
     id: {
       type: Number,
@@ -67,13 +26,19 @@ export default {
     },
     separatorThickness: {
       type: Number,
-      default: 3 // TODO may half a pixel be a problem
+      default: 3
     },
     minRatio: {
       type: Number,
       default: 0
     }
   },
+  data() {
+    return {
+      activeSeparatorIndex: null
+    };
+  },
+  inject: { _areas: "areas" },
   computed: {
     areasWidth() {
       return this.areasRatio.map(
@@ -90,7 +55,6 @@ export default {
     }
   },
   methods: {
-    makeSeparator(h) {},
     onSeparatorMouseDown(separatorIndex, e) {
       this.activeSeparatorIndex = separatorIndex;
       e.preventDefault();
@@ -143,7 +107,44 @@ export default {
       this.activeSeparatorIndex = null;
       document.body.style.removeProperty("cursor");
       document.removeEventListener("mousemove", this.drag);
+    },
+    renderSeparator(h, index) {
+      return h("div", {
+        attrs: {
+          "data-test": "separator"
+        },
+        style: {
+          [this.direction === "row"
+            ? "width"
+            : "height"]: `${this.separatorThickness}px`,
+          cursor: this.direction === "row" ? "col-resize" : "row-resize",
+          flexShrink: 0
+        },
+        on: { mousedown: e => this.onSeparatorMouseDown(index, e) }
+      });
     }
+  },
+  render(h) {
+    const areas = this.areas;
+    if (!areas || areas.length < 2) {
+      throw "Container can only work with at least 2 areas.";
+    }
+
+    return h(
+      "div",
+      { class: "container", style: { flexDirection: this.direction } },
+      areas
+        .map((area, i) => {
+          area.data.style = this.areasWidth[i];
+          return i !== areas.length - 1
+            ? [
+                Object.assign({}, area), // Need to recreate object to tell vue to rerender
+                this.renderSeparator(h, i)
+              ]
+            : Object.assign({}, area); // Need to recreate object to tell vue to rerender
+        })
+        .flat()
+    );
   }
 };
 
