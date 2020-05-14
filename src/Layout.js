@@ -60,7 +60,6 @@ export default (layout, separatorThickness) => ({
       return this.containers.find(container => container.id === id);
     },
     updateContainerTreeKeys(container) {
-      // TODO change naming
       container.key = this.getNextContainerKey();
       this.getContainerAncestors(container).forEach(
         ancestorContainer => (ancestorContainer.key = this.getNextContainerKey())

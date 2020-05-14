@@ -17,8 +17,7 @@ export default {
   },
   data() {
     return {
-      dragAndDropMode: false,
-      splitMode: null,
+      mode: null,
       activeAreaId: null,
       areaIdPrefix: null,
       availableComponents: null,
@@ -30,6 +29,20 @@ export default {
       areaIdGen: null,
       areaContentIdGen: null
     };
+  },
+  computed: {
+    swapMode() {
+      return this.mode === "swap";
+    },
+    deleteMode() {
+      return this.mode === "delete";
+    },
+    splitVerticalMode() {
+      return this.mode === "split-vertical";
+    },
+    splitHorizontalMode() {
+      return this.mode === "split-horizontal";
+    }
   },
   created() {
     this.containerIdGen = makeIdGenerator();
@@ -145,26 +158,16 @@ export default {
       };
       this.areasContent.splice(areaId, 1, newAreaContentObject);
     },
-    onMouseMove(e) {
-      // TODO for development only, may be used by user instead of hardcoded here
-      this.setDragAndDropMode(e.metaKey);
-      this.setSplitMode(
-        e.shiftKey ? "horizontal" : e.altKey ? "vertical" : null
-      );
-    },
-    setSplitMode(mode) {
-      if (!["vertical", "horizontal", null].includes(mode)) {
-        throw `Split mode can only accept "vertical", "horizontal" or null value, get "${mode}".`;
+    setMode(mode) {
+      if (
+        mode !== null &&
+        !["split-vertical", "split-horizontal", "swap", "delete"].includes(mode)
+      ) {
+        throw `Mode must be "split-vertical", "split-horizontal", "swap" or "delete", get ${mode}. To exit any mode, call setMode(null)`;
       }
-      if (this.splitMode !== mode) {
-        this.splitMode = mode;
+      if (this.mode !== mode) {
+        this.mode = mode;
       }
-    },
-    setDragAndDropMode(active = true) {
-      if (typeof active !== "boolean") {
-        throw `setDragAndDropMode only accepts boolean, get "${typeof active}"`;
-      }
-      this.dragAndDropMode = active;
     },
     deleteArea(areaId) {
       this.$refs.layout.deleteArea(areaId);
@@ -206,6 +209,9 @@ export default {
         .find(areaContent => areaContent.name === name);
     },
     /******* Methods to be used internally *******/
+    onMouseLeave() {
+      this.activeAreaId = null;
+    },
     setActiveAreaId(id) {
       this.activeAreaId = id;
     },
@@ -297,24 +303,15 @@ export default {
     }
   },
   render(h) {
-    return h(
-      "div",
-      {
-        class: "areas",
+    return h("div", { class: "areas", on: { mouseleave: this.onMouseLeave } }, [
+      this.renderTeleports(h),
+      h(this.layoutComponent, {
+        ref: "layout",
         on: {
-          mousemove: e => this.onMouseMove(e)
+          updated: this.onLayoutUpdated
         }
-      },
-      [
-        this.renderTeleports(h),
-        h(this.layoutComponent, {
-          ref: "layout",
-          on: {
-            updated: this.onLayoutUpdated
-          }
-        })
-      ]
-    );
+      })
+    ]);
   }
 };
 

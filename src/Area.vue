@@ -2,16 +2,15 @@
   <div
     class="area"
     data-test="area"
+    :draggable="isDraggable"
     :class="{
       'area-active': isAreaActive,
-      'area-active-vertical-splitting': areas.splitMode === 'vertical',
-      'area-active-horizontal-splitting': areas.splitMode === 'horizontal',
-      'area-active-grab': areas.dragAndDropMode && !dragging,
+      'area-active-vertical-splitting': areas.splitVerticalMode,
+      'area-active-horizontal-splitting': areas.splitHorizontalMode,
+      'area-active-grab': isDraggable && !dragging,
       'area-active-grabbing': dragging,
       }"
-    @click.right="onRighClick"
     @click="onAreaClick"
-    :draggable="draggable"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @dragenter="onDragEnter"
@@ -43,6 +42,10 @@
 <script>
 export default {
   name: "areacomponent", // cannot use area because it is a reserved HTML keyword
+  props: {
+    id: { type: Number, require: true }
+  },
+  inject: ["areas"],
   data() {
     return {
       dragover: false,
@@ -51,23 +54,15 @@ export default {
       horizontalSplitTop: null
     };
   },
-  props: {
-    id: { type: Number, require: true },
-    draggable: { type: Boolean, default: true }
-  },
-  inject: ["areas"],
-  created() {
-    this.$emit("created", this);
-  },
   computed: {
+    isDraggable() {
+      return this.areas.swapMode;
+    },
     isAreaActive() {
       return this.id === this.areas.activeAreaId;
     },
     isOverlayDisplayed() {
-      return (
-        !this.isAreaActive &&
-        (this.areas.splitMode || this.areas.dragAndDropMode)
-      );
+      return !this.isAreaActive && (this.areas.splitMode || this.isDraggable);
     },
     verticalSplitDisplayed() {
       return (
@@ -84,10 +79,13 @@ export default {
       );
     },
     isVerticalSplitMode() {
-      return this.areas.splitMode === "vertical";
+      return this.areas.splitVerticalMode;
     },
     isHorizontalSplitMode() {
-      return this.areas.splitMode === "horizontal";
+      return this.areas.splitHorizontalMode;
+    },
+    isDeleteMode() {
+      return this.areas.deleteMode;
     }
   },
   methods: {
@@ -126,15 +124,14 @@ export default {
         horizontalPercentage,
         verticalPercentage
       } = this.getLocalMouseCoordinates(e);
-      if (e.altKey) {
+
+      if (this.isVerticalSplitMode) {
         this.areas.splitArea(this.id, "vertical", verticalPercentage);
-      } else if (e.shiftKey) {
+      } else if (this.isHorizontalSplitMode) {
         this.areas.splitArea(this.id, "horizontal", horizontalPercentage);
+      } else if (this.isDeleteMode) {
+        this.areas.deleteArea(this.id, e);
       }
-    },
-    onRighClick(e) {
-      e.preventDefault();
-      this.areas.deleteArea(this.id, e);
     },
     onMouseMove(e) {
       const {

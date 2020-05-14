@@ -21,9 +21,55 @@
     import Vue from '../../node_modules/vue/dist/vue.esm.browser.js';
     import Areas from "./dist/areas.esm.js";
 
+    let areas = null;
+
+    const headerComponent = {
+      data() {
+        return {
+          optionsShown: false,
+          selectedOption: null,
+        }
+      },
+      computed: {
+        mainButtonContent() {
+          return this.optionsShown ? "Hide options" : "Show options";
+        }
+      },
+      watch: {
+        optionsShown() {
+          if (!this.optionsShown && this.selectedOption !== null) {
+            this.selectedOption = null
+          }
+        },
+        selectedOption() {
+          areas.setMode(this.selectedOption);
+        }
+      },
+      methods: {
+
+      },
+      template: `
+        <div>
+          <button type="button" @click="optionsShown = !optionsShown">{{ mainButtonContent }}</button>
+          <template v-if="optionsShown">
+            <input type="radio" id="radio0" :value="null" v-model="selectedOption">
+            <label for="radio0">No option</label>
+            <input type="radio" id="radio1" value="split-vertical" v-model="selectedOption">
+            <label for="radio1">Vertical split</label>
+            <input type="radio" id="radio2" value="split-horizontal" v-model="selectedOption">
+            <label for="radio2">Horizontal split</label>
+            <input type="radio" id="radio3" value="swap" v-model="selectedOption">
+            <label for="radio3">Swap</label>
+            <input type="radio" id="radio4" value="delete" v-model="selectedOption">
+            <label for="radio4">Delete</label>
+          </template>
+        </div>`
+    }
+
     const vm = new Vue({
       render: function (h) {
         return h("div", { style: "width: 80%; margin: auto; height: 80%;" }, [
+          h(headerComponent),
           h(Areas,
             {
               ref: "areas",
@@ -83,7 +129,10 @@
           )])
       },
     }).$mount('#app');
-    vm.$refs.areas.getComponentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
+
+    areas = vm.$refs.areas;
+    areas.getComponentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
+
   </script>
 </body>
 
