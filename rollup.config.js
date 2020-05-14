@@ -8,7 +8,7 @@ const isProduction = (process.env.BUILD === "production");
 console.log(`ROLLUP -- Building for ${isProduction ? "PRODUCTION" : "DEVELOPMENT"}`);
 
 const plugins = [
-  vue()
+  vue({ needMap: false })
 ];
 
 if (isProduction) {
@@ -25,14 +25,14 @@ if (isProduction) {
 export default {
   input: "src/main.js",
   output: [{
-    sourcemap: !isProduction,
     name: "areas",
     file: "dist/areas.js",
-    format: "umd"
+    format: "umd",
+    sourcemap: !isProduction
   }, {
-    sourcemap: !isProduction,
     file: "dist/areas.esm.js",
-    format: "es"
+    format: "es",
+    sourcemap: !isProduction
   }],
   plugins
 };
