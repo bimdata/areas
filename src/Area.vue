@@ -7,8 +7,9 @@
       'area-active': isAreaActive,
       'area-active-vertical-splitting': areas.splitVerticalMode,
       'area-active-horizontal-splitting': areas.splitHorizontalMode,
-      'area-active-grab': isDraggable && !dragging,
-      'area-active-grabbing': dragging,
+      'area-active-grab': isSwapMode && !dragging,
+      'area-active-grabbing': isSwapMode && dragging,
+      'area-active-delete': isDeleteMode
       }"
     @click="onAreaClick"
     @dragover="onDragOver"
@@ -20,18 +21,21 @@
     @mouseenter="onMouseEnter"
     @mousemove="onMouseMove"
   >
-    <!-- TODO the next two elements should be merged as one -->
-    <div class="area-overlay" v-if="isOverlayDisplayed"></div>
-    <div class="area-overlay-dragover" v-if="dragover && !dragging">
-      <div class="dash-area"></div>
-    </div>
     <div
-      class="area-vertical-split"
+      class="area-overlay"
+      :class="{
+      'area-overlay-dragover': dragover,
+      'area-overlay-delete': isDeleteMode
+      }"
+      v-if="isOverlayDisplayed"
+    ></div>
+    <div
+      class="area-split area-split-vertical"
       :style="{left: `${verticalSplitLeft}%`}"
       v-if="verticalSplitDisplayed"
     ></div>
     <div
-      class="area-horizontal-split"
+      class="area-split area-split-horizontal"
       :style="{top: `${horizontalSplitTop}%`}"
       v-if="horizontalSplitDisplayed"
     ></div>
@@ -62,7 +66,10 @@ export default {
       return this.id === this.areas.activeAreaId;
     },
     isOverlayDisplayed() {
-      return !this.isAreaActive && (this.areas.splitMode || this.isDraggable);
+      return (
+        (!this.isAreaActive && (this.isSplitMode || this.isSwapMode)) ||
+        (this.isAreaActive && this.isDeleteMode)
+      );
     },
     verticalSplitDisplayed() {
       return (
@@ -78,6 +85,9 @@ export default {
         this.horizontalSplitTop !== null
       );
     },
+    isSplitMode() {
+      return this.isVerticalSplitMode || this.isHorizontalSplitMode;
+    },
     isVerticalSplitMode() {
       return this.areas.splitVerticalMode;
     },
@@ -86,6 +96,9 @@ export default {
     },
     isDeleteMode() {
       return this.areas.deleteMode;
+    },
+    isSwapMode() {
+      return this.areas.swapMode;
     }
   },
   methods: {
@@ -168,55 +181,41 @@ export default {
 
 <style scoped>
 .area {
-  background-color: cornsilk;
-  box-sizing: border-box;
+  background-color: whitesmoke;
   position: relative;
   width: 100%;
   height: 100%;
 }
 .area-active {
-  box-shadow: inset 0 0 5px grey;
+  box-shadow: inset 0 0 2px grey;
 }
 .area-overlay {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(128, 128, 128, 0.199);
-}
-.area-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(128, 128, 128, 0.199);
+  background-color: rgba(128, 128, 128, 0.2);
 }
 .area-overlay-dragover {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  padding: 5px;
-  box-sizing: border-box;
-  pointer-events: none;
+  outline-offset: -10px;
+  outline: 5px dashed rgba(128, 128, 128, 0.4);
 }
-.dash-area {
-  height: 100%;
-  box-sizing: border-box;
-  border: dashed 5px grey;
+.area-overlay-delete {
+  background-color: rgba(255, 0, 0, 0.1);
 }
-.area-vertical-split {
+.area-split {
   pointer-events: none;
   position: absolute;
+  background-color: white;
+}
+.area-split-vertical {
   margin-left: -1px;
-  width: 3px;
+  width: 2px;
   height: 100%;
-  background-color: red;
 }
-.area-horizontal-split {
-  pointer-events: none;
-  position: absolute;
+.area-split-horizontal {
   margin-top: -1px;
   width: 100%;
-  height: 3px;
-  background-color: red;
+  height: 2px;
 }
 .area-active-vertical-splitting {
   cursor: col-resize;
@@ -226,6 +225,9 @@ export default {
 }
 .area-active-grab {
   cursor: grab;
+}
+.area-active-delete {
+  cursor: crosshair;
 }
 .area-active-grabbing {
   cursor: grabbing;
