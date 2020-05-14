@@ -173,7 +173,7 @@ export default {
 
 <style scoped>
 .area {
-  background-color: whitesmoke;
+  background-color: var(--areas-background-color, whitesmoke);
   position: relative;
   width: 100%;
   height: 100%;

@@ -64,11 +64,11 @@ export default {
       this.activeSeparatorIndex = separatorIndex;
       e.preventDefault();
       e.stopPropagation();
-      document.body.style.setProperty(
-        "cursor",
-        this.direction === "row" ? "ew-resize" : "ns-resize",
-        "important"
-      );
+      this._areas.cursor = `--areas-global-cursor: ${
+        this.direction === "row"
+          ? "var(--areas-vertical-resize-cursor, ew-resize)"
+          : "var(--areas-horizontal-resize-cursor, ns-resize)"
+      }`;
 
       document.addEventListener("mousemove", this.drag);
       document.addEventListener("mouseup", e => this.stopDrag(e));
@@ -110,7 +110,7 @@ export default {
     },
     stopDrag(e) {
       this.activeSeparatorIndex = null;
-      document.body.style.removeProperty("cursor");
+      this._areas.cursor = null;
       document.removeEventListener("mousemove", this.drag);
     },
     renderSeparator(h, index) {
@@ -125,7 +125,10 @@ export default {
             [this.direction === "row"
               ? "width"
               : "height"]: `${this.separatorThickness}px`,
-            cursor: this.direction === "row" ? "ew-resize" : "ns-resize",
+            cursor:
+              this.direction === "row"
+                ? "var(--areas-vertical-resize-cursor, ew-resize)"
+                : "var(--areas-horizontal-resize-cursor, ns-resize)",
             "pointer-events": this._areas.noMode ? "auto" : "none"
           },
           on: { mousedown: e => this.onSeparatorMouseDown(index, e) }

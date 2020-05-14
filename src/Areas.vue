@@ -27,7 +27,8 @@ export default {
       containerIdGen: null,
       containerKeyGen: null,
       areaIdGen: null,
-      areaContentIdGen: null
+      areaContentIdGen: null,
+      cursor: null
     };
   },
   computed: {
@@ -308,15 +309,23 @@ export default {
     }
   },
   render(h) {
-    return h("div", { class: "areas", on: { mouseleave: this.onMouseLeave } }, [
-      this.renderTeleports(h),
-      h(this.layoutComponent, {
-        ref: "layout",
-        on: {
-          updated: this.onLayoutUpdated
-        }
-      })
-    ]);
+    return h(
+      "div",
+      {
+        class: "areas",
+        style: `cursor: var(--areas-global-cursor, unset); ${this.cursor}`,
+        on: { mouseleave: this.onMouseLeave }
+      },
+      [
+        this.renderTeleports(h),
+        h(this.layoutComponent, {
+          ref: "layout",
+          on: {
+            updated: this.onLayoutUpdated
+          }
+        })
+      ]
+    );
   }
 };
 
@@ -343,8 +352,7 @@ function makeIdGenerator() {
 
 <style scoped>
 .areas {
-  /* TODO background color will affect the separator colors. It should be configurable. */
-  background-color: darkslategrey;
+  background-color: var(--areas-separator-color, darkslategrey);
   height: 100%;
   width: 100%;
   display: flex;
