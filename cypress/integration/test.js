@@ -3,9 +3,9 @@ const SEPARATOR_SELECTOR = "[data-test=separator]";
 const ID_PREFIX = "area-";
 const WIDTH = 800;
 const HEIGHT = 600;
-// TODO MARGIN_OF_ERROR may be reduced after taking into accound separator thickness
-const MARGIN_OF_ERROR = 3; // Because ratio are percentage computed to px... not perfect
+const MARGIN_OF_ERROR = 2; // Because ratio are percentage computed to px... not perfect
 const EMPTY_COMPONENT_TEXT = "empty component";
+const SEPARATOR_THICKNESS = 2;
 
 // TODO somae feature like swap may also be tested with mouse event instead of direct API (with drag and drop mode set for example)
 
@@ -18,6 +18,9 @@ function initTest(cy, cfg) {
 describe('Simple area', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       components: [{ render(h) { return h("div", "Hey !") } }],
       layout: {
         componentIndex: 0
@@ -51,6 +54,9 @@ describe('Simple area', () => {
 describe('Default empty component', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       layout: {
         componentIndex: null
       }
@@ -71,6 +77,9 @@ describe('Default empty component', () => {
 describe('Custom empty component', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       emptyComponent: {
         props: { text: { type: String } },
         render(h) { return h("div", this.text) }
@@ -100,6 +109,9 @@ describe('Custom empty component', () => {
 describe('Dual vertical areas', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       components: [
         { render(h) { return h("div", "Hey !") } },
         { render(h) { return h("div", "Ouille !") } }
@@ -130,9 +142,9 @@ describe('Dual vertical areas', () => {
       expect(area1.clientHeight).to.equal(HEIGHT);
       expect(area2.clientHeight).to.equal(HEIGHT);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalWidth = WIDTH * 30 / 100;
-      const area2TheoreticalWidth = WIDTH * 70 / 100;
+      // SEPARATOR_THICKNESS only for width because container is in row
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 30 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 70 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
@@ -151,9 +163,8 @@ describe('Dual vertical areas', () => {
       expect(area1.clientHeight).to.equal(HEIGHT);
       expect(area2.clientHeight).to.equal(HEIGHT);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalWidth = WIDTH * 10 / 100;
-      const area2TheoreticalWidth = WIDTH * 90 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 10 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 90 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
@@ -164,6 +175,9 @@ describe('Dual vertical areas', () => {
 describe('Dual horizontal areas', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       components: [
         { render(h) { return h("div", "Hey !") } },
         { render(h) { return h("div", "Ouille !") } }
@@ -195,9 +209,9 @@ describe('Dual horizontal areas', () => {
       expect(area1.clientWidth).to.equal(WIDTH);
       expect(area2.clientWidth).to.equal(WIDTH);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalHeight = HEIGHT * 16 / 100;
-      const area2TheoreticalHeight = HEIGHT * 84 / 100;
+      // SEPARATOR_THICKNESS only for height because container is in column
+      const area1TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 16 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 84 / 100;
       expect(area1.clientHeight).to.be.closeTo(area1TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
     });
@@ -216,9 +230,8 @@ describe('Dual horizontal areas', () => {
       expect(area1.clientWidth).to.equal(WIDTH);
       expect(area2.clientWidth).to.equal(WIDTH);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalHeight = HEIGHT * 50 / 100;
-      const area2TheoreticalHeight = HEIGHT * 50 / 100;
+      const area1TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 50 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 50 / 100;
       expect(area1.clientHeight).to.be.closeTo(area1TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
     });
@@ -229,6 +242,10 @@ describe('Dual horizontal areas', () => {
 describe('Three areas in the same direction (vertical)', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS,
+        separatorMargin: 0 // To handle mouseup correctly on separator
+      },
       components: [
         { render(h) { return h("div", "Hey !") } },
         { render(h) { return h("div", "Ouille !") } },
@@ -266,10 +283,9 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area2.clientHeight).to.equal(HEIGHT);
       expect(area3.clientHeight).to.equal(HEIGHT);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalWidth = WIDTH * 30 / 100;
-      const area2TheoreticalWidth = WIDTH * 30 / 100;
-      const area3TheoreticalWidth = WIDTH * 40 / 100;
+      const area1TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 30 / 100;
+      const area2TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 30 / 100;
+      const area3TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 40 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -291,10 +307,9 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area2.clientHeight).to.equal(HEIGHT);
       expect(area3.clientHeight).to.equal(HEIGHT);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalWidth = WIDTH * 50 / 100;
-      const area2TheoreticalWidth = WIDTH * 10 / 100;
-      const area3TheoreticalWidth = WIDTH * 40 / 100;
+      const area1TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 50 / 100;
+      const area2TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 10 / 100;
+      const area3TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 40 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -305,7 +320,7 @@ describe('Three areas in the same direction (vertical)', () => {
     cy.get(SEPARATOR_SELECTOR).first()
       .trigger('mousedown', "center")
       .trigger("mousemove", { clientX: WIDTH })
-    // .trigger('mouseup'); // Can not mouseup because the separator is behind separator margin
+      .trigger('mouseup');
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -315,10 +330,9 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area2.clientHeight).to.equal(HEIGHT);
       expect(area3.clientHeight).to.equal(HEIGHT);
 
-      // TODO this should take into accout separator width !
-      const area1TheoreticalWidth = WIDTH * 60 / 100;
+      const area1TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 60 / 100;
       const area2TheoreticalWidth = 0;
-      const area3TheoreticalWidth = WIDTH * 40 / 100;
+      const area3TheoreticalWidth = (WIDTH - 2 * SEPARATOR_THICKNESS) * 40 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -344,8 +358,8 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area1.clientHeight).to.equal(HEIGHT);
       expect(area2.clientHeight).to.equal(HEIGHT);
 
-      const area1TheoreticalWidth = WIDTH * 60 / 100;
-      const area2TheoreticalWidth = WIDTH * 40 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 60 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 40 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
@@ -370,6 +384,9 @@ describe('Three areas in the same direction (vertical)', () => {
 describe('Three areas in a custom layout (a big left, two at the right, little at the top, big at the bottom)', () => {
   beforeEach(() => {
     const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS
+      },
       components: [
         { render(h) { return h("div", "Hey !") } },
         { render(h) { return h("div", "Ouille !") } },
@@ -410,14 +427,14 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       const [area1, area2, area3] = els;
 
       expect(area1.clientHeight).to.equal(HEIGHT);
-      const area2TheoreticalHeight = HEIGHT * 15 / 100;
-      const area3TheoreticalHeight = HEIGHT * 85 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 15 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 85 / 100;
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
-      const area1TheoreticalWidth = WIDTH * 20 / 100;
-      const area2TheoreticalWidth = WIDTH * 80 / 100;
-      const area3TheoreticalWidth = WIDTH * 80 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -435,14 +452,14 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       const [area1, area2, area3] = els;
 
       expect(area1.clientHeight).to.equal(HEIGHT);
-      const area2TheoreticalHeight = HEIGHT * 15 / 100;
-      const area3TheoreticalHeight = HEIGHT * 85 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 15 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 85 / 100;
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
-      const area1TheoreticalWidth = WIDTH * 50 / 100;
-      const area2TheoreticalWidth = WIDTH * 50 / 100;
-      const area3TheoreticalWidth = WIDTH * 50 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -457,14 +474,14 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       const [area1, area2, area3] = els;
 
       expect(area1.clientHeight).to.equal(HEIGHT);
-      const area2TheoreticalHeight = HEIGHT * 78 / 100;
-      const area3TheoreticalHeight = HEIGHT * 22 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 78 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 22 / 100;
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
-      const area1TheoreticalWidth = WIDTH * 50 / 100;
-      const area2TheoreticalWidth = WIDTH * 50 / 100;
-      const area3TheoreticalWidth = WIDTH * 50 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 50 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
@@ -489,8 +506,8 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area1.clientHeight).to.equal(HEIGHT);
       expect(area2.clientHeight).to.equal(HEIGHT);
 
-      const area1TheoreticalWidth = WIDTH * 20 / 100;
-      const area2TheoreticalWidth = WIDTH * 80 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
     });
@@ -548,14 +565,14 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       const [area1, area2, area3] = els;
 
       expect(area1.clientHeight).to.equal(HEIGHT);
-      const area2TheoreticalHeight = HEIGHT * 15 / 100;
-      const area3TheoreticalHeight = HEIGHT * 85 / 100;
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 15 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 85 / 100;
       expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
       expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
 
-      const area1TheoreticalWidth = WIDTH * 20 / 100;
-      const area2TheoreticalWidth = WIDTH * 80 / 100;
-      const area3TheoreticalWidth = WIDTH * 80 / 100;
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
       expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
