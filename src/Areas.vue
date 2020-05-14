@@ -42,6 +42,9 @@ export default {
     },
     splitHorizontalMode() {
       return this.mode === "split-horizontal";
+    },
+    noMode() {
+      return this.mode === null;
     }
   },
   created() {

@@ -66,7 +66,7 @@ export default {
       e.stopPropagation();
       document.body.style.setProperty(
         "cursor",
-        this.direction === "row" ? "col-resize" : "row-resize",
+        this.direction === "row" ? "ew-resize" : "ns-resize",
         "important"
       );
 
@@ -125,8 +125,8 @@ export default {
             [this.direction === "row"
               ? "width"
               : "height"]: `${this.separatorThickness}px`,
-            cursor: this.direction === "row" ? "col-resize" : "row-resize",
-            flexShrink: 0
+            cursor: this.direction === "row" ? "ew-resize" : "ns-resize",
+            "pointer-events": this._areas.noMode ? "auto" : "none"
           },
           on: { mousedown: e => this.onSeparatorMouseDown(index, e) }
         },
@@ -191,8 +191,8 @@ function sum(a, b) {
 }
 .container-separator {
   position: relative;
+  flex-shrink: 0;
 }
-
 .container-separator-margin {
   position: absolute;
   z-index: 1;
