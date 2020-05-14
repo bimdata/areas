@@ -19,19 +19,18 @@
       class="area-overlay"
       :class="{
       'area-overlay-dragover': dragover,
-      'area-overlay-delete': isDeleteMode
+      'area-overlay-delete': isAreaActive && isDeleteMode
       }"
       v-if="isOverlayDisplayed"
     ></div>
     <div
-      class="area-split area-split-vertical"
-      :style="{left: `${verticalSplitLeft}%`}"
-      v-if="verticalSplitDisplayed"
-    ></div>
-    <div
-      class="area-split area-split-horizontal"
-      :style="{top: `${horizontalSplitTop}%`}"
-      v-if="horizontalSplitDisplayed"
+      v-if="isSplitMode && isAreaActive"
+      class="area-split"
+      :class="{
+        'area-split-vertical': isVerticalSplitMode,
+        'area-split-horizontal': isHorizontalSplitMode,
+      }"
+      :style="`${isVerticalSplitMode ? 'left' : 'top'}: ${isVerticalSplitMode ? verticalSplitLeft : horizontalSplitTop}%`"
     ></div>
     <div class="area-content" :id="areas.getDOMAreaId(id)"></div>
   </div>
@@ -62,21 +61,7 @@ export default {
     isOverlayDisplayed() {
       return (
         (!this.isAreaActive && (this.isSplitMode || this.isSwapMode)) ||
-        (this.isAreaActive && this.isDeleteMode)
-      );
-    },
-    verticalSplitDisplayed() {
-      return (
-        this.isAreaActive &&
-        this.isVerticalSplitMode &&
-        this.verticalSplitLeft !== null
-      );
-    },
-    horizontalSplitDisplayed() {
-      return (
-        this.isAreaActive &&
-        this.isHorizontalSplitMode &&
-        this.horizontalSplitTop !== null
+        this.isDeleteMode
       );
     },
     isSplitMode() {
@@ -215,12 +200,10 @@ export default {
   background-color: white;
 }
 .area-split-vertical {
-  margin-left: -1px;
   width: 2px;
   height: 100%;
 }
 .area-split-horizontal {
-  margin-top: -1px;
   width: 100%;
   height: 2px;
 }
