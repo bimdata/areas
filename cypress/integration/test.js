@@ -19,8 +19,8 @@ describe('Simple area', () => {
       defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
-        { render(h) { return h("div", "Hey !") } },
-        { render(h) { return h("div", "Ouille !") } }
+        { render(h) { return h("div", "component content 1") } },
+        { render(h) { return h("div", "component content 2") } }
       ],
       layout: {
         componentIndex: 0
@@ -30,7 +30,7 @@ describe('Simple area', () => {
   });
 
   it('Should render the simple area within all available space', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
     cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
@@ -53,7 +53,7 @@ describe('Simple area', () => {
   it('Should add vertical area if splitted vertically, horizontal if splitted horizontally', () => {
     cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
     cy.get(AREA_SELECTOR).should("have.length", 2).contains(DEFAULT_COMPONENT_TEXT);
 
     cy.get(AREA_SELECTOR).should(els => {
@@ -72,7 +72,7 @@ describe('Simple area', () => {
 
     cy.get("@areas").invoke("splitArea", 1, "horizontal", 62);
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
     cy.get(`${AREA_SELECTOR}:contains(${DEFAULT_COMPONENT_TEXT})`).should('have.length', 2);
 
     cy.get(AREA_SELECTOR).should(els => {
@@ -95,11 +95,11 @@ describe('Simple area', () => {
   });
 
   it('Should display other component if area component is changed', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
 
     cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: 1 });
 
-    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("component content 2");
 
     cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
 
@@ -112,7 +112,7 @@ describe('Simple area', () => {
     cy.get(AREA_SELECTOR).trigger("click", { clientX: WIDTH / 4, clientY: HEIGHT / 2 });
 
     cy.get(AREA_SELECTOR).contains(DEFAULT_COMPONENT_TEXT);
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -132,7 +132,7 @@ describe('Simple area', () => {
 
     cy.get(AREA_SELECTOR).last().trigger("click", { clientX: WIDTH / 2, clientY: HEIGHT * 0.7 });
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
     cy.get(`${AREA_SELECTOR}:contains(${DEFAULT_COMPONENT_TEXT})`).should('have.length', 2);
 
     cy.get(AREA_SELECTOR).should(els => {
@@ -220,7 +220,7 @@ describe('Dual vertical areas', () => {
       },
     },
     render(h) {
-      return h("div", "Hey !")
+      return h("div", "component content 1")
     }
   }
 
@@ -230,7 +230,7 @@ describe('Dual vertical areas', () => {
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         comp1,
-        { render(h) { return h("div", "Ouille !") } }
+        { render(h) { return h("div", "component content 2") } }
       ],
       layout: {
         ratios: [30, 70],
@@ -248,8 +248,8 @@ describe('Dual vertical areas', () => {
   });
 
   it('Should render the two areas with the correct width and height', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -288,11 +288,11 @@ describe('Dual vertical areas', () => {
 
   it('Should call onChange $area with correct ids method when swapping areas', () => {
     cy.spy(toSpy, "handler");
-    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 1");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 2");
     cy.get("@areas").invoke("swapAreas", 1, 2);
-    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}2`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 1");
 
     cy.wrap(toSpy).its("handler").should("be.calledWith", 2, 1);
 
@@ -300,8 +300,8 @@ describe('Dual vertical areas', () => {
 
     cy.wrap(toSpy).its("handler").should("be.calledWith", 1, 2);
 
-    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 1");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 2");
   });
 });
 
@@ -313,10 +313,10 @@ describe('Dual horizontal areas', () => {
       components: [
         {
           render(h) {
-            return h("div", "Hey !")
+            return h("div", "component content 1")
           }
         },
-        { render(h) { return h("div", "Ouille !") } }
+        { render(h) { return h("div", "component content 2") } }
       ],
       layout: {
         ratios: [16, 84],
@@ -335,8 +335,8 @@ describe('Dual horizontal areas', () => {
   });
 
   it('Should render the two areas with the correct width and height', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -384,11 +384,11 @@ describe('Three areas in the same direction (vertical)', () => {
       components: [
         {
           render(h) {
-            return h("div", "Hey !")
+            return h("div", "component content 1")
           }
         },
-        { render(h) { return h("div", "Ouille !") } },
-        { render(h) { return h("div", "Ola !") } }
+        { render(h) { return h("div", "component content 2") } },
+        { render(h) { return h("div", "component content 3") } }
       ],
       layout: {
         ratios: [30, 30, 40],
@@ -410,9 +410,9 @@ describe('Three areas in the same direction (vertical)', () => {
   });
 
   it('Should render the three areas with the correct width and height', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -480,15 +480,15 @@ describe('Three areas in the same direction (vertical)', () => {
 
   it("Should fill the space and display the correct areas when deleting area", () => {
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get("@areas").invoke("deleteArea", 2);
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -505,9 +505,9 @@ describe('Three areas in the same direction (vertical)', () => {
 
     cy.get("@areas").invoke("deleteArea", 1);
 
-    cy.get(AREA_SELECTOR).contains("Hey !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 2").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(1);
@@ -522,15 +522,15 @@ describe('Three areas in the same direction (vertical)', () => {
   it("Should delete area if clicked in delete mode", () => {
     cy.get("@areas").invoke("setMode", "delete");
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).eq(1).trigger("click", { clientX: WIDTH / 2, clientY: HEIGHT / 2 });
 
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -547,9 +547,9 @@ describe('Three areas in the same direction (vertical)', () => {
 
     cy.get(AREA_SELECTOR).first().trigger("click", { clientX: WIDTH / 4, clientY: HEIGHT / 2 });
 
-    cy.get(AREA_SELECTOR).contains("Hey !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 2").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(1);
@@ -569,11 +569,11 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       components: [
         {
           render(h) {
-            return h("div", "Hey !")
+            return h("div", "component content 1")
           }
         },
-        { render(h) { return h("div", "Ouille !") } },
-        { render(h) { return h("div", "Ola !") } }
+        { render(h) { return h("div", "component content 2") } },
+        { render(h) { return h("div", "component content 3") } }
       ],
       layout: {
         ratios: [20, 80],
@@ -601,9 +601,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   });
 
   it('Should render the three areas with the correct width and height', () => {
-    cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
+    cy.get(AREA_SELECTOR).contains("component content 1");
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -672,15 +672,15 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   });
 
   it("Should fill the space and display the correct areas when deleting area", () => {
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
-    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
+    cy.get(AREA_SELECTOR).contains("component content 1");
 
     cy.get("@areas").invoke("deleteArea", 3);
 
-    cy.get(AREA_SELECTOR).contains("Ouille !");
-    cy.get(AREA_SELECTOR).contains("Ola !");
-    cy.get(AREA_SELECTOR).contains("Hey !").should('not.exist');
+    cy.get(AREA_SELECTOR).contains("component content 2");
+    cy.get(AREA_SELECTOR).contains("component content 3");
+    cy.get(AREA_SELECTOR).contains("component content 1").should('not.exist');
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -697,9 +697,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
 
     cy.get("@areas").invoke("deleteArea", 1);
 
-    cy.get(AREA_SELECTOR).contains("Ouille !").should('not.exist');
-    cy.get(AREA_SELECTOR).contains("Ola !");
-    cy.get(AREA_SELECTOR).contains("Hey !").should('not.exist');
+    cy.get(AREA_SELECTOR).contains("component content 2").should('not.exist');
+    cy.get(AREA_SELECTOR).contains("component content 3");
+    cy.get(AREA_SELECTOR).contains("component content 1").should('not.exist');
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(1);
@@ -712,26 +712,26 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
   });
 
   it('Should display the correct content after swapping areas content', () => {
-    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 3");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 1");
     cy.get("@areas").invoke("swapAreas", 1, 2);
-    cy.get(`#${ID_PREFIX}1`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 3");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 1");
     cy.get("@areas").invoke("swapAreas", 1, 3);
-    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}3`).contains("Ola !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 1");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 3");
   });
 
   it.skip('Should display the correct content after drag and drop areas in swap mode', () => {
     // TODO skipped because Cypress drag & drop no seems to work properly
     cy.get("@areas").invoke("setMode", "swap");
 
-    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 3");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 1");
 
     cy.get(AREA_SELECTOR).first()
       .trigger("mousedown", { which: 1 })
@@ -739,9 +739,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       .trigger("mousemove")
       .trigger("mouseup", { force: true });
 
-    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}3`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 1");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 3");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 2");
   });
 
   it("Should save and load layout", () => {
@@ -758,9 +758,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get("@areas")
       .then(areas => cy.get("@savedLayout").then(savedLayout => areas.loadLayout(savedLayout)));
 
-    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("component content 2");
+    cy.get(`#${ID_PREFIX}2`).contains("component content 3");
+    cy.get(`#${ID_PREFIX}3`).contains("component content 1");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -784,9 +784,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
 
 describe('Components must be created only once and cached', () => {
 
-  const comp1 = { created() { /* default */ }, render(h) { return h("div", "Hey !") } };
-  const comp2 = { created() { /* default */ }, render(h) { return h("div", "Ouille !") } };
-  const comp3 = { created() { /* default */ }, render(h) { return h("div", "Ola !") } };
+  const comp1 = { created() { /* default */ }, render(h) { return h("div", "component content 1") } };
+  const comp2 = { created() { /* default */ }, render(h) { return h("div", "component content 2") } };
+  const comp3 = { created() { /* default */ }, render(h) { return h("div", "component content 3") } };
 
   beforeEach(() => {
     cy.spy(comp1, "created");
