@@ -21,7 +21,10 @@ describe('Simple area', () => {
       style: {
         separatorThickness: SEPARATOR_THICKNESS
       },
-      components: [{ render(h) { return h("div", "Hey !") } }],
+      components: [
+        { render(h) { return h("div", "Hey !") } },
+        { render(h) { return h("div", "Ouille !") } }
+      ],
       layout: {
         componentIndex: 0
       }
@@ -47,6 +50,110 @@ describe('Simple area', () => {
       } finally {
         expect(areas.deleteArea).to.have.throw();
       }
+    });
+  });
+
+  it('Should add vertical area if splitted vertically, horizontal if splitted horizontally', () => {
+    cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
+
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).should("have.length", 2).contains(EMPTY_COMPONENT_TEXT);
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(2);
+      const [area1, area2] = els;
+
+      expect(area1.clientHeight).to.equal(HEIGHT);
+      expect(area2.clientHeight).to.equal(HEIGHT);
+
+      // SEPARATOR_THICKNESS only for width because container is in row
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+    });
+
+    cy.get("@areas").invoke("splitArea", 1, "horizontal", 62);
+
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(`${AREA_SELECTOR}:contains(${EMPTY_COMPONENT_TEXT})`).should('have.length', 2);
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(3);
+      const [area1, area3, area2] = els;
+
+      expect(area2.clientHeight).to.equal(HEIGHT);
+      const area1TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 62 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 38 / 100;
+      expect(area1.clientHeight).to.be.closeTo(area1TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
+
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 80 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 20 / 100;
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
+    });
+  });
+
+  it('Should display other component if area component is changed', () => {
+    cy.get(AREA_SELECTOR).contains("Hey !");
+
+    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: 1 });
+
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+
+    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
+
+    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
+  });
+
+  it('Should add area if clicked in split mode', () => {
+    cy.get("@areas").invoke("setMode", "split-vertical");
+
+    cy.get(AREA_SELECTOR).trigger("click", { clientX: WIDTH / 4, clientY: HEIGHT / 2 });
+
+    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
+    cy.get(AREA_SELECTOR).contains("Hey !");
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(2);
+      const [area1, area2] = els;
+
+      expect(area1.clientHeight).to.equal(HEIGHT);
+      expect(area2.clientHeight).to.equal(HEIGHT);
+
+      // SEPARATOR_THICKNESS only for width because container is in row
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 25 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 75 / 100;
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+    });
+
+    cy.get("@areas").invoke("setMode", "split-horizontal");
+
+    cy.get(AREA_SELECTOR).last().trigger("click", { clientX: WIDTH / 2, clientY: HEIGHT * 0.7 });
+
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(`${AREA_SELECTOR}:contains(${EMPTY_COMPONENT_TEXT})`).should('have.length', 2);
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(3);
+      const [area1, area2, area3] = els;
+
+      expect(area1.clientHeight).to.equal(HEIGHT);
+      const area2TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 70 / 100;
+      const area3TheoreticalHeight = (HEIGHT - SEPARATOR_THICKNESS) * 30 / 100;
+      expect(area2.clientHeight).to.be.closeTo(area2TheoreticalHeight, MARGIN_OF_ERROR);
+      expect(area3.clientHeight).to.be.closeTo(area3TheoreticalHeight, MARGIN_OF_ERROR);
+
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 25 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 75 / 100;
+      const area3TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 75 / 100;
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
   });
 });
@@ -378,6 +485,47 @@ describe('Three areas in the same direction (vertical)', () => {
       expect(area2.clientWidth).to.equal(WIDTH);
     });
 
+  });
+
+  it("Should delete area if clicked in delete mode", () => {
+    cy.get("@areas").invoke("setMode", "delete");
+
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+
+    cy.get(AREA_SELECTOR).eq(1).trigger("click", { clientX: WIDTH / 2, clientY: HEIGHT / 2 });
+
+    cy.get(AREA_SELECTOR).contains("Hey !");
+    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(2);
+      const [area1, area2] = els;
+
+      expect(area1.clientHeight).to.equal(HEIGHT);
+      expect(area2.clientHeight).to.equal(HEIGHT);
+
+      const area1TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 60 / 100;
+      const area2TheoreticalWidth = (WIDTH - SEPARATOR_THICKNESS) * 40 / 100;
+      expect(area1.clientWidth).to.be.closeTo(area1TheoreticalWidth, MARGIN_OF_ERROR);
+      expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
+    });
+
+    cy.get(AREA_SELECTOR).first().trigger("click", { clientX: WIDTH / 4, clientY: HEIGHT / 2 });
+
+    cy.get(AREA_SELECTOR).contains("Hey !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ouille !").should("not.exist");
+    cy.get(AREA_SELECTOR).contains("Ola !");
+
+    cy.get(AREA_SELECTOR).should(els => {
+      expect(els).to.have.length(1);
+      const [area2] = els;
+
+      expect(area2.clientHeight).to.equal(HEIGHT);
+      expect(area2.clientWidth).to.equal(WIDTH);
+    });
   })
 });
 
@@ -542,6 +690,25 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get(`#${ID_PREFIX}3`).contains("Ola !");
   });
 
+  it.skip('Should display the correct content after drag and drop areas in swap mode', () => {
+    // TODO skipped because Cypress drag & drop no seems to work properly
+    cy.get("@areas").invoke("setMode", "swap");
+
+    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
+    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
+
+    cy.get(AREA_SELECTOR).first()
+      .trigger("mousedown", { which: 1 })
+    cy.get(AREA_SELECTOR).last()
+      .trigger("mousemove")
+      .trigger("mouseup", { force: true });
+
+    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
+    cy.get(`#${ID_PREFIX}3`).contains("Ouille !");
+  });
+
   it("Should save and load layout", () => {
     cy.get("@areas").then(areas => areas.getCurrentLayout()).as('savedLayout');
 
@@ -577,5 +744,67 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
       expect(area2.clientWidth).to.be.closeTo(area2TheoreticalWidth, MARGIN_OF_ERROR);
       expect(area3.clientWidth).to.be.closeTo(area3TheoreticalWidth, MARGIN_OF_ERROR);
     });
-  })
+  });
+});
+
+describe('Components must be created only once and cached', () => {
+
+  const comp1 = { created() { /* empty */ }, render(h) { return h("div", "Hey !") } };
+  const comp2 = { created() { /* empty */ }, render(h) { return h("div", "Ouille !") } };
+  const comp3 = { created() { /* empty */ }, render(h) { return h("div", "Ola !") } };
+
+  beforeEach(() => {
+    cy.spy(comp1, "created");
+    cy.spy(comp2, "created");
+    cy.spy(comp3, "created");
+
+    const cfg = {
+      style: {
+        separatorThickness: SEPARATOR_THICKNESS,
+        separatorMargin: 0
+      },
+      components: [
+        comp1,
+        comp2,
+        comp3
+      ],
+      layout: {
+        ratios: [20, 80],
+        direction: "row",
+        children: [
+          {
+            componentIndex: 1
+          },
+          {
+            ratios: [15, 85],
+            direction: "column",
+            children: [
+              {
+                componentIndex: 2
+              },
+              {
+                componentIndex: 0
+              },
+            ]
+          }
+        ]
+      }
+    };
+    initTest(cy, cfg);
+  });
+
+  it("Created method must have been called only once after resize, split, change, swap and delete", () => {
+    cy.get(SEPARATOR_SELECTOR).last()
+      .trigger('mousedown', "center")
+      .trigger("mousemove", { clientY: HEIGHT / 2 })
+      .trigger('mouseup');
+    cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
+    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: 1 });
+    cy.get("@areas").invoke("swapAreas", 1, 2);
+    cy.get("@areas").invoke("deleteArea", 2);
+
+    expect(comp1.created).to.be.calledOnce;
+    expect(comp2.created).to.be.calledOnce;
+    expect(comp3.created).to.be.calledOnce;
+  });
 });
