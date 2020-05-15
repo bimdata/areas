@@ -273,11 +273,9 @@ export default {
       return areaObject;
     },
     getAreas() {
-      // TODO this may be removed if area are exposed to children another way
       return this.$refs.layout.getAreaInstances();
     },
     getArea(id) {
-      // TODO this may be removed if area are exposed to children another way
       return this.getAreas().find(area => area.id === id);
     },
     onLayoutUpdated() {
@@ -307,7 +305,7 @@ export default {
                     },
                     on: {
                       mounted({ childInstance }) {
-                        areaContent.instance = childInstance; // TODO is it really usefull here ???
+                        areaContent.instance = childInstance;
                       }
                     },
                     ref: "teleports",

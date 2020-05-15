@@ -7,8 +7,6 @@ const MARGIN_OF_ERROR = 2; // Because ratio are percentage computed to px... not
 const EMPTY_COMPONENT_TEXT = "empty component";
 const SEPARATOR_THICKNESS = 2;
 
-// TODO somae feature like swap may also be tested with mouse event instead of direct API (with drag and drop mode set for example)
-
 function initTest(cy, cfg) {
   cy.visit('test');
   cy.window().then(win => win.mountApp({ cfg, width: WIDTH, height: HEIGHT }))
