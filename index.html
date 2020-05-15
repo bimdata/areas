@@ -111,7 +111,33 @@
                   // separatorDetectionMargin: 20,
                   // separatorThickness: 10,
                   components: [
-                    { props: { text: { type: String, default: "no text provided" } }, render(h) { return h("div", this.text) }, mounted() { this.$emit("mounted") } },
+                    {
+                      inject: ["$area"],
+                      props: { text: { type: String, default: "no text provided" } },
+                      created() {
+                        this.$area.onChange(this.handler);
+                      },
+                      mounted() {
+                        this.$emit("mounted");
+                      },
+                      methods: {
+                        handler(id, old) {
+                          console.log(`change area from ${old} to ${id}`);
+                          console.log(this.$area.domElement);
+                          console.log(this.$area.id);
+                          console.log(this.$area.contentComponent);
+                          console.log(this.$area.component);
+                          console.log(this.$area.areas);
+                        },
+                        stop() {
+                          this.$area.offChange(this.handler);
+                        }
+                      },
+                      template: `<div>
+                          {{text}}
+                          <button type="button" @click="stop">Click to stop listening to area change</button>
+                        </div>`
+                    },
                     { props: { text: { type: String, default: "no text provided" } }, render(h) { return h("div", this.text) } },
                     { render(h) { return h("div", "Hey !") } },
                   ],

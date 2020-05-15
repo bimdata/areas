@@ -206,15 +206,29 @@ describe('Custom empty component', () => {
 });
 
 describe('Dual vertical areas', () => {
+  const toSpy = {
+    handler: () => { }
+  }
+  const comp1 = {
+    inject: ["$area"],
+    created() {
+      this.$area.onChange(this.handler);
+    },
+    methods: {
+      handler(id, old) {
+        toSpy.handler(id, old);
+      },
+    },
+    render(h) {
+      return h("div", "Hey !")
+    }
+  }
+
   beforeEach(() => {
     const cfg = {
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
-        {
-          render(h) {
-            return h("div", "Hey !")
-          }
-        },
+        comp1,
         { render(h) { return h("div", "Ouille !") } }
       ],
       layout: {
@@ -271,6 +285,23 @@ describe('Dual vertical areas', () => {
     });
   });
 
+  it('Should call onChange $area with correct ids method when swapping areas', () => {
+    cy.spy(toSpy, "handler");
+    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
+    cy.get("@areas").invoke("swapAreas", 1, 2);
+    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}2`).contains("Hey !");
+
+    cy.wrap(toSpy).its("handler").should("be.calledWith", 2, 1);
+
+    cy.get("@areas").invoke("swapAreas", 1, 2);
+
+    cy.wrap(toSpy).its("handler").should("be.calledWith", 1, 2);
+
+    cy.get(`#${ID_PREFIX}1`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}2`).contains("Ouille !");
+  });
 });
 
 describe('Dual horizontal areas', () => {
