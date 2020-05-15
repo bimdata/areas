@@ -725,9 +725,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
     cy.get("@areas")
       .then(areas => cy.get("@savedLayout").then(savedLayout => areas.loadLayout(savedLayout)));
 
-    cy.get(`#${ID_PREFIX}4`).contains("Ouille !");
-    cy.get(`#${ID_PREFIX}5`).contains("Ola !");
-    cy.get(`#${ID_PREFIX}6`).contains("Hey !");
+    cy.get(`#${ID_PREFIX}1`).contains("Ouille !");
+    cy.get(`#${ID_PREFIX}2`).contains("Ola !");
+    cy.get(`#${ID_PREFIX}3`).contains("Hey !");
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);

@@ -53,14 +53,17 @@ export default {
     }
   },
   created() {
-    this.containerIdGen = makeIdGenerator();
-    this.containerKeyGen = makeIdGenerator();
-    this.areaIdGen = makeIdGenerator();
-    this.areaContentIdGen = makeIdGenerator();
-
+    this.initGenerators();
+    this.areasContent = [];
     this.parseCfg(this.cfg);
   },
   methods: {
+    initGenerators() {
+      this.containerIdGen = makeIdGenerator();
+      this.containerKeyGen = makeIdGenerator();
+      this.areaIdGen = makeIdGenerator();
+      this.areaContentIdGen = makeIdGenerator();
+    },
     /******* PARSING CFG *******/
     parseCfg(cfg) {
       // The following values no need to be reative, that is why they are not present on data object
@@ -78,7 +81,6 @@ export default {
       this.buildLayout(layout);
     },
     parseLayout(layout) {
-      this.areasContent = [];
       return layout.children
         ? this.parseContainer(layout)
         : this.parseArea(layout);
@@ -139,7 +141,10 @@ export default {
     },
     /******* Methods to be used externally *******/
     loadLayout(layout) {
-      this.buildLayout(this.parseLayout(layout));
+      this.initGenerators();
+      this.areasContent = [];
+
+      this.$nextTick(() => this.buildLayout(this.parseLayout(layout)));
     },
     getCurrentLayout() {
       const layout = this.$refs.layout.getLayout();
