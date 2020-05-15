@@ -22,7 +22,7 @@ exports[`Areas Should allow user to get component by name and update props (this
 </div>"
 `;
 
-exports[`Areas Should display the default empty component if componentIndex = null 1`] = `
+exports[`Areas Should display the default component if componentIndex = null 1`] = `
 "<div class=\\"areas\\" style=\\"cursor: var(--areas-global-cursor, unset);\\">
   <div style=\\"display: none;\\">
     <anonymous-stub targetid=\\"1\\">

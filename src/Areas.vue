@@ -27,7 +27,7 @@ export default {
       availableComponents: null,
       areasContent: null,
       layoutComponent: null,
-      emptyComponent: null,
+      defaultComponent: null,
       containerIdGen: null,
       containerKeyGen: null,
       areaIdGen: null,
@@ -72,7 +72,7 @@ export default {
       this.areaMinRatio = cfg.areaMinRatio;
 
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
-      this.emptyComponent = this.cfg.emptyComponent || {
+      this.defaultComponent = this.cfg.defaultComponent || {
         render: () => null
       };
       this.availableComponents = cfg.components;
@@ -114,7 +114,7 @@ export default {
         area.componentIndex !== null &&
         !this.availableComponents[area.componentIndex]
       ) {
-        throw `The component with index "${area.componentIndex}" does not exist. "componentIndex" in cfg.layout must be a valid index in the cfg.components array or null for empty component.`;
+        throw `The component with index "${area.componentIndex}" does not exist. "componentIndex" in cfg.layout must be a valid index in the cfg.components array or null for default component.`;
       }
       const areaObject = {
         type: "area",
@@ -125,7 +125,7 @@ export default {
         component:
           area.componentIndex !== null
             ? this.availableComponents[area.componentIndex]
-            : this.emptyComponent,
+            : this.defaultComponent,
         cfg: area.cfg,
         id: this.areaContentIdGen()
       };
@@ -164,14 +164,14 @@ export default {
         componentIndex !== null &&
         !Object.keys(this.availableComponents).includes(String(componentIndex))
       ) {
-        throw `Impossible to change component. Component index "${componentIndex}" is not available. For empty component, use null.`;
+        throw `Impossible to change component. Component index "${componentIndex}" is not available. For default component, use null.`;
       }
       const id = this.areaContentIdGen();
       const newAreaContentObject = {
         id,
         component:
           componentIndex === null
-            ? this.emptyComponent
+            ? this.defaultComponent
             : this.availableComponents[componentIndex],
         ...(cfg && { cfg }),
         ...(name && { name })
@@ -205,7 +205,7 @@ export default {
       );
       this.areasContent[newAreaId] = {
         id: this.areaContentIdGen(),
-        component: this.emptyComponent
+        component: this.defaultComponent
       };
 
       this.$nextTick(() => {

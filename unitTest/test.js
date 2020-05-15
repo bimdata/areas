@@ -21,7 +21,7 @@ describe('Areas', () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
 
-  it("Should display the default empty component if componentIndex = null", () => {
+  it("Should display the default component if componentIndex = null", () => {
     const cfg = {
       layout: { componentIndex: null }
     };

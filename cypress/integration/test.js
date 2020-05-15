@@ -4,7 +4,7 @@ const ID_PREFIX = "area-";
 const WIDTH = 800;
 const HEIGHT = 600;
 const MARGIN_OF_ERROR = 2; // Because ratio are percentage computed to px... not perfect
-const EMPTY_COMPONENT_TEXT = "empty component";
+const DEFAULT_COMPONENT_TEXT = "default component";
 const SEPARATOR_THICKNESS = 2;
 
 function initTest(cy, cfg) {
@@ -16,7 +16,7 @@ function initTest(cy, cfg) {
 describe('Simple area', () => {
   beforeEach(() => {
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -54,7 +54,7 @@ describe('Simple area', () => {
     cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
 
     cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(AREA_SELECTOR).should("have.length", 2).contains(EMPTY_COMPONENT_TEXT);
+    cy.get(AREA_SELECTOR).should("have.length", 2).contains(DEFAULT_COMPONENT_TEXT);
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(2);
@@ -73,7 +73,7 @@ describe('Simple area', () => {
     cy.get("@areas").invoke("splitArea", 1, "horizontal", 62);
 
     cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(`${AREA_SELECTOR}:contains(${EMPTY_COMPONENT_TEXT})`).should('have.length', 2);
+    cy.get(`${AREA_SELECTOR}:contains(${DEFAULT_COMPONENT_TEXT})`).should('have.length', 2);
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -103,7 +103,7 @@ describe('Simple area', () => {
 
     cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
 
-    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
+    cy.get(AREA_SELECTOR).contains(DEFAULT_COMPONENT_TEXT);
   });
 
   it('Should add area if clicked in split mode', () => {
@@ -111,7 +111,7 @@ describe('Simple area', () => {
 
     cy.get(AREA_SELECTOR).trigger("click", { clientX: WIDTH / 4, clientY: HEIGHT / 2 });
 
-    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
+    cy.get(AREA_SELECTOR).contains(DEFAULT_COMPONENT_TEXT);
     cy.get(AREA_SELECTOR).contains("Hey !");
 
     cy.get(AREA_SELECTOR).should(els => {
@@ -133,7 +133,7 @@ describe('Simple area', () => {
     cy.get(AREA_SELECTOR).last().trigger("click", { clientX: WIDTH / 2, clientY: HEIGHT * 0.7 });
 
     cy.get(AREA_SELECTOR).contains("Hey !");
-    cy.get(`${AREA_SELECTOR}:contains(${EMPTY_COMPONENT_TEXT})`).should('have.length', 2);
+    cy.get(`${AREA_SELECTOR}:contains(${DEFAULT_COMPONENT_TEXT})`).should('have.length', 2);
 
     cy.get(AREA_SELECTOR).should(els => {
       expect(els).to.have.length(3);
@@ -155,7 +155,7 @@ describe('Simple area', () => {
   });
 });
 
-describe('Default empty component', () => {
+describe('Default component', () => {
   beforeEach(() => {
     const cfg = {
       separatorThickness: SEPARATOR_THICKNESS,
@@ -166,7 +166,7 @@ describe('Default empty component', () => {
     initTest(cy, cfg);
   });
 
-  it('Should display the default empty component if componentIndex = null', () => {
+  it('Should display the default component if componentIndex = null', () => {
     cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
@@ -175,11 +175,11 @@ describe('Default empty component', () => {
   });
 });
 
-describe('Custom empty component', () => {
+describe('Custom default component', () => {
   beforeEach(() => {
     const cfg = {
       separatorThickness: SEPARATOR_THICKNESS,
-      emptyComponent: {
+      defaultComponent: {
         props: { text: { type: String } },
         render(h) { return h("div", this.text) }
       },
@@ -187,7 +187,7 @@ describe('Custom empty component', () => {
         componentIndex: null,
         cfg: {
           props: {
-            text: "CUSTOM EMPTY COMPONENT"
+            text: "CUSTOM DEFAULT COMPONENT"
           }
         }
       }
@@ -195,8 +195,8 @@ describe('Custom empty component', () => {
     initTest(cy, cfg);
   });
 
-  it('Should display the custom empty component if componentIndex = null and cfg should work', () => {
-    cy.get(AREA_SELECTOR).contains("CUSTOM EMPTY COMPONENT");
+  it('Should display the custom default component if componentIndex = null and cfg should work', () => {
+    cy.get(AREA_SELECTOR).contains("CUSTOM DEFAULT COMPONENT");
     cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
@@ -226,7 +226,7 @@ describe('Dual vertical areas', () => {
 
   beforeEach(() => {
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         comp1,
@@ -308,7 +308,7 @@ describe('Dual vertical areas', () => {
 describe('Dual horizontal areas', () => {
   beforeEach(() => {
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         {
@@ -378,7 +378,7 @@ describe('Dual horizontal areas', () => {
 describe('Three areas in the same direction (vertical)', () => {
   beforeEach(() => {
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       separatorDetectionMargin: 0, // To handle mouseup correctly on separator
       components: [
@@ -564,7 +564,7 @@ describe('Three areas in the same direction (vertical)', () => {
 describe('Three areas in a custom layout (a big left, two at the right, little at the top, big at the bottom)', () => {
   beforeEach(() => {
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         {
@@ -784,9 +784,9 @@ describe('Three areas in a custom layout (a big left, two at the right, little a
 
 describe('Components must be created only once and cached', () => {
 
-  const comp1 = { created() { /* empty */ }, render(h) { return h("div", "Hey !") } };
-  const comp2 = { created() { /* empty */ }, render(h) { return h("div", "Ouille !") } };
-  const comp3 = { created() { /* empty */ }, render(h) { return h("div", "Ola !") } };
+  const comp1 = { created() { /* default */ }, render(h) { return h("div", "Hey !") } };
+  const comp2 = { created() { /* default */ }, render(h) { return h("div", "Ouille !") } };
+  const comp3 = { created() { /* default */ }, render(h) { return h("div", "Ola !") } };
 
   beforeEach(() => {
     cy.spy(comp1, "created");
@@ -794,7 +794,7 @@ describe('Components must be created only once and cached', () => {
     cy.spy(comp3, "created");
 
     const cfg = {
-      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
+      defaultComponent: { render: h => h("div", DEFAULT_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       separatorDetectionMargin: 0,
       components: [
