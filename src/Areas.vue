@@ -155,14 +155,18 @@ export default {
       }
       const { cfg, componentIndex, name } = componentCfg;
       if (
+        componentIndex !== null &&
         !Object.keys(this.availableComponents).includes(String(componentIndex))
       ) {
-        throw `Impossible to change component. Component index "${componentIndex}" is not available.`;
+        throw `Impossible to change component. Component index "${componentIndex}" is not available. For empty component, use null.`;
       }
       const id = this.areaContentIdGen();
       const newAreaContentObject = {
         id,
-        component: this.availableComponents[componentIndex],
+        component:
+          componentIndex === null
+            ? this.emptyComponent
+            : this.availableComponents[componentIndex],
         ...(cfg && { cfg }),
         ...(name && { name })
       };
