@@ -18,9 +18,7 @@ function initTest(cy, cfg) {
 describe('Simple area', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       components: [
         { render(h) { return h("div", "Hey !") } },
         { render(h) { return h("div", "Ouille !") } }
@@ -161,9 +159,7 @@ describe('Simple area', () => {
 describe('Default empty component', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       layout: {
         componentIndex: null
       }
@@ -184,9 +180,7 @@ describe('Default empty component', () => {
 describe('Custom empty component', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       emptyComponent: {
         props: { text: { type: String } },
         render(h) { return h("div", this.text) }
@@ -216,11 +210,13 @@ describe('Custom empty component', () => {
 describe('Dual vertical areas', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       components: [
-        { render(h) { return h("div", "Hey !") } },
+        {
+          render(h) {
+            return h("div", "Hey !")
+          }
+        },
         { render(h) { return h("div", "Ouille !") } }
       ],
       layout: {
@@ -282,11 +278,13 @@ describe('Dual vertical areas', () => {
 describe('Dual horizontal areas', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       components: [
-        { render(h) { return h("div", "Hey !") } },
+        {
+          render(h) {
+            return h("div", "Hey !")
+          }
+        },
         { render(h) { return h("div", "Ouille !") } }
       ],
       layout: {
@@ -349,12 +347,14 @@ describe('Dual horizontal areas', () => {
 describe('Three areas in the same direction (vertical)', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS,
-        separatorMargin: 0 // To handle mouseup correctly on separator
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
+      separatorDetectionMargin: 0, // To handle mouseup correctly on separator
       components: [
-        { render(h) { return h("div", "Hey !") } },
+        {
+          render(h) {
+            return h("div", "Hey !")
+          }
+        },
         { render(h) { return h("div", "Ouille !") } },
         { render(h) { return h("div", "Ola !") } }
       ],
@@ -532,11 +532,13 @@ describe('Three areas in the same direction (vertical)', () => {
 describe('Three areas in a custom layout (a big left, two at the right, little at the top, big at the bottom)', () => {
   beforeEach(() => {
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
       components: [
-        { render(h) { return h("div", "Hey !") } },
+        {
+          render(h) {
+            return h("div", "Hey !")
+          }
+        },
         { render(h) { return h("div", "Ouille !") } },
         { render(h) { return h("div", "Ola !") } }
       ],
@@ -759,10 +761,8 @@ describe('Components must be created only once and cached', () => {
     cy.spy(comp3, "created");
 
     const cfg = {
-      style: {
-        separatorThickness: SEPARATOR_THICKNESS,
-        separatorMargin: 0
-      },
+      separatorThickness: SEPARATOR_THICKNESS,
+      separatorDetectionMargin: 0,
       components: [
         comp1,
         comp2,

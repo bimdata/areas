@@ -28,7 +28,7 @@ export default {
       type: Number,
       default: 2
     },
-    separatorMargin: {
+    separatorDetectionMargin: {
       // used to help user to catch separator
       type: Number,
       default: 10
@@ -139,15 +139,15 @@ export default {
             style: {
               zIndex: this._areas.zIndexStart + 2,
               [this.direction === "row" ? "left" : "top"]: `${-this
-                .separatorMargin}px`,
+                .separatorDetectionMargin}px`,
               width:
                 this.direction === "row"
-                  ? `${this.separatorMargin * 2}px`
+                  ? `${this.separatorDetectionMargin * 2}px`
                   : "100%",
               height:
                 this.direction === "row"
                   ? "100%"
-                  : `${this.separatorMargin * 2}px`
+                  : `${this.separatorDetectionMargin * 2}px`
             }
           })
         ]

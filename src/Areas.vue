@@ -63,10 +63,10 @@ export default {
   methods: {
     /******* PARSING CFG *******/
     parseCfg(cfg) {
-      const style = cfg.style || {};
       // The following values no need to be reative, that is why they are not present on data object
-      this.separatorThickness = style.separatorThickness;
-      this.separatorMargin = style.separatorMargin;
+      this.separatorThickness = cfg.separatorThickness;
+      this.separatorDetectionMargin = cfg.separatorDetectionMargin;
+      this.areaMinRatio = cfg.areaMinRatio;
 
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
@@ -133,7 +133,8 @@ export default {
     buildLayout(layout) {
       this.layoutComponent = makeLayoutComponent(layout, {
         separatorThickness: this.separatorThickness,
-        separatorMargin: this.separatorMargin
+        separatorDetectionMargin: this.separatorDetectionMargin,
+        minRatio: this.areaMinRatio
       });
     },
     /******* Methods to be used externally *******/

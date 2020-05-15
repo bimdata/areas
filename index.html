@@ -107,9 +107,9 @@
               ref: "areas",
               props: {
                 cfg: {
-                  style: {
-                    separatorThickness: 2,
-                  },
+                  // areaMinRatio: 10,
+                  // separatorDetectionMargin: 20,
+                  // separatorThickness: 10,
                   components: [
                     { props: { text: { type: String, default: "no text provided" } }, render(h) { return h("div", this.text) }, mounted() { this.$emit("mounted") } },
                     { props: { text: { type: String, default: "no text provided" } }, render(h) { return h("div", this.text) } },

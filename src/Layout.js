@@ -1,7 +1,7 @@
 import Area from "./Area.vue";
 import Container from "./Container.vue";
 
-export default (layout, { separatorThickness, separatorMargin }) => ({
+export default (layout, containerProps) => ({
   name: "Layout",
   inject: ["areas"],
   data() {
@@ -153,7 +153,7 @@ export default (layout, { separatorThickness, separatorMargin }) => ({
       const { children, direction = "row", id, key } = container;
       return h(
         Container,
-        { props: { direction, areasRatio: container.ratios, id, separatorThickness, separatorMargin }, key: `areaContainer${key}` },
+        { props: { direction, areasRatio: container.ratios, id, ...containerProps }, key: `areaContainer${key}` },
         children.map(child => {
           if (child.type === "container") {
             return this.makeContainer(h, child);
