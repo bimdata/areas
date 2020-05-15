@@ -73,7 +73,7 @@ export default {
 
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.emptyComponent = this.cfg.emptyComponent || {
-        render: h => h("div", ["empty component"])
+        render: () => null
       };
       this.availableComponents = cfg.components;
 

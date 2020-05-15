@@ -16,6 +16,7 @@ function initTest(cy, cfg) {
 describe('Simple area', () => {
   beforeEach(() => {
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         { render(h) { return h("div", "Hey !") } },
@@ -166,7 +167,6 @@ describe('Default empty component', () => {
   });
 
   it('Should display the default empty component if componentIndex = null', () => {
-    cy.get(AREA_SELECTOR).contains(EMPTY_COMPONENT_TEXT);
     cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
       expect(el).to.have.length(1);
       expect(el[0].clientWidth).to.equal(WIDTH);
@@ -226,6 +226,7 @@ describe('Dual vertical areas', () => {
 
   beforeEach(() => {
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         comp1,
@@ -307,6 +308,7 @@ describe('Dual vertical areas', () => {
 describe('Dual horizontal areas', () => {
   beforeEach(() => {
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         {
@@ -376,6 +378,7 @@ describe('Dual horizontal areas', () => {
 describe('Three areas in the same direction (vertical)', () => {
   beforeEach(() => {
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       separatorDetectionMargin: 0, // To handle mouseup correctly on separator
       components: [
@@ -561,6 +564,7 @@ describe('Three areas in the same direction (vertical)', () => {
 describe('Three areas in a custom layout (a big left, two at the right, little at the top, big at the bottom)', () => {
   beforeEach(() => {
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       components: [
         {
@@ -790,6 +794,7 @@ describe('Components must be created only once and cached', () => {
     cy.spy(comp3, "created");
 
     const cfg = {
+      emptyComponent: { render: h => h("div", EMPTY_COMPONENT_TEXT) },
       separatorThickness: SEPARATOR_THICKNESS,
       separatorDetectionMargin: 0,
       components: [
