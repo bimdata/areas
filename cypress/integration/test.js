@@ -828,12 +828,12 @@ describe('Components must be created only once and cached', () => {
       .trigger("mousemove", { clientY: HEIGHT / 2 })
       .trigger('mouseup');
     cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
-    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: 1 });
+    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
     cy.get("@areas").invoke("swapAreas", 1, 2);
     cy.get("@areas").invoke("deleteArea", 2);
 
-    expect(comp1.created).to.be.calledOnce;
-    expect(comp2.created).to.be.calledOnce;
-    expect(comp3.created).to.be.calledOnce;
+    cy.wrap(comp1).its("created").should("be.calledOnce");
+    cy.wrap(comp2).its("created").should("be.calledOnce");
+    cy.wrap(comp3).its("created").should("be.calledOnce");
   });
 });
