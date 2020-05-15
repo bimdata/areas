@@ -1,7 +1,7 @@
-<div style="display: flex; flex-direction: column; align-items: center;">
-<p><img width="150" src="./areas.png" alt="Areas logo"></p>
-<h1>Areas</h2>
-</div>
+
+<p align="center"><img width="150" src="./areas-logo.png" alt="Areas logo"></p>
+<p align="center"><img width="200" src="./areas-title.png" alt="Areas logo"></p>
+
 
 Build for produciton :
 ```
