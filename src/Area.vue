@@ -2,7 +2,6 @@
   <div
     class="area"
     data-test="area"
-    :style="{ cursor, zIndex: dragover ? areas.zIndexStart + 2 : isAreaActive ? areas.zIndexStart + 1 : 'unset' }"
     :draggable="isDraggable"
     :class="{ 'area-active': isAreaActive }"
     @click="onAreaClick"
@@ -17,6 +16,7 @@
   >
     <div
       class="area-overlay"
+      :style="{ cursor, zIndex: dragover ? areas.zIndexStart + 2 : isAreaActive ? areas.zIndexStart + 1 : areas.zIndexStart }"
       :class="{
         'area-overlay-dragover': dragover && !isAreaActive,
         'area-overlay-split': isAreaActive && isSplitMode,

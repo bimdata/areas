@@ -137,7 +137,7 @@ export default {
           h("div", {
             class: "container-separator-margin",
             style: {
-              zIndex: this._areas.zIndexStart + 2,
+              zIndex: this._areas.zIndexStart,
               [this.direction === "row" ? "left" : "top"]: `${-this
                 .separatorDetectionMargin}px`,
               width:

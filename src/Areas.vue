@@ -11,7 +11,7 @@ export default {
     },
     zIndexStart: {
       type: Number,
-      default: 0
+      default: 1
     }
   },
   provide() {
