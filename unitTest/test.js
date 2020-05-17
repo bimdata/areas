@@ -166,7 +166,7 @@ describe('Areas', () => {
         },
       ],
       layout: {
-        name: 'targetComponent',
+        name: 'targetArea',
         componentIndex: 0,
         cfg: {
           props: {
@@ -179,7 +179,7 @@ describe('Areas', () => {
     const wrapper = shallowMount(Areas, { propsData: { cfg } });
     expect(wrapper.html()).toMatchSnapshot();
 
-    wrapper.vm.getComponentByName("targetComponent").cfg.props.text = "text updated";
+    wrapper.vm.getAreaContentByName("targetArea").cfg.props.text = "text updated";
     await Vue.nextTick();
     expect(wrapper.html()).toMatchSnapshot();
   });

@@ -222,7 +222,7 @@ export default {
 
       this.$nextTick(this.reattachTeleports);
     },
-    getComponentByName(name) {
+    getAreaContentByName(name) {
       return this.areasContent
         .filter(Boolean)
         .filter(areaContent => areaContent.name)
