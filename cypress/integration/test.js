@@ -97,11 +97,11 @@ describe('Simple area', () => {
   it('Should display other component if area component is changed', () => {
     cy.get(AREA_SELECTOR).contains("component content 1");
 
-    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: 1 });
+    cy.get("@areas").invoke("changeAreaContent", 1, { componentIndex: 1 });
 
     cy.get(AREA_SELECTOR).contains("component content 2");
 
-    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
+    cy.get("@areas").invoke("changeAreaContent", 1, { componentIndex: null });
 
     cy.get(AREA_SELECTOR).contains(DEFAULT_COMPONENT_TEXT);
   });
@@ -833,7 +833,7 @@ describe('Components must be created only once and cached', () => {
       .trigger("mousemove", { clientY: HEIGHT / 2 })
       .trigger('mouseup');
     cy.get("@areas").invoke("splitArea", 1, "vertical", 20);
-    cy.get("@areas").invoke("changeAreaComponent", 1, { componentIndex: null });
+    cy.get("@areas").invoke("changeAreaContent", 1, { componentIndex: null });
     cy.get("@areas").invoke("swapAreas", 1, 2);
     cy.get("@areas").invoke("deleteArea", 2);
 

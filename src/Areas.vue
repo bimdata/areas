@@ -150,7 +150,7 @@ export default {
       const layout = this.$refs.layout.getLayout();
       return this.reverseParseLayout(layout);
     },
-    changeAreaComponent(areaId, componentCfg = {}) {
+    changeAreaContent(areaId, contentCfg = {}) {
       if (
         !this.areasContent
           .map((areaContent, index) => (areaContent ? index : null))
@@ -159,7 +159,7 @@ export default {
       ) {
         throw `Impossible to change component. Area id "${areaId}" does not exist.`;
       }
-      const { cfg, componentIndex, name } = componentCfg;
+      const { cfg, componentIndex, name } = contentCfg;
       if (
         componentIndex !== null &&
         !Object.keys(this.availableComponents).includes(String(componentIndex))
