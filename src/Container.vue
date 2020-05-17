@@ -15,9 +15,7 @@ export default {
       default: "row",
       validator(direction) {
         if (!["row", "column"].includes(direction)) {
-          console.error(
-            `Container direction property can only be "row" or "column", received : "${direction}"`
-          );
+          throw `Container direction property can only be "row" or "column", received : "${direction}"`;
           return false;
         } else {
           return true;
