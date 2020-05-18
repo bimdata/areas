@@ -17,6 +17,8 @@ Areas aims to provide a flexible and customizable environment to create custom U
 
 It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. Current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport will resize areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
+![CI](https://github.com/bimdata/areas/workflows/CI/badge.svg)
+
 # Install
 
 npm :
