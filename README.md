@@ -231,15 +231,17 @@ npm run test
 
 Unit tests :
 ```
+npm run build:prod
 npm run test:unit
 ```
 
 E2e tests :
 ```
+npm run build:prod
 npm run test:e2e
 ```
 
-To e2e test on development (this will open cypress instead of running it) :
+To e2e test on development (this will build in production mode and open cypress instead of running it) :
 ```
 npm run test:e2e-dev
 ```
