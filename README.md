@@ -13,13 +13,13 @@
   <img width="300" height="150" src="./assets/delete.gif" alt="Areas delete">
 </p>
 
-Areas aims to provide a flexible and customizable environment to create custom UI layouts using [Vue.js](https://vuejs.org/).
+Areas aim to provide a flexible and customizable environment to create custom UI layouts using [Vue.js](https://vuejs.org/).
 
-It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. Current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport will resize areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. The current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when the layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport will resize areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
 # Install
 
-npm :
+npm:
 
 ```
 npm i @bimdata/areas
@@ -27,7 +27,7 @@ npm i @bimdata/areas
 
 # Usage
 
-Import Areas on your Vue.js app :
+Import Areas on your Vue.js app:
 
 ```javascript
 
@@ -35,7 +35,7 @@ import Areas from "@bimdata/areas";
 
 ```
 
-Use it in your component :
+Use it in your component:
 
 ```html
 <template>
@@ -45,7 +45,7 @@ Use it in your component :
 </template>
 ```
 
-Configuration example :
+Configuration example:
 
 ```javascript
 const areasCfg = {
@@ -85,7 +85,7 @@ const areasCfg = {
 };
 ```
 
-Result :
+Result:
 
 <img width="400" src="./assets/areas-simple-example.png" alt="Areas simple example">
 
@@ -93,50 +93,51 @@ Result :
 
 ## Configuration
 
-Areas needs an object as cfg props :
+Areas need an object as cfg props:
 
-### `cfg` :
+### `cfg`:
 | Property | Type | Description |
 | :--- | :--- | :--- |
 | `components` | `array` | **Required**. An array of Vue.js components. |
 | `layout` | `array` | **Required**. An [`area`](#area) or an [`area container`](#area-container). |
 | `separatorThickness` | `number` | **Optional**. Default to 2. The thickness of separators. |
-| `separatorDetectionMargin` | `number` | **Optional**. Default to 10. Margin of the detection region on separators. This helps user to get the separator with the mouse even if it is small. |
+| `separatorDetectionMargin` | `number` | **Optional**. Default to 10. Margin of the detection region on separators. This helps the user to get the separator with the mouse even if it is small. |
 | `areaMinRatio` | `number` | **Optional**. Default to 0. The minimal ratio of an area. |
-| `defaultComponent` | `object` | **Optional**. Default to a component that render nothing. The default component that will be used when splitting window or usin componentIndex = null. |
+| `defaultComponent` | `object` | **Optional**. Default to a component that renders nothing. The default component that will be used when splitting the window or using componentIndex = null. |
 
-### `area` :
+### `area`:
 | Property | Type | Description |
 | :--- | :--- | :--- |
 | `componentIndex` | `number` | **Required**. A valid index of the `cfg.components` array, or null for the default component. |
 | `name` | `string` | **Optional**. A name that can be used to retrieve area content. |
 | `cfg` | `object` | **Optional**. A [data object](https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth) used to pass props, event listener... to the component instance. |
 
-### `area container` :
+### `area container`:
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `ratios` | `array` | **Required**. An array of integer the represent the precentage of the corresponding children in the container. Length must be > 1. |
+| `ratios` | `array` | **Required**. An array of integer the represent the percentage of the corresponding children in the container. Length must be > 1. |
 | `children` | `array` | **Required**. An array of [`area`](#area) or [`area container`](#area-container). Must have the same length as ratios. |
 | `direction` | `string` | **Optional**. Default to `row`. Can be changed to `column`. The way areas will be displayed in the container. |
 
 ## Modes
 
-Areas component instance can be set with *modes* :
-- `split-vertical` : a vertical bar is displayed on top of hovered (active) area. Clicking will split area vertically.
-- `split-horizontal` : a horizontal bar is displayed on top of hovered (active) area. Clicking will split area horizontally.
-- `swap` : areas can be dragged and dropped to swap them.
-- `delete` : clicking area delete it. (it is impossible to delete the last remaining area)
+Areas component instance can be set with *modes*:
+- `split-vertical`: a vertical bar is displayed on top of the hovered (active) area. Clicking will split the area vertically.
+- `split-horizontal`: a horizontal bar is displayed on top of the hovered (active) area. Clicking will split the area horizontally.
+- `swap`: areas can be dragged and dropped to swap them.
+- `delete`: clicking area delete it. (it is impossible to delete the last remaining area)
 
-To set mode, use `setMode` on areas instance : (example using [ref](https://vuejs.org/v2/api/#ref))
+To set a mode, use `setMode` on areas instance: (example using [ref](https://vuejs.org/v2/api/#ref))
+
 ```javascript
 this.$refs.areas.setMode(mode); // mode must be "split-vertical", "split-horizontal", "swap", "delete" or null to exit modes
 ```
 
-When mode is different from null, overlays will be displayed on areas. To change overlays style, use [corresponding css variables](#style).
+When the mode is different from null, overlays will be displayed on areas. To change overlays style, use [corresponding css variables](#style).
 
 ## Public Methods
 
-Methods on Areas instance :
+Methods on Areas instance:
 
 | Name | Arguments | Description |
 | :--- | :--- | :--- |
@@ -151,7 +152,7 @@ Methods on Areas instance :
 
 ## Style
 
-It is possible to customize areas style by declaring css variables :
+It is possible to customize areas style by declaring css variables:
 
 ```css
 /* Cursors */
@@ -196,7 +197,7 @@ It is possible to customize areas style by declaring css variables :
 
 ## Area injection
 
-Each child component in an area will be able to get some area utilities from the area it leaves in by [injecting](https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection) $area :
+Each child component in an area is able to get some area utilities from the area it leaves in by [injecting](https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection) $area:
 
 ```javascript
 {
@@ -205,7 +206,7 @@ Each child component in an area will be able to get some area utilities from the
 }
 ```
 
-The `$area` object will provide the following properties :
+The `$area` object will provide the following properties:
 
 | Property | Description |
 | :--- | :--- |
@@ -219,29 +220,29 @@ The `$area` object will provide the following properties :
 
 # Development
 
-Build on change for development and serve :
+Build on change for development and serve:
 ```
 npm run dev
 ```
 
-All Tests :
+All Tests:
 ```
 npm run test
 ```
 
-Unit tests :
+Unit tests:
 ```
 npm run build:prod
 npm run test:unit
 ```
 
-E2e tests :
+E2e tests:
 ```
 npm run build:prod
 npm run test:e2e
 ```
 
-To e2e test on development (this will build in production mode and open cypress instead of running it) :
+To e2e test on development (this will build in production mode and open cypress instead of running it):
 ```
 npm run test:e2e-dev
 ```
