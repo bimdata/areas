@@ -6,7 +6,7 @@
   "module": "dist/areas.esm.js",
   "unpkg": "dist/areas.js",
   "scripts": {
-    "test": "npm run build:prod && npm run test:unit && npm run test:e2e",
+    "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "jest",
     "test:e2e": "start-server-and-test 'npm run serve -- -p 3030' 3030 cy:run",
     "test:e2e-dev": "npm run build:prod && start-server-and-test 'npm run serve -- -p 3030' 3030 cy:open",
@@ -17,8 +17,7 @@
     "build:prod": "rollup -c --environment BUILD:production",
     "prebuild:dev": "rm -rf dist",
     "prebuild:prod": "rm -rf dist",
-    "dev": "npm run build:dev -- --watch",
-    "prepublishOnly": "npm run build:prod"
+    "dev": "npm run build:dev -- --watch"
   },
   "author": "BIMData.io",
   "repository": {

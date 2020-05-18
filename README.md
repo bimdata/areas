@@ -228,6 +228,7 @@ npm run dev
 
 All Tests :
 ```
+npm run build:prod
 npm run test
 ```
 
