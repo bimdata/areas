@@ -32,7 +32,7 @@ describe('Simple area', () => {
   it('Should render the simple area within all available space', () => {
     cy.get(AREA_SELECTOR).contains("component content 1");
     cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should('have.length', 1).invoke("innerWidth").should("equal", WIDTH);
-    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should('have.length', 1).invoke("innerHeight").should("equal", HEIGHT);
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).invoke("innerHeight").should("equal", HEIGHT);
   });
 
   it('Should throw an error if trying to delete the root area', () => {
@@ -164,11 +164,8 @@ describe('Default component', () => {
   });
 
   it('Should display the default component if componentIndex = null', () => {
-    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
-      expect(el).to.have.length(1);
-      expect(el[0].clientWidth).to.equal(WIDTH);
-      expect(el[0].clientHeight).to.equal(HEIGHT);
-    });
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should('have.length', 1).invoke("innerWidth").should("equal", WIDTH);
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).invoke("innerHeight").should("equal", HEIGHT);
   });
 });
 
@@ -194,11 +191,8 @@ describe('Custom default component', () => {
 
   it('Should display the custom default component if componentIndex = null and cfg should work', () => {
     cy.get(AREA_SELECTOR).contains("CUSTOM DEFAULT COMPONENT");
-    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should(el => {
-      expect(el).to.have.length(1);
-      expect(el[0].clientWidth).to.equal(WIDTH);
-      expect(el[0].clientHeight).to.equal(HEIGHT);
-    });
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).should('have.length', 1).invoke("innerWidth").should("equal", WIDTH);
+    cy.get(AREA_SELECTOR).find(`#${ID_PREFIX}1`).invoke("innerHeight").should("equal", HEIGHT);
   });
 });
 
