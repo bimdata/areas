@@ -13,7 +13,7 @@
   <img width="300" height="150" src="./assets/delete.gif" alt="Areas delete">
 </p>
 
-Areas aim to provide a flexible and customizable environment to create custom UI layouts using [Vue.js](https://vuejs.org/).
+Areas aims to provide a flexible and customizable environment to create custom UI layouts using [Vue.js](https://vuejs.org/).
 
 It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. The current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when the layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport will resize areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
@@ -93,7 +93,7 @@ Result:
 
 ## Configuration
 
-Areas need an object as cfg props:
+Areas needs an object as cfg props:
 
 ### `cfg`:
 | Property | Type | Description |
@@ -152,7 +152,7 @@ Methods on Areas instance:
 
 ## Style
 
-It is possible to customize areas style by declaring css variables:
+It is possible to customize areas style by declaring CSS variables:
 
 ```css
 /* Cursors */
