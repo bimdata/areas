@@ -15,11 +15,11 @@
 
 Areas aims to provide a flexible and customizable environment to create custom UI layouts using [Vue.js](https://vuejs.org/).
 
-It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. The current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when the layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport will resize areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+It is possible to **split** (vertical/horizontal), **resize**, **swap** and **delete** areas as needed. The current layout can be **saved** and **loaded** later. Components in areas are **cached** and not rerendered when the layout is edited. Areas width and height are **percentage ratio based** so resizing the viewport resizes areas accordingly. Styles can be customized using [CSS variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
 
 # Install
 
-npm:
+Use npm:
 
 ```
 npm i @bimdata/areas
@@ -27,7 +27,7 @@ npm i @bimdata/areas
 
 # Usage
 
-Import Areas on your Vue.js app:
+Import Areas in your Vue.js app:
 
 ```javascript
 
@@ -93,7 +93,7 @@ Result:
 
 ## Configuration
 
-Areas needs an object as cfg props:
+Areas needs an object as `cfg` props:
 
 ### `cfg`:
 | Property | Type | Description |
@@ -103,37 +103,37 @@ Areas needs an object as cfg props:
 | `separatorThickness` | `number` | **Optional**. Default to 2. The thickness of separators. |
 | `separatorDetectionMargin` | `number` | **Optional**. Default to 10. Margin of the detection region on separators. This helps the user to get the separator with the mouse even if it is small. |
 | `areaMinRatio` | `number` | **Optional**. Default to 0. The minimal ratio of an area. |
-| `defaultComponent` | `object` | **Optional**. Default to a component that renders nothing. The default component that will be used when splitting the window or using componentIndex = null. |
+| `defaultComponent` | `object` | **Optional**. Default to a component that renders nothing. The default component is used when splitting the window or using componentIndex = null. |
 
 ### `area`:
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `componentIndex` | `number` | **Required**. A valid index of the `cfg.components` array, or null for the default component. |
-| `name` | `string` | **Optional**. A name that can be used to retrieve area content. |
-| `cfg` | `object` | **Optional**. A [data object](https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth) used to pass props, event listener... to the component instance. |
+| `componentIndex` | `number` | **Required**. A valid index of the `cfg.components` array, or `null` for the default component. |
+| `name` | `string` | **Optional**. A name, useful to retrieve area content. |
+| `cfg` | `object` | **Optional**. A [data object](https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth) used to pass props, event listener,... to the component instance. |
 
 ### `area container`:
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `ratios` | `array` | **Required**. An array of integer the represent the percentage of the corresponding children in the container. Length must be > 1. |
+| `ratios` | `array` | **Required**. An array of integers representing the percentage of the corresponding children in the container. Length must be > 1. |
 | `children` | `array` | **Required**. An array of [`area`](#area) or [`area container`](#area-container). Must have the same length as ratios. |
-| `direction` | `string` | **Optional**. Default to `row`. Can be changed to `column`. The way areas will be displayed in the container. |
+| `direction` | `string` | **Optional**. Default to `row`. Can be changed to `column`. The way areas is displayed in the container. |
 
 ## Modes
 
 Areas component instance can be set with *modes*:
-- `split-vertical`: a vertical bar is displayed on top of the hovered (active) area. Clicking will split the area vertically.
-- `split-horizontal`: a horizontal bar is displayed on top of the hovered (active) area. Clicking will split the area horizontally.
+- `split-vertical`: a vertical bar is displayed on top of the hovered (active) area. Clicking splits the area vertically.
+- `split-horizontal`: a horizontal bar is displayed on top of the hovered (active) area. Clicking splits the area horizontally.
 - `swap`: areas can be dragged and dropped to swap them.
-- `delete`: clicking area delete it. (it is impossible to delete the last remaining area)
+- `delete`: clicking area deletes it. (It is impossible to delete the last remaining area.)
 
-To set a mode, use `setMode` on areas instance: (example using [ref](https://vuejs.org/v2/api/#ref))
+To set a mode, use `setMode` on areas instance: (usage example with [ref](https://vuejs.org/v2/api/#ref))
 
 ```javascript
 this.$refs.areas.setMode(mode); // mode must be "split-vertical", "split-horizontal", "swap", "delete" or null to exit modes
 ```
 
-When the mode is different from null, overlays will be displayed on areas. To change overlays style, use [corresponding css variables](#style).
+When the mode is different from `null`, overlays is displayed on areas. To change overlays style, use [corresponding css variables](#style).
 
 ## Public Methods
 
@@ -146,13 +146,13 @@ Methods on Areas instance:
 | `changeAreaContent(areaId, contentCfg)` | `areaId`: **Required**. The id of the area to change the content. `contentCfg`: **Required**. An [`area content`](#area) object.  | Change the content of an area. |
 | `setMode(mode)` | `mode`: **Required**. See [Modes](#Modes) | Change Areas mode. |
 | `deleteArea(areaId)` | `areaId`: **Required**. | Delete area with this id. |
-| `splitArea(areaId, way, percentage = 50, insertNewAfter = true)` | `areaId`: **Required**. `way`: **Required**. "vertical" or "horizontal". `percentage`, the percentage from left or top. `insertNewAfter`, if the new area will be inserted after or before the splitted one. | Split area. |
+| `splitArea(areaId, way, percentage = 50, insertNewAfter = true)` | `areaId`: **Required**. `way`: **Required**. "vertical" or "horizontal". `percentage`, the percentage from left or top. `insertNewAfter`, if new the area is inserted after or before the splitted one. | Split area. |
 | `swapAreas(areaId1, areaId2)` | `areaId1` & `areaId2`: **Required** numbers | Swap areas. |
 | `getAreaContentByName(name)` | `name`: **Required** string | Get [`area content`](#area) by name. |
 
 ## Style
 
-It is possible to customize areas style by declaring CSS variables:
+It is possible to customize areas style declaring CSS variables:
 
 ```css
 /* Cursors */
@@ -197,7 +197,7 @@ It is possible to customize areas style by declaring CSS variables:
 
 ## Area injection
 
-Each child component in an area is able to get some area utilities from the area it leaves in by [injecting](https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection) $area:
+Each child component in an area is able to get some area utilities from the area it lives in by [injecting](https://vuejs.org/v2/guide/components-edge-cases.html#Dependency-Injection) $area:
 
 ```javascript
 {
@@ -206,7 +206,7 @@ Each child component in an area is able to get some area utilities from the area
 }
 ```
 
-The `$area` object will provide the following properties:
+The `$area` object provides the following properties:
 
 | Property | Description |
 | :--- | :--- |
@@ -215,12 +215,12 @@ The `$area` object will provide the following properties:
 | component | The Vue.js component instance of the area. |
 | contentComponent | The Vue.js component instance of the first child of the area. (It is different from area.$children[0] due to implementation) |
 | areas | The Areas Vue.js component instance. |
-| onChange(handler) | A method that accepts a callback (handler) as parameter. The handler will be called when area change (swap) with newAreaId and OldAreaId as parameters. |
+| onChange(handler) | A method that accepts a callback (handler) as parameter. The handler is called when area change (swap) with newAreaId and OldAreaId as parameters. |
 | offChange(handler) | A method that accepts a callback (handler) as parameter to stop listening to area change with this handler. |
 
 # Development
 
-Build on change for development and serve:
+Build on-change for development and server:
 ```
 npm run dev
 ```
@@ -242,7 +242,7 @@ npm run build:prod
 npm run test:e2e
 ```
 
-To e2e test on development (this will build in production mode and open cypress instead of running it):
+To e2e test on development (this builds in production mode and open cypress instead of running it):
 ```
 npm run test:e2e-dev
 ```
