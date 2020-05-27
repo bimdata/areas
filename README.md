@@ -109,7 +109,7 @@ Areas needs an object as `cfg` props:
 | Property | Type | Description |
 | :--- | :--- | :--- |
 | `componentIndex` | `number` | **Required**. A valid index of the `cfg.components` array, or `null` for the default component. |
-| `name` | `string` | **Optional**. A name, useful to retrieve area content. |
+| `name` | `string` | **Optional**. A name, used to retrieve area content. |
 | `cfg` | `object` | **Optional**. A [data object](https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth) used to pass props, event listener,... to the component instance. |
 
 ### `area container`:
@@ -146,7 +146,7 @@ Methods on Areas instance:
 | `changeAreaContent(areaId, contentCfg)` | `areaId`: **Required**. The id of the area to change the content. `contentCfg`: **Required**. An [`area content`](#area) object.  | Change the content of an area. |
 | `setMode(mode)` | `mode`: **Required**. See [Modes](#Modes) | Change Areas mode. |
 | `deleteArea(areaId)` | `areaId`: **Required**. | Delete area with this id. |
-| `splitArea(areaId, way, percentage = 50, insertNewAfter = true)` | `areaId`: **Required**. `way`: **Required**. "vertical" or "horizontal". `percentage`, the percentage from left or top. `insertNewAfter`, if new the area is inserted after or before the splitted one. | Split area. |
+| `splitArea(areaId, way, percentage = 50, insertNewAfter = true)` | `areaId`: **Required**. `way`: **Required**. "vertical" or "horizontal". `percentage`, the percentage from left or top. `insertNewAfter`, if the new area is inserted after or before the splitted one. | Split area. |
 | `swapAreas(areaId1, areaId2)` | `areaId1` & `areaId2`: **Required** numbers | Swap areas. |
 | `getAreaContentByName(name)` | `name`: **Required** string | Get [`area content`](#area) by name. |
 
@@ -220,7 +220,7 @@ The `$area` object provides the following properties:
 
 # Development
 
-Build on-change for development and server:
+Build on-change for development and serve:
 ```
 npm run dev
 ```
