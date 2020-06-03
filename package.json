@@ -5,6 +5,9 @@
   "main": "dist/areas.js",
   "module": "dist/areas.esm.js",
   "unpkg": "dist/areas.js",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "jest",
