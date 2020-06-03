@@ -1,7 +1,7 @@
 import { terser } from "rollup-plugin-terser";
 import vue from 'rollup-plugin-vue';
-import serve from 'rollup-plugin-serve'
-import livereload from 'rollup-plugin-livereload'
+import serve from 'rollup-plugin-serve';
+import livereload from 'rollup-plugin-livereload';
 
 const isProduction = (process.env.BUILD === "production");
 

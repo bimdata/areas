@@ -1,6 +1,6 @@
 {
   "name": "@bimdata/areas",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A Vuejs Blender style area manager to create custom layouts.",
   "main": "dist/areas.js",
   "module": "dist/areas.esm.js",
