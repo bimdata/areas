@@ -17,7 +17,7 @@ if (isProduction) {
   );
 } else {
   plugins.push(
-    serve({ open: true, port: 8080, contentBase: '' }),
+    serve({ open: true, port: 8091, contentBase: '' }),
     livereload('dist')
   );
 }
