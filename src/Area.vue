@@ -228,7 +228,7 @@ export default {
   height: 2px;
 }
 .area-content {
-  overflow: scroll;
+  overflow: auto;
   width: 100%;
   height: 100%;
 }
