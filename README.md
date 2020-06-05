@@ -171,6 +171,7 @@ It is possible to customize areas style declaring CSS variables:
 --areas-background-color: color;
 --areas-separator-color: color;
 --areas-split-line-color: color;
+--areas-active-box-shadow: box-shadow;
 
 /* Areas modes overlays */
 --areas-overlay-color: color;

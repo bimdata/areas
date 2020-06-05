@@ -181,7 +181,7 @@ export default {
   height: 100%;
 }
 .area-active {
-  box-shadow: inset 0 0 2px grey;
+  box-shadow: var(--areas-active-box-shadow, inset 0 0 2px grey);
 }
 .area-overlay {
   position: absolute;

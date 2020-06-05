@@ -15,6 +15,7 @@
 
     .areas {
       /*
+      --areas-active-box-shadow: inset 0 0 10px red;
       --areas-overlay-color: red;
       --areas-overlay-outline-offset: 10px;
       --areas-overlay-outline: dotted 5px blue;
@@ -62,6 +63,11 @@
           selectedOption: null,
         }
       },
+      props: {
+        areasSize: {
+          default: "not specified"
+        }
+      },
       computed: {
         mainButtonContent() {
           return this.optionsShown ? "Hide options" : "Show options";
@@ -81,20 +87,23 @@
 
       },
       template: `
-        <div style="margin:10px;">
-          <button type="button" @click="optionsShown = !optionsShown">{{ mainButtonContent }}</button>
-          <template v-if="optionsShown">
-            <input type="radio" id="radio0" :value="null" v-model="selectedOption">
-            <label for="radio0">No option</label>
-            <input type="radio" id="radio1" value="split-vertical" v-model="selectedOption">
-            <label for="radio1">Vertical split</label>
-            <input type="radio" id="radio2" value="split-horizontal" v-model="selectedOption">
-            <label for="radio2">Horizontal split</label>
-            <input type="radio" id="radio3" value="swap" v-model="selectedOption">
-            <label for="radio3">Swap</label>
-            <input type="radio" id="radio4" value="delete" v-model="selectedOption">
-            <label for="radio4">Delete</label>
-          </template>
+        <div style="margin:10px; display:flex; justify-content: space-between">
+          <div>
+            <button type="button" @click="optionsShown = !optionsShown">{{ mainButtonContent }}</button>
+            <template v-if="optionsShown">
+              <input type="radio" id="radio0" :value="null" v-model="selectedOption">
+              <label for="radio0">No option</label>
+              <input type="radio" id="radio1" value="split-vertical" v-model="selectedOption">
+              <label for="radio1">Vertical split</label>
+              <input type="radio" id="radio2" value="split-horizontal" v-model="selectedOption">
+              <label for="radio2">Horizontal split</label>
+              <input type="radio" id="radio3" value="swap" v-model="selectedOption">
+              <label for="radio3">Swap</label>
+              <input type="radio" id="radio4" value="delete" v-model="selectedOption">
+              <label for="radio4">Delete</label>
+            </template>
+          </div>
+          <div>Areas size : {{areasSize}}</div>
         </div>`
     }
 
@@ -107,76 +116,91 @@
               ref: "areas",
               props: {
                 cfg: {
-                  // areaMinRatio: 10,
-                  // separatorDetectionMargin: 20,
-                  // separatorThickness: 10,
                   components: [
-                    {
-                      inject: ["$area"],
-                      props: { text: { type: String, default: "no text provided" } },
-                      created() {
-                        this.$area.onChange(this.handler);
-                      },
-                      mounted() {
-                        this.$emit("mounted");
-                      },
-                      methods: {
-                        handler(id, old) {
-                          console.log(`change area from ${old} to ${id}`);
-                          console.log(this.$area.domElement);
-                          console.log(this.$area.id);
-                          console.log(this.$area.contentComponent);
-                          console.log(this.$area.component);
-                          console.log(this.$area.areas);
-                        },
-                        stop() {
-                          this.$area.offChange(this.handler);
-                        }
-                      },
-                      template: `<div>
-                          {{text}}
-                          <button type="button" @click="stop">Click to stop listening to area change</button>
-                        </div>`
-                    },
-                    { props: { text: { type: String, default: "no text provided" } }, render(h) { return h("div", this.text) } },
-                    { render(h) { return h("div", "Hey !") } },
+                    { render(h) { return h("div", "Content I") } },
+                    { render(h) { return h("div", "Content II") } },
+                    { render(h) { return h("pre", `d
+                    d
+                    d
+                    d
+                    d
+                    d
+                    ddsdsdsdscoucou
+
+
+                    d
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    d
+                    d
+                    dd
+                    d
+                    d
+                    d
+                    d
+                    d
+                    d
+                    d
+                    d
+                    d`) } },
+                    { render(h) { return h("div", "Content III") } },
                   ],
                   layout: {
                     direction: "row",
                     ratios: [20, 80],
                     children: [
                       {
-                        name: "comp1", // Can be used to get this specific component
                         componentIndex: 0,
-                        cfg: {
-                          on: {
-                            mounted() {
-                              console.log("Comp 1 mounted !");
-                            }
-                          },
-                          props: {
-                            text: "nothing"
-                          }
-                        }
                       },
                       {
                         direction: "column",
-                        ratios: [40, 50, 10],
+                        ratios: [40, 60],
                         children: [
                           {
                             componentIndex: 1,
-                            cfg: {
-                              props: {
-                                text: "Hey :D"
-                              }
-                            }
                           },
                           {
                             componentIndex: 2
-                          },
-                          {
-                            componentIndex: null // if null, render a customizable default component
-                          },
+                          }
                         ]
                       }
                     ]
