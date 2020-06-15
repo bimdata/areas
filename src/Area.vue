@@ -100,6 +100,10 @@ export default {
       this.dragging = true;
       dragEvent.dataTransfer.setData("areas-areaid", String(this.id));
       dragEvent.dataTransfer.effectAllowed = "move";
+      if (this.areas.cfg.dragImage) {
+        const cfgDragImage = this.areas.cfg.dragImage;
+        dragEvent.dataTransfer.setDragImage(cfgDragImage.src, cfgDragImage.xOffset, cfgDragImage.yOffset);
+      }
     },
     onDragEnd() {
       this.dragging = false;

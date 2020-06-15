@@ -54,6 +54,9 @@
     import Vue from '../../node_modules/vue/dist/vue.esm.browser.js';
     import Areas from "./dist/areas.esm.js";
 
+    const dragImage = document.createElement("img");
+    dragImage.src = "https://media-exp1.licdn.com/dms/image/C4D0BAQHoCO5FSOrIGg/company-logo_200_200/0?e=1600300800&v=beta&t=apvq-bf2d87naZfhPleTxUoBOpN6QQ8_V-mNu6pxyCY"
+
     let areas = null;
 
     const headerComponent = {
@@ -116,6 +119,11 @@
               ref: "areas",
               props: {
                 cfg: {
+                  dragImage: {
+                    src: dragImage,
+                    xOffset: 100,
+                    yOffset: 100,
+                  },
                   components: [
                     { render(h) { return h("div", "Content I") } },
                     { render(h) { return h("div", "Content II") } },
@@ -212,7 +220,7 @@
       },
     }).$mount('#app');
 
-    // areas = vm.$refs.areas;
+    areas = vm.$refs.areas;
     // areas.getAreaContentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
 
   </script>
