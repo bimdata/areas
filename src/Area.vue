@@ -102,7 +102,7 @@ export default {
       dragEvent.dataTransfer.effectAllowed = "move";
       if (this.areas.cfg.dragImage) {
         const cfgDragImage = this.areas.cfg.dragImage;
-        dragEvent.dataTransfer.setDragImage(cfgDragImage.src, cfgDragImage.xOffset, cfgDragImage.yOffset);
+        dragEvent.dataTransfer.setDragImage(cfgDragImage.img, cfgDragImage.xOffset, cfgDragImage.yOffset);
       }
     },
     onDragEnd() {

@@ -106,7 +106,7 @@ Areas needs an object as `cfg` props:
 | `separatorDetectionMargin` | `number` | **Optional**. Default to 10. Margin of the detection region on separators. This helps the user to get the separator with the mouse even if it is small. |
 | `areaMinRatio` | `number` | **Optional**. Default to 0. The minimal ratio of an area. |
 | `defaultComponent` | `object` | **Optional**. Default to a component that renders nothing. The default component is used when splitting the window or using componentIndex = null. |
-| `dragImage` | `object` | **Optional**. An object to customize drag image. Properties are src, xOffset and yOffset and match [setDragImage web API](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage). |
+| `dragImage` | `object` | **Optional**. An object to customize drag image. Properties are img, xOffset and yOffset and match [setDragImage web API](https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer/setDragImage). |
 
 ### `area`:
 | Property | Type | Description |
