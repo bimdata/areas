@@ -36,6 +36,9 @@ export default {
     };
   },
   computed: {
+    size() {
+      return this.areasContent && this.areasContent.filter(Boolean).length;
+    },
     swapMode() {
       return this.mode === "swap";
     },
@@ -192,6 +195,9 @@ export default {
     deleteArea(areaId) {
       this.$refs.layout.deleteArea(areaId);
       this.areasContent.splice(areaId, 1, undefined);
+      this.$emit("area-deletted", {
+        areaId
+      });
     },
     splitArea(areaId, way, percentage = 50, insertNewAfter = true) {
       if (!["vertical", "horizontal"].includes(way)) {
@@ -211,6 +217,13 @@ export default {
       this.$nextTick(() => {
         // Wait for the layout to rerender
         this.areasContent = Array.from(this.areasContent);
+        this.$emit("area-splitted", {
+          areaId,
+          newAreaId,
+          way,
+          percentage,
+          insertNewAfter
+        });
       });
     },
     swapAreas(areaId1, areaId2) {
@@ -220,7 +233,13 @@ export default {
       this.areasContent.splice(areaId2, 1, area1content);
       this.areasContent.splice(areaId1, 1, area2content);
 
-      this.$nextTick(this.reattachTeleports);
+      this.$nextTick(() => {
+        this.reattachTeleports();
+        this.$emit("areas-swapped", {
+          areaId1,
+          areaId2
+        });
+      });
     },
     getAreaContentByName(name) {
       return this.areasContent

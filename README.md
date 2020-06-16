@@ -138,6 +138,17 @@ this.$refs.areas.setMode(mode); // mode must be "split-vertical", "split-horizon
 
 When the mode is different from `null`, overlays is displayed on areas. To change overlays style, use [corresponding css variables](#style).
 
+## Events
+
+Splitting, deletting and swapping fire events that can be listened on areas component.
+
+| Name | Arguments |
+| :--- | :--- |
+| `area-splitted` | `{ areaId, newAreaId, way, percentage, insertNewAfter }` |
+| `area-deletted` | `{ areaId }` |
+| `areas-swapped` | `{ areaId1, areaId2 }` |
+
+
 ## Public Methods
 
 Methods on Areas instance:
@@ -221,6 +232,28 @@ The `$area` object provides the following properties:
 | areas | The Areas Vue.js component instance. |
 | onChange(handler) | A method that accepts a callback (handler) as parameter. The handler is called when area change (swap) with newAreaId and OldAreaId as parameters. |
 | offChange(handler) | A method that accepts a callback (handler) as parameter to stop listening to area change with this handler. |
+
+## Size
+
+To know areas size (number of areas) :
+```javascript
+// The host component
+{
+  data() {
+    return {
+      areasSize: null,
+    }
+  },
+  mounted() {
+    this.$watch(() => this.$refs.areas.size, size => { // ref="areas" must be placed on Areas component
+      this.areasSize = size;
+    }, {
+      immediate: true
+    });
+  },
+  // ...
+}
+```
 
 # Development
 

@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Areas</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Areas</title>
-  <style>
-    html,
-    body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    .areas {
-      /*
+      .areas {
+        /*
       --areas-active-box-shadow: inset 0 0 10px red;
       --areas-overlay-color: red;
       --areas-overlay-outline-offset: 10px;
@@ -44,52 +43,51 @@
       --areas-dragging-cursor: context-menu;
       --areas-delete-cursor: cell;
       */
-    }
-  </style>
-</head>
+      }
+    </style>
+  </head>
 
-<body>
-  <div id="app"></div>
-  <script type="module">
-    import Vue from '../../node_modules/vue/dist/vue.esm.browser.js';
-    import Areas from "./dist/areas.esm.js";
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import Vue from "../../node_modules/vue/dist/vue.esm.browser.js";
+      import Areas from "./dist/areas.esm.js";
 
-    const dragImage = document.createElement("img");
-    dragImage.src = "https://media-exp1.licdn.com/dms/image/C4D0BAQHoCO5FSOrIGg/company-logo_200_200/0?e=1600300800&v=beta&t=apvq-bf2d87naZfhPleTxUoBOpN6QQ8_V-mNu6pxyCY"
+      const dragImage = document.createElement("img");
+      dragImage.src =
+        "https://media-exp1.licdn.com/dms/image/C4D0BAQHoCO5FSOrIGg/company-logo_200_200/0?e=1600300800&v=beta&t=apvq-bf2d87naZfhPleTxUoBOpN6QQ8_V-mNu6pxyCY";
 
-    let areas = null;
+      let areas = null;
 
-    const headerComponent = {
-      data() {
-        return {
-          optionsShown: false,
-          selectedOption: null,
-        }
-      },
-      props: {
-        areasSize: {
-          default: "not specified"
-        }
-      },
-      computed: {
-        mainButtonContent() {
-          return this.optionsShown ? "Hide options" : "Show options";
-        }
-      },
-      watch: {
-        optionsShown() {
-          if (!this.optionsShown && this.selectedOption !== null) {
-            this.selectedOption = null
-          }
+      const headerComponent = {
+        data() {
+          return {
+            optionsShown: false,
+            selectedOption: null,
+          };
         },
-        selectedOption() {
-          areas.setMode(this.selectedOption);
-        }
-      },
-      methods: {
-
-      },
-      template: `
+        props: {
+          areasSize: {
+            default: "not specified",
+          },
+        },
+        computed: {
+          mainButtonContent() {
+            return this.optionsShown ? "Hide options" : "Show options";
+          },
+        },
+        watch: {
+          optionsShown() {
+            if (!this.optionsShown && this.selectedOption !== null) {
+              this.selectedOption = null;
+            }
+          },
+          selectedOption() {
+            areas.setMode(this.selectedOption);
+          },
+        },
+        methods: {},
+        template: `
         <div style="margin:10px; display:flex; justify-content: space-between">
           <div>
             <button type="button" @click="optionsShown = !optionsShown">{{ mainButtonContent }}</button>
@@ -107,15 +105,26 @@
             </template>
           </div>
           <div>Areas size : {{areasSize}}</div>
-        </div>`
-    }
+        </div>`,
+      };
 
-    const vm = new Vue({
-      render: function (h) {
-        return h("div", { style: "width: 80%; margin: auto; height: 80%;" }, [
-          h(headerComponent),
-          h(Areas,
-            {
+      const vm = new Vue({
+        data() {
+          return {
+            areasSize: null,
+          }
+        },
+        mounted() {
+          this.$watch(() => this.$refs.areas.size, size => {
+            this.areasSize = size;
+          }, {
+            immediate: true
+          });
+        },
+        render(h) {
+          return h("div", { style: "width: 80%; margin: auto; height: 80%;" }, [
+            h(headerComponent, {props: {areasSize: this.areasSize}}),
+            h(Areas, {
               ref: "areas",
               props: {
                 cfg: {
@@ -125,9 +134,21 @@
                     yOffset: 100,
                   },
                   components: [
-                    { render(h) { return h("div", "Content I") } },
-                    { render(h) { return h("div", "Content II") } },
-                    { render(h) { return h("pre", `d
+                    {
+                      render(h) {
+                        return h("div", "Content I");
+                      },
+                    },
+                    {
+                      render(h) {
+                        return h("div", "Content II");
+                      },
+                    },
+                    {
+                      render(h) {
+                        return h(
+                          "pre",
+                          `d
                     d
                     d
                     d
@@ -189,8 +210,15 @@
                     d
                     d
                     d
-                    d`) } },
-                    { render(h) { return h("div", "Content III") } },
+                    d`
+                        );
+                      },
+                    },
+                    {
+                      render(h) {
+                        return h("div", "Content III");
+                      },
+                    },
                   ],
                   layout: {
                     direction: "row",
@@ -207,23 +235,40 @@
                             componentIndex: 1,
                           },
                           {
-                            componentIndex: 2
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          )])
-      },
-    }).$mount('#app');
+                            componentIndex: 2,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+              on: {
+                "area-deletted"({ areaId }) {
+                  console.log(`Area ${areaId} deleted.`);
+                },
+                "areas-swapped"({ areaId1, areaId2 }) {
+                  console.log(`Areas ${areaId1} and ${areaId2} swapped.`);
+                },
+                "area-splitted"({
+                  areaId,
+                  newAreaId,
+                  way,
+                  percentage,
+                  insertNewAfter,
+                }) {
+                  console.log(
+                    `Areas ${areaId} splitted. New area ${newAreaId} created. Way : ${way}. Percentage : ${percentage}. Inserted after : ${insertNewAfter}`
+                  );
+                },
+              },
+            }),
+          ]);
+        },
+      }).$mount("#app");
 
-    areas = vm.$refs.areas;
-    // areas.getAreaContentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
-
-  </script>
-</body>
-
+      areas = vm.$refs.areas;
+      // areas.getAreaContentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
+    </script>
+  </body>
 </html>
