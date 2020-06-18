@@ -112,18 +112,22 @@
         data() {
           return {
             areasSize: null,
-          }
+          };
         },
         mounted() {
-          this.$watch(() => this.$refs.areas.size, size => {
-            this.areasSize = size;
-          }, {
-            immediate: true
-          });
+          this.$watch(
+            () => this.$refs.areas.size,
+            (size) => {
+              this.areasSize = size;
+            },
+            {
+              immediate: true,
+            }
+          );
         },
         render(h) {
           return h("div", { style: "width: 80%; margin: auto; height: 80%;" }, [
-            h(headerComponent, {props: {areasSize: this.areasSize}}),
+            h(headerComponent, { props: { areasSize: this.areasSize } }),
             h(Areas, {
               ref: "areas",
               props: {
@@ -135,13 +139,34 @@
                   },
                   components: [
                     {
+                      props: {
+                        text: {
+                          type: String,
+                          default: "No text provided"
+                        }
+                      },
                       render(h) {
-                        return h("div", "Content I");
+                        return h("div", `Content I. Text: ${this.text}`);
                       },
                     },
                     {
+                      inject: ["$area"],
+                      props: {
+                        list: {
+                          type: Array,
+                          default: () => [],
+                        },
+                      },
+                      methods: {
+                        onClick() {
+                          console.log("Clicked :D !");
+                        }
+                      },
                       render(h) {
-                        return h("div", "Content II");
+                        return h("div", [
+                          h("button", {on: {click:this.onClick}}, "Click Me :D"),
+                          h("ul", this.list.map(li => h("li", li)))
+                        ]);
                       },
                     },
                     {
@@ -225,7 +250,13 @@
                     ratios: [20, 80],
                     children: [
                       {
+                        name: "test",
                         componentIndex: 0,
+                        cfg: {
+                          props: {
+                            text: null
+                          }
+                        }
                       },
                       {
                         direction: "column",
@@ -233,6 +264,11 @@
                         children: [
                           {
                             componentIndex: 1,
+                            cfg: {
+                              props: {
+                                list: ["jean", "yo", "marcel"]
+                              }
+                            }
                           },
                           {
                             componentIndex: 2,
@@ -268,7 +304,9 @@
       }).$mount("#app");
 
       areas = vm.$refs.areas;
-      // areas.getAreaContentByName("comp1").cfg.props.text = "Youhou ! =D"; // This is reactive !
+      areas.getAreaContentByName("test").cfg.props.text = "32"; // This is reactive !
+
+      window.areas = areas;
     </script>
   </body>
 </html>
