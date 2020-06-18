@@ -32,6 +32,9 @@ export default {
         get areas() {
           return self.areas;
         },
+        get areaContent() {
+          return this.areas.areasContent[self.targetId];
+        },
         onChange(handler) {
           if (typeof handler !== "function") {
             throw `onAreaChange only accept function, get "${typeof handler}"`;

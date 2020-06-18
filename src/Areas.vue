@@ -331,7 +331,7 @@ export default {
                     refInFor: true,
                     key: `teleportArea${areaContent.id}` // needed to do not rerender components
                   },
-                  [h(areaContent.component, { ...areaContent.cfg })]
+                  [h(areaContent.component, areaContent.cfg)]
                 )
               : null
           )
