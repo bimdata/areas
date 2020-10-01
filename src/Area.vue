@@ -8,7 +8,7 @@
     @dragover="onDragOver"
     @dragleave="onDragLeave"
     @dragenter="onDragEnter"
-    @dragstart="onDragStart"
+    @dragstart.self="onDragStart"
     @drop="onDrop"
     @dragend="onDragEnd"
     @mouseenter="onMouseEnter"
