@@ -118,7 +118,7 @@ export default {
           attrs: {
             "data-test": "separator"
           },
-          class: "container-separator",
+          class: "areas-container__separator",
           style: {
             [this.direction === "row"
               ? "width"
@@ -133,7 +133,7 @@ export default {
         },
         [
           h("div", {
-            class: "container-separator-margin",
+            class: "areas-container__separator-margin",
             style: {
               zIndex: this._areas.zIndexStart,
               [this.direction === "row" ? "left" : "top"]: `${-this
@@ -160,7 +160,7 @@ export default {
 
     return h(
       "div",
-      { class: "container", style: { flexDirection: this.direction } },
+      { class: "areas-container", style: { flexDirection: this.direction } },
       areas
         .map((area, i) => {
           area.data.style = this.areasWidth[i];
@@ -186,16 +186,16 @@ function sum(a, b) {
 </script>
 
 <style scoped>
-.container {
+.areas-container {
   display: flex;
   width: 100%;
   height: 100%;
 }
-.container-separator {
+.areas-container__separator {
   position: relative;
   flex-shrink: 0;
 }
-.container-separator-margin {
+.areas-container__separator-margin {
   position: absolute;
 }
 </style>
