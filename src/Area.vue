@@ -114,7 +114,9 @@ export default {
         dragEvent.dataTransfer.getData("areas-areaid"),
         10
       );
-      this.areas.swapAreas(areaId, this.id);
+      if (!Number.isNaN(areaId)) {
+        this.areas.swapAreas(areaId, this.id);
+      }
     },
     onDragEnter(dragEvent) {
       if (dragEvent.dataTransfer.types.includes("areas-areaid")) {
