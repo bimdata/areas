@@ -7,16 +7,16 @@ export default {
   props: {
     cfg: {
       type: Object,
-      required: true
+      required: true,
     },
     zIndexStart: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
   provide() {
     return {
-      areas: this
+      areas: this,
     };
   },
   data() {
@@ -32,7 +32,7 @@ export default {
       containerKeyGen: null,
       areaIdGen: null,
       areaContentIdGen: null,
-      cursor: null
+      cursor: null,
     };
   },
   computed: {
@@ -53,7 +53,7 @@ export default {
     },
     noMode() {
       return this.mode === null;
-    }
+    },
   },
   created() {
     this.initGenerators();
@@ -76,7 +76,7 @@ export default {
 
       this.areaIdPrefix = this.cfg.areaIdPrefix || "area-";
       this.defaultComponent = this.cfg.defaultComponent || {
-        render: () => null
+        render: () => null,
       };
       this.availableComponents = cfg.components;
 
@@ -103,13 +103,13 @@ export default {
         key: this.containerKeyGen(),
         direction: container.direction || "row",
         ratios: container.ratios,
-        children: container.children.map(child => {
+        children: container.children.map((child) => {
           if (child.children) {
             return this.parseContainer(child);
           } else {
             return this.parseArea(child);
           }
-        })
+        }),
       };
     },
     parseArea(area) {
@@ -121,7 +121,7 @@ export default {
       }
       const areaObject = {
         type: "area",
-        id: this.areaIdGen()
+        id: this.areaIdGen(),
       };
       const contentObject = {
         name: area.name,
@@ -130,7 +130,7 @@ export default {
             ? this.availableComponents[area.componentIndex]
             : this.defaultComponent,
         cfg: area.cfg,
-        id: this.areaContentIdGen()
+        id: this.areaContentIdGen(),
       };
       this.areasContent[areaObject.id] = contentObject;
       return areaObject;
@@ -139,7 +139,7 @@ export default {
       this.layoutComponent = makeLayoutComponent(layout, {
         separatorThickness: this.separatorThickness,
         separatorDetectionMargin: this.separatorDetectionMargin,
-        minRatio: this.areaMinRatio
+        minRatio: this.areaMinRatio,
       });
     },
     /******* Methods to be used externally *******/
@@ -177,7 +177,7 @@ export default {
             ? this.defaultComponent
             : this.availableComponents[componentIndex],
         ...(cfg && { cfg }),
-        ...(name && { name })
+        ...(name && { name }),
       };
       this.areasContent.splice(areaId, 1, newAreaContentObject);
     },
@@ -196,7 +196,7 @@ export default {
       this.$refs.layout.deleteArea(areaId);
       this.areasContent.splice(areaId, 1, undefined);
       this.$emit("area-deletted", {
-        areaId
+        areaId,
       });
     },
     splitArea(areaId, way, percentage = 50, insertNewAfter = true) {
@@ -211,7 +211,7 @@ export default {
       );
       this.areasContent[newAreaId] = {
         id: this.areaContentIdGen(),
-        component: this.defaultComponent
+        component: this.defaultComponent,
       };
 
       this.$nextTick(() => {
@@ -222,7 +222,30 @@ export default {
           newAreaId,
           way,
           percentage,
-          insertNewAfter
+          insertNewAfter,
+        });
+      });
+    },
+    splitLayout(way = "vertical", percentage = 50, insertNewAfter = true, cfg) {
+      if (!["vertical", "horizontal"].includes(way)) {
+        throw `Cannot inception this way. Only accept "vertical" or "horizontal", get "${way}".`;
+      }
+      const newAreaId = this.$refs.layout.splitLayout(way, percentage, insertNewAfter);
+      this.areasContent[newAreaId] = {
+        id: this.areaContentIdGen(),
+        component: this.defaultComponent,
+        cfg
+      };
+
+      this.$nextTick(() => {
+        // Wait for the layout to rerender
+        this.areasContent = Array.from(this.areasContent);
+        this.$emit("layout-splitted", {
+          newAreaId,
+          way,
+          insertNewAfter,
+          percentage,
+          cfg
         });
       });
     },
@@ -237,15 +260,15 @@ export default {
         this.reattachTeleports();
         this.$emit("areas-swapped", {
           areaId1,
-          areaId2
+          areaId2,
         });
       });
     },
     getAreaContentByName(name) {
       return this.areasContent
         .filter(Boolean)
-        .filter(areaContent => areaContent.name)
-        .find(areaContent => areaContent.name === name);
+        .filter((areaContent) => areaContent.name)
+        .find((areaContent) => areaContent.name === name);
     },
     /******* Methods to be used internally *******/
     onMouseLeave() {
@@ -272,11 +295,11 @@ export default {
       return {
         direction: container.direction,
         ratios: roundRatios(container.ratios),
-        children: container.children.map(child =>
+        children: container.children.map((child) =>
           child.type === "container"
             ? this.reverseParseContainer(child)
             : this.reverseParseArea(child)
-        )
+        ),
       };
     },
     reverseParseArea(area) {
@@ -287,7 +310,7 @@ export default {
       const areaObject = {
         componentIndex: componentIndex === -1 ? null : componentIndex,
         ...(areaContent.cfg && { cfg: areaContent.cfg }), // will not add the property if undefined
-        ...(areaContent.name && { name: areaContent.name }) // will not add the property if undefined
+        ...(areaContent.name && { name: areaContent.name }), // will not add the property if undefined
       };
       return areaObject;
     },
@@ -295,13 +318,13 @@ export default {
       return this.$refs.layout.getAreaInstances();
     },
     getArea(id) {
-      return this.getAreas().find(area => area.id === id);
+      return this.getAreas().find((area) => area.id === id);
     },
     onLayoutUpdated() {
       this.reattachTeleports();
     },
     reattachTeleports() {
-      this.$refs.teleports.forEach(teleport => teleport.attach());
+      this.$refs.teleports.forEach((teleport) => teleport.attach());
     },
     updateContainerRatio(containerId, newRatios) {
       this.$refs.layout.updateContainerRatio(containerId, newRatios);
@@ -320,16 +343,16 @@ export default {
                   Teleport,
                   {
                     props: {
-                      targetId: areaId
+                      targetId: areaId,
                     },
                     on: {
                       mounted({ childInstance }) {
                         areaContent.instance = childInstance;
-                      }
+                      },
                     },
                     ref: "teleports",
                     refInFor: true,
-                    key: `teleportArea${areaContent.id}` // needed to do not rerender components
+                    key: `teleportArea${areaContent.id}`, // needed to do not rerender components
                   },
                   [h(areaContent.component, { ...areaContent.cfg })]
                 )
@@ -337,7 +360,7 @@ export default {
           )
           .filter(Boolean)
       );
-    }
+    },
   },
   render(h) {
     return h(
@@ -345,19 +368,19 @@ export default {
       {
         class: "areas",
         style: `cursor: var(--areas-global-cursor, unset); ${this.cursor}`,
-        on: { mouseleave: this.onMouseLeave }
+        on: { mouseleave: this.onMouseLeave },
       },
       [
         this.renderTeleports(h),
         h(this.layoutComponent, {
           ref: "layout",
           on: {
-            updated: this.onLayoutUpdated
-          }
-        })
+            updated: this.onLayoutUpdated,
+          },
+        }),
       ]
     );
-  }
+  },
 };
 
 function roundRatios(ratios) {

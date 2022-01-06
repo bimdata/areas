@@ -137,6 +137,14 @@
                     xOffset: 100,
                     yOffset: 100,
                   },
+                  defaultComponent: {
+                    props: {
+                      text: String
+                    },
+                    render(h) {
+                      return h("div", this.text);
+                    }
+                  },
                   components: [
                     {
                       props: {

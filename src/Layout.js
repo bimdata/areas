@@ -122,6 +122,26 @@ export default (layout, containerProps) => ({
       }
       return newAreaId;
     },
+    splitLayout(way = "vertical", percentage = 50, insertNewAfter = true) {
+      const direction = way === "vertical" ? "row" : "column";
+      const newAreaId = this.getNextAreaId();
+      const newAreaObject = {
+        id: newAreaId,
+        type: "area"
+      };
+
+      const children = insertNewAfter ? [this.layout, newAreaObject] : [newAreaObject, this.layout];
+      this.layout = {
+        type: "container",
+        id: this.getNextContainerId(),
+        key: this.getNextContainerKey(),
+        direction,
+        ratios: [percentage, 100 - percentage],
+        children
+      };
+
+      return newAreaId;
+    },
     mergeRatios(container, areaIndex) {
       if (areaIndex === 0) {
         const firstRatio = container.ratios.shift();
